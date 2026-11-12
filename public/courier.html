@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpeeDial Express — Rider Terminal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 flex flex-col items-center">
+  <div class="w-full max-w-md space-y-4">
+    <!-- Branded Header with Location Toggle -->
+    <div class="bg-slate-900 border border-orange-500/40 rounded-2xl p-4 space-y-3 shadow-lg">
+      <div class="flex items-center justify-between">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-orange-500 font-extrabold text-lg">SpeeDial Express</span>
+            <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded">RC: 8937370</span>
+          </div>
+          <p id="rider-location-label" class="text-xs text-slate-400 mt-0.5">Kaduna Metro • Solo Dispatch Mode</p>
+        </div>
+        <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+          ONLINE
+        </span>
+      </div>
+
+      <!-- Active Hub Filter Toggle -->
+      <div class="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+        <button id="tab-KD" onclick="switchHub('KD')" class="py-1.5 text-xs font-bold rounded-lg bg-orange-600 text-white transition">
+          Kaduna (KD)
+        </button>
+        <button id="tab-KN" onclick="switchHub('KN')" class="py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">
+          Kano (KN)
+        </button>
+        <button id="tab-ALL" onclick="switchHub('ALL')" class="py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">
+          All Hubs
+        </button>
+      </div>
+    </div>
+
+    <div id="orders-container" class="space-y-4">
+      <div class="text-center text-slate-400 text-sm py-8">Loading active dispatches...</div>
+    </div>
+
+    <div class="text-center pt-2">
+      <a href="/index.html" class="text-xs text-slate-400 hover:text-orange-400 transition">
+        ← Switch to Customer Booking & Tracker
+      </a>
+    </div>
+  </div>
+
+  <script>
+    let currentHub = localStorage.getItem('speedial_city') || 'KD';
+
+    function switchHub(hub) {
+      currentHub = hub;
+      if (hub === 'KD' || hub === 'KN') {
+        localStorage.setItem('speedial_city', hub);
+      }
+
+      ['KD', 'KN', 'ALL'].forEach(key => {
+        document.getElementById(`tab-${key}`).className = (key === hub)
+          ? 'py-1.5 text-xs font-bold rounded-lg bg-orange-600 text-white transition'
+          : 'py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition';
+      });
+
+      const labelMap = {
+        KD: 'Kaduna Metro • Solo Dispatch Mode',
+        KN: 'Kano Metro • Solo Dispatch Mode',
+        ALL: 'Kaduna & Kano • All Active Dispatches'
+      };
+      document.getElementById('rider-location-label').textContent = labelMap[hub];
+      loadActiveOrders();
+    }
+
+    async function loadActiveOrders() {
+      const container = document.getElementById('orders-container');
+      try {
+        const query = (currentHub === 'KD' || currentHub === 'KN') ? `?city=${currentHub}` : '';
+        const res = await fetch(`/api/orders/active${query}`);
+        const data = await res.json();
+
+        if (!data.orders || data.orders.length === 0) {
+          const hubName = currentHub === 'KN' ? 'Kano' : currentHub === 'KD' ? 'Kaduna' : 'any hub';
+          container.innerHTML = `
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center space-y-2">
+              <p class="text-slate-300 font-medium">No active dispatches in ${hubName}</p>
+              <p class="text-xs text-slate-500">New bookings auto-assign directly to your dispatch queue.</p>
+              <button onclick="loadActiveOrders()" class="mt-3 px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg text-slate-300">
+                Refresh Queue
+              </button>
+            </div>`;
+          return;
+        }
+
+        container.innerHTML = data.orders.map(order => {
+          const isPickup = order.status === 'ACCEPTED' || order.status === 'PENDING';
+          const isKanoOrder = order.tracking_code.startsWith('KN-');
+          const cityTag = isKanoOrder
+            ? '<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30">KANO</span>'
+            : '<span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30">KADUNA</span>';
+          const badgeColor = isPickup
+            ? 'bg-amber-500/20 text-amber-300 border-amber-500/30'
+            : 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30';
+
+          return `
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-md">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="font-mono font-bold text-orange-400 text-base">${order.tracking_code}</span>
+                  ${cityTag}
+                </div>
+                <span class="px-2.5 py-0.5 text-xs font-bold rounded-full border ${badgeColor}">
+                  ${order.status}
+                </span>
+              </div>
+
+              <div class="text-xs space-y-1.5 bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
+                <div>
+                  <span class="text-slate-500 uppercase text-[10px] font-semibold">Pickup:</span>
+                  <p class="text-slate-200">${order.pickup_address || 'Metro Area'}</p>
+                  <p class="text-slate-400">${order.sender_name || ''} ${order.sender_phone ? '• ' + order.sender_phone : ''}</p>
+                </div>
+                <div class="border-t border-slate-800 my-1.5"></div>
+                <div>
+                  <span class="text-slate-500 uppercase text-[10px] font-semibold">Dropoff:</span>
+                  <p class="text-slate-200">${order.dropoff_address || 'Metro Area'}</p>
+                  <p class="text-slate-400">${order.recipient_name || ''} ${order.recipient_phone ? '• ' + order.recipient_phone : ''}</p>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <label class="block text-xs text-slate-400">
+                  ${isPickup ? 'Enter Sender Pickup OTP' : 'Enter Recipient Dropoff OTP'}
+                </label>
+                <div class="flex gap-2">
+                  <input id="otp-${order.tracking_code}" type="text" maxlength="4" placeholder="OTP"
+                    class="w-28 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-center font-mono text-base tracking-widest focus:outline-none focus:border-orange-500" />
+                  ${isPickup
+                    ? `<button onclick="verifyStep('${order.tracking_code}', 'verify-pickup')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm rounded-xl py-2">Verify Pickup</button>`
+                    : `<button onclick="verifyStep('${order.tracking_code}', 'verify-dropoff')" class="flex-1 bg-orange-600 hover:bg-orange-500 text-white font-semibold text-sm rounded-xl py-2">Complete Delivery</button>`
+                  }
+                </div>
+                <p id="msg-${order.tracking_code}" class="text-xs hidden"></p>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        container.innerHTML = `<div class="text-red-400 text-xs text-center py-4">Failed to connect to backend server.</div>`;
+      }
+    }
+
+    async function verifyStep(trackingCode, endpoint) {
+      const otp = document.getElementById(`otp-${trackingCode}`).value.trim();
+      const msgEl = document.getElementById(`msg-${trackingCode}`);
+      if (!otp) return;
+
+      const res = await fetch(`/api/orders/${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order_id: trackingCode, otp })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        msgEl.textContent = data.error || 'Verification failed.';
+        msgEl.className = 'text-xs text-red-400 block';
+        return;
+      }
+
+      msgEl.textContent = data.message;
+      msgEl.className = 'text-xs text-emerald-400 block';
+      setTimeout(loadActiveOrders, 700);
+    }
+
+    switchHub(currentHub);
+  </script>
+</body>
+</html>
