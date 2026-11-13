@@ -150,30 +150,50 @@
       }
     }
 
-    async function verifyStep(trackingCode, endpoint) {
-      const otp = document.getElementById(`otp-${trackingCode}`).value.trim();
-      const msgEl = document.getElementById(`msg-${trackingCode}`);
-      if (!otp) return;
+   async function verifyStep(trackingCode, endpoint) {
+  const otpInput = document.getElementById(`otp-${trackingCode}`);
+  const msgEl = document.getElementById(`msg-${trackingCode}`);
+  const otp = otpInput ? otpInput.value.trim() : '';
 
-      const res = await fetch(`/api/orders/${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ order_id: trackingCode, otp })
-      });
-      const data = await res.json();
+  if (!otp) {
+    if (msgEl) {
+      msgEl.textContent = 'Please enter the 4-digit OTP first.';
+      msgEl.className = 'text-xs text-amber-400 mt-1';
+    }
+    return;
+  }
 
-      if (!res.ok) {
+  if (msgEl) {
+    msgEl.textContent = 'Verifying OTP...';
+    msgEl.className = 'text-xs text-slate-400 mt-1';
+  }
+
+  try {
+    const res = await fetch(`/api/orders/${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ order_id: trackingCode, otp })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (msgEl) {
         msgEl.textContent = data.error || 'Verification failed.';
-        msgEl.className = 'text-xs text-red-400 block';
-        return;
+        msgEl.className = 'text-xs text-red-400 mt-1';
       }
-
-      msgEl.textContent = data.message;
-      msgEl.className = 'text-xs text-emerald-400 block';
-      setTimeout(loadActiveOrders, 700);
+      return;
     }
 
-    switchHub(currentHub);
-  </script>
-</body>
+    if (msgEl) {
+      msgEl.textContent = data.message || 'Verified!';
+      msgEl.className = 'text-xs text-emerald-400 mt-1';
+    }
+    setTimeout(() => loadActiveOrders(), 800);
+  } catch (err) {
+    if (msgEl) {
+      msgEl.textContent = 'Network error. Check connection and retry.';
+      msgEl.className = 'text-xs text-red-400 mt-1';
+    }
+  }
+}
 </html>
