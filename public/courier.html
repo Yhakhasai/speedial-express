@@ -24,7 +24,7 @@
       </div>
 
       <!-- Active Hub Filter Toggle -->
-      <div class="grid grid-cols-3 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+      <div class="grid grid-cols-4 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
         <button id="tab-KD" onclick="switchHub('KD')" class="py-1.5 text-xs font-bold rounded-lg bg-orange-600 text-white transition">
           Kaduna (KD)
         </button>
@@ -34,6 +34,37 @@
         <button id="tab-ALL" onclick="switchHub('ALL')" class="py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">
           All Hubs
         </button>
+        <div class="grid grid-cols-4 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+  ...
+  <button id="tab-ALL" onclick="switchHub('ALL')" class="py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">
+    All Hubs
+  </button>
+  <button type="button" id="tab-admin" onclick="openAdminTab()" class="py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-orange-400 transition">
+    <!-- Admin Rider Approval Panel -->
+<div id="admin-container" class="hidden bg-slate-900 border border-orange-500/40 rounded-2xl p-4 space-y-3">
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-sm font-bold text-orange-400">Admin • Rider Approvals</h2>
+      <p class="text-[11px] text-slate-400">Approve or suspend dispatch riders</p>
+    </div>
+    <button type="button" onclick="closeAdminTab()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-[11px] rounded-lg text-slate-300">
+      Back to Queue
+    </button>
+  </div>
+
+  <div id="admin-pin-gate" class="flex gap-2">
+    <input id="admin-pin-input" type="password" maxlength="8" placeholder="Enter Admin PIN (Default: 8937)" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono" />
+    <button type="button" onclick="unlockAdminPanel()" class="px-4 py-2 bg-orange-600 hover:bg-orange-500 rounded-xl text-xs font-bold text-white">
+      Unlock
+    </button>
+  </div>
+  <p id="admin-msg" class="text-xs hidden"></p>
+
+  <div id="admin-riders-list" class="space-y-2"></div>
+</div>
+    Admin
+  </button>
+</div>
       </div>
     </div>
 
@@ -84,7 +115,103 @@
 
   <script>
     let currentHub = localStorage.getItem('speedial_city') || 'KD';
+    let savedAdminPin = sessionStorage.getItem('speedial_admin_pin') || '';
 
+    function openAdminTab() {
+      document.getElementById('orders-container').classList.add('hidden');
+      document.getElementById('admin-container').classList.remove('hidden');
+      if (savedAdminPin) {
+        document.getElementById('admin-pin-input').value = savedAdminPin;
+        unlockAdminPanel();
+      }
+    }
+
+    function closeAdminTab() {
+      document.getElementById('admin-container').classList.add('hidden');
+      document.getElementById('orders-container').classList.remove('hidden');
+    }
+
+    async function unlockAdminPanel() {
+      const pin = document.getElementById('admin-pin-input').value.trim();
+      const msgEl = document.getElementById('admin-msg');
+      const listEl = document.getElementById('admin-riders-list');
+
+      msgEl.classList.remove('hidden');
+      msgEl.textContent = 'Loading riders...';
+      msgEl.className = 'text-xs text-slate-400';
+
+      try {
+        const res = await fetch('/api/auth/riders', {
+          headers: { 'x-admin-pin': pin }
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          msgEl.textContent = data.error || 'Access denied.';
+          msgEl.className = 'text-xs text-red-400';
+          listEl.innerHTML = '';
+          return;
+        }
+
+        savedAdminPin = pin;
+        sessionStorage.setItem('speedial_admin_pin', pin);
+        msgEl.classList.add('hidden');
+
+        if (!data.riders || data.riders.length === 0) {
+          listEl.innerHTML = '<p class="text-xs text-slate-400 text-center py-3">No riders registered yet.</p>';
+          return;
+        }
+
+        listEl.innerHTML = data.riders.map(r => {
+          const badgeColor = r.status === 'ACTIVE'
+            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+            : r.status === 'PENDING'
+              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+              : 'bg-red-500/20 text-red-300 border-red-500/40';
+
+          return `
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 flex items-center justify-between gap-2">
+              <div class="space-y-0.5">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-slate-100">${r.full_name}</span>
+                  <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${badgeColor}">${r.status}</span>
+                </div>
+                <p class="text-[11px] text-slate-400">${r.phone} • Hub: ${r.city} • Plate: ${r.vehicle_plate || 'N/A'}</p>
+              </div>
+              <div class="flex gap-1.5">
+                ${r.status !== 'ACTIVE' ? `
+                  <button type="button" onclick="setRiderStatus(${r.id}, 'ACTIVE')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-lg">
+                    Approve
+                  </button>
+                ` : `
+                  <button type="button" onclick="setRiderStatus(${r.id}, 'SUSPENDED')" class="px-2.5 py-1.5 bg-red-600/80 hover:bg-red-600 text-white text-[11px] font-semibold rounded-lg">
+                    Suspend
+                  </button>
+                `}
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        msgEl.textContent = 'Network error loading riders.';
+        msgEl.className = 'text-xs text-red-400';
+      }
+    }
+
+    async function setRiderStatus(riderId, newStatus) {
+      try {
+        const res = await fetch(`/api/auth/riders/${riderId}/status`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-pin': savedAdminPin
+          },
+          body: JSON.stringify({ status: newStatus })
+        });
+        if (res.ok) {
+          unlockAdminPanel();
+        }
+      } catch (e) {}
+    }
     function switchHub(hub) {
       currentHub = hub;
       if (hub === 'KD' || hub === 'KN') {
