@@ -104,5 +104,53 @@ router.get('/my-orders', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+// 4. Admin: List All Registered Riders (Protected by Admin PIN)
+router.get('/riders', async (req, res) => {
+  try {
+    const adminPin = String(req.headers['x-admin-pin'] || req.query.admin_pin || '').trim();
+    const expectedPin = process.env.ADMIN_PIN || '8937';
+    if (adminPin !== expectedPin) {
+      return res.status(401).json({ error: 'Invalid Admin PIN.' });
+    }
 
+    const result = await db.query(
+      `SELECT id, full_name, phone, city, vehicle_plate, status, created_at
+       FROM users
+       WHERE role = 'RIDER'
+       ORDER BY CASE WHEN status = 'PENDING' THEN 0 ELSE 1 END, created_at DESC`
+    );
+    res.json({ success: true, riders: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 5. Admin: Approve or Suspend a Rider
+router.patch('/riders/:id/status', async (req, res) => {
+  try {
+    const adminPin = String(req.headers['x-admin-pin'] || '').trim();
+    const expectedPin = process.env.ADMIN_PIN || '8937';
+    if (adminPin !== expectedPin) {
+      return res.status(401).json({ error: 'Invalid Admin PIN.' });
+    }
+
+    const { status } = req.body;
+    const cleanStatus = String(status || '').trim().toUpperCase();
+    if (!['ACTIVE', 'PENDING', 'SUSPENDED'].includes(cleanStatus)) {
+      return res.status(400).json({ error: 'Invalid status.' });
+    }
+
+    const result = await db.query(
+      `UPDATE users SET status = $1 WHERE id = $2 AND role = 'RIDER'
+       RETURNING id, full_name, phone, city, vehicle_plate, status`,
+      [cleanStatus, req.params.id]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Rider not found.' });
+    }
+    res.json({ success: true, rider: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 module.exports = router;
