@@ -47,71 +47,7 @@
       </a>
       <!-- Rider Registration / Sign In Bar -->
 <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
-  let riderAuthMode = 'REGISTER';
-
-    function toggleRiderAuth(mode) {
-      riderAuthMode = mode;
-      const panel = document.getElementById('rider-auth-panel');
-      const isReg = mode === 'REGISTER';
-      panel.classList.remove('hidden');
-      document.getElementById('rider-auth-name').classList.toggle('hidden', !isReg);
-      document.getElementById('rider-reg-extras').classList.toggle('hidden', !isReg);
-      document.getElementById('rider-auth-submit').textContent = isReg ? 'Submit Rider Registration' : 'Sign In as Rider';
-    }
-
-    async function submitRiderAuth() {
-      const msgEl = document.getElementById('rider-auth-msg');
-      const phone = document.getElementById('rider-auth-phone').value.trim();
-      const pin = document.getElementById('rider-auth-pin').value.trim();
-      const full_name = document.getElementById('rider-auth-name').value.trim();
-      const city = document.getElementById('rider-auth-city').value;
-      const vehicle_plate = document.getElementById('rider-auth-plate').value.trim();
-
-      msgEl.classList.remove('hidden');
-      msgEl.textContent = 'Processing...';
-      msgEl.className = 'text-xs text-slate-400';
-
-      const endpoint = riderAuthMode === 'REGISTER' ? '/api/auth/register' : '/api/auth/login';
-      const payload = riderAuthMode === 'REGISTER'
-        ? { role: 'RIDER', full_name, phone, pin, city, vehicle_plate }
-        : { role: 'RIDER', phone, pin };
-
-      try {
-        const res = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          msgEl.textContent = data.error || 'Rider auth failed.';
-          msgEl.className = 'text-xs text-red-400';
-          return;
-        }
-        if (riderAuthMode === 'REGISTER') {
-          msgEl.textContent = data.message;
-          msgEl.className = 'text-xs text-emerald-400';
-          return;
-        }
-        localStorage.setItem('speedial_rider', JSON.stringify(data.user));
-        document.getElementById('rider-session-label').textContent = `Rider: ${data.user.full_name} (${data.user.vehicle_plate || data.user.city})`;
-        document.getElementById('rider-auth-panel').classList.add('hidden');
-        switchHub(data.user.city || 'KD');
-      } catch (err) {
-        msgEl.textContent = 'Network error. Please retry.';
-        msgEl.className = 'text-xs text-red-400';
-      }
-    }
-
-    const savedRider = localStorage.getItem('speedial_rider');
-    if (savedRider) {
-      try {
-        const r = JSON.parse(savedRider);
-        document.getElementById('rider-session-label').textContent = `Rider: ${r.full_name} (${r.vehicle_plate || r.city})`;
-      } catch (e) {}
-    }
-
-    switchHub(currentHub);
+ 
   <div class="flex items-center justify-between">
     <span id="rider-session-label" class="text-xs font-semibold text-slate-300">Solo Dispatch Rider</span>
     <div class="flex gap-1.5">
