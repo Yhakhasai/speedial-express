@@ -4,13 +4,21 @@ const db = require('../db');
 
 const ADMIN_PIN = process.env.ADMIN_PIN || '8937';
 
+// Auto-create email verification columns on server boot
+db.query(`
+  ALTER TABLE users
+    ADD COLUMN IF NOT EXISTS email VARCHAR(160),
+    ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE,
+    ADD COLUMN IF NOT EXISTS verification_code VARCHAR(10);
+`).catch(() => {});
+
 function generateOtp() {
   return String(Math.floor(100000 + Math.random() * 900000));
 }
 
 async function sendVerificationEmail(toEmail, fullName, otp) {
   if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    return false; // Fallback mode when SMTP isn't configured on Render
+    return false;
   }
   try {
     const nodemailer = require('nodemailer');
