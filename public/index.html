@@ -3,170 +3,240 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>SpeeDial Express • Customer Portal</title>
+  <title>SpeeDial Express • Customer Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans select-none pb-12">
+<body class="bg-[#1e1035] text-slate-100 min-h-screen font-sans pb-24 select-none">
 
-  <!-- ==================== 1. AUTH PORTAL (LOGIN / SIGN UP) ==================== -->
-  <div id="cust-auth-screen" class="min-h-screen bg-gradient-to-b from-purple-950 via-slate-950 to-slate-950 flex flex-col justify-center px-6 py-8 max-w-md mx-auto">
-    
-    <!-- Header Title -->
-    <div class="mb-6">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 mb-3">
-        <span class="w-2 h-2 rounded-full bg-orange-500"></span>
-        <span class="text-[11px] font-bold text-orange-400">SPEEDIAL EXPRESS • RC: 8937370</span>
+  <!-- ==================== CUSTOMER DASHBOARD SHELL ==================== -->
+  <div id="cust-shell" class="max-w-md mx-auto min-h-screen flex flex-col justify-between">
+
+    <div class="space-y-4">
+      <!-- Top Header -->
+      <div class="px-5 pt-6 pb-2 flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-extrabold text-white tracking-tight">Hello, usman 👋</h1>
+          <p class="text-xs text-purple-300 font-medium mt-0.5">Mon • Nov 16, 2026</p>
+        </div>
+        <button type="button" onclick="switchCustTab('alerts')" class="w-10 h-10 rounded-full bg-purple-900/60 border border-purple-700/50 flex items-center justify-center text-purple-200 relative shadow">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-orange-500"></span>
+        </button>
       </div>
-      <h1 id="auth-main-title" class="text-3xl font-extrabold text-white tracking-tight">Welcome Back</h1>
-      <p id="auth-main-sub" class="text-xs text-slate-400 mt-1">Login to continue</p>
+
+      <!-- Main Scrollable Content Area -->
+      <div class="px-4 space-y-4">
+
+        <!-- ==================== TAB 1: HOME VIEW ==================== -->
+        <div id="cview-home" class="space-y-4">
+          <!-- Wallet Hero Card -->
+          <div class="bg-gradient-to-br from-[#6b21a8] via-[#7e22ce] to-[#581c87] rounded-3xl p-5 text-white shadow-2xl relative overflow-hidden border border-purple-500/30">
+            <div class="flex items-center justify-between text-xs text-purple-200 font-medium">
+              <span class="flex items-center gap-1.5">💳 Available for orders</span>
+              <button type="button" onclick="toggleBalanceMask()" class="p-1.5 rounded-full bg-black/20 hover:bg-black/40 text-purple-200 transition">👁️</button>
+            </div>
+            
+            <div id="hero-balance" class="text-4xl font-extrabold tracking-tight mt-2 font-mono">₦2,000.00</div>
+            
+            <div class="inline-block mt-2.5 px-3 py-1 rounded-full bg-black/25 text-[11px] font-semibold text-purple-100 tracking-wide">
+              Bonus: ₦2,000
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-5">
+              <button type="button" onclick="openAddMoneyModal()" class="bg-white hover:bg-purple-50 active:scale-[0.98] transition text-slate-950 font-bold text-xs py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-1.5">
+                <span class="text-sm font-black">+</span> Fund wallet
+              </button>
+              <button type="button" onclick="openWithdrawModal()" class="bg-white/15 hover:bg-white/25 active:scale-[0.98] transition text-white font-bold text-xs py-3.5 rounded-2xl flex items-center justify-center gap-1.5 backdrop-blur-sm border border-white/10">
+                <span>↗</span> Withdraw
+              </button>
+            </div>
+          </div>
+
+          <!-- Send a Package Banner Card -->
+          <button type="button" onclick="alert('Opening Send a Package booking flow...')" class="w-full bg-[#2a1b4e] hover:bg-[#32205d] border border-purple-500/30 rounded-3xl p-4.5 flex items-center justify-between text-left shadow-lg transition group">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-2xl bg-purple-600/30 border border-purple-500/40 text-purple-300 flex items-center justify-center text-xl shadow-inner">
+                🚚
+              </div>
+              <div>
+                <h2 class="text-sm font-extrabold text-white group-hover:text-purple-300 transition">Send a Package</h2>
+                <p class="text-[11px] text-purple-300/80 mt-0.5">Get a price estimate and book a rider now</p>
+              </div>
+            </div>
+            <span class="text-purple-400 group-hover:translate-x-0.5 transition font-extrabold text-xl pr-1">›</span>
+          </button>
+
+          <!-- 2x2 Stats Grid -->
+          <div class="grid grid-cols-2 gap-3.5">
+            <div class="bg-[#2a1b4e] border border-purple-500/20 rounded-3xl p-4.5 flex flex-col justify-between h-28 shadow-md">
+              <div class="text-2xl font-extrabold text-white font-mono">0</div>
+              <div class="flex items-end justify-between">
+                <span class="text-xs font-semibold text-purple-200">Total Orders</span>
+                <span class="text-purple-400 text-lg opacity-80">📦</span>
+              </div>
+            </div>
+
+            <div class="bg-[#2a1b4e] border border-purple-500/20 rounded-3xl p-4.5 flex flex-col justify-between h-28 shadow-md">
+              <div class="text-2xl font-extrabold text-emerald-400 font-mono">0</div>
+              <div class="flex items-end justify-between">
+                <span class="text-xs font-semibold text-purple-200">Completed</span>
+                <span class="text-emerald-400 text-lg opacity-80">✓</span>
+              </div>
+            </div>
+
+            <div class="bg-[#2a1b4e] border border-purple-500/20 rounded-3xl p-4.5 flex flex-col justify-between h-28 shadow-md">
+              <div class="text-2xl font-extrabold text-amber-400 font-mono">0</div>
+              <div class="flex items-end justify-between">
+                <span class="text-xs font-semibold text-purple-200">Active Deliveries</span>
+                <span class="text-amber-400 text-lg opacity-80">⏳</span>
+              </div>
+            </div>
+
+            <div class="bg-[#2a1b4e] border border-purple-500/20 rounded-3xl p-4.5 flex flex-col justify-between h-28 shadow-md">
+              <div class="text-xl font-extrabold text-purple-300 font-mono">₦0</div>
+              <div class="flex items-end justify-between">
+                <span class="text-xs font-semibold text-purple-200">Total Spent</span>
+                <span class="text-purple-400 text-lg opacity-80">💳</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Orders Section -->
+          <div class="space-y-3 pt-2">
+            <h2 class="text-sm font-extrabold text-white tracking-wide">Recent Orders</h2>
+            <div class="bg-[#2a1b4e] border border-purple-500/20 rounded-3xl p-8 text-center space-y-2 shadow-lg">
+              <div class="w-12 h-12 rounded-2xl bg-purple-950/60 border border-purple-800/50 mx-auto flex items-center justify-center text-purple-400 text-xl">
+                📥
+              </div>
+              <p class="text-xs font-bold text-slate-200">No orders yet</p>
+              <p class="text-[11px] text-purple-300/70">Book your first delivery to see waybills here</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== TAB 2: ORDERS VIEW ==================== -->
+        <div id="cview-orders" class="hidden space-y-4">
+          <h1 class="text-xl font-extrabold text-white tracking-tight">My Orders</h1>
+          <div class="bg-[#2a1b4e] border border-purple-500/20 rounded-3xl p-8 text-center space-y-2 shadow-lg">
+            <p class="text-xs font-bold text-slate-200">No orders placed</p>
+            <p class="text-[11px] text-purple-300/70">Your delivery history will appear here</p>
+          </div>
+        </div>
+
+        <!-- ==================== TAB 3: WALLET VIEW ==================== -->
+        <div id="cview-wallet" class="hidden space-y-4">
+          <h1 class="text-xl font-extrabold text-white tracking-tight">Wallet & Payments</h1>
+          <div class="bg-gradient-to-br from-[#6b21a8] to-[#581c87] rounded-3xl p-5 text-white shadow-xl space-y-3">
+            <p class="text-xs text-purple-200 font-medium">Available Balance</p>
+            <p class="text-3xl font-extrabold font-mono">₦2,000.00</p>
+            <div class="flex gap-2.5 pt-2">
+              <button type="button" onclick="openAddMoneyModal()" class="flex-1 bg-white text-slate-950 font-bold text-xs py-3 rounded-2xl shadow">+ Add money</button>
+              <button type="button" onclick="openWithdrawModal()" class="flex-1 bg-black/30 text-white font-bold text-xs py-3 rounded-2xl">Withdraw</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== TAB 4: ALERTS VIEW ==================== -->
+        <div id="cview-alerts" class="hidden space-y-4">
+          <h1 class="text-xl font-extrabold text-white tracking-tight">Notifications</h1>
+          <div class="bg-[#2a1b4e] border border-purple-500/20 rounded-3xl p-4 flex items-start gap-3 shadow">
+            <div class="w-8 h-8 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-bold shrink-0">🎁</div>
+            <div>
+              <p class="text-xs font-bold text-white">Welcome Bonus Credited!</p>
+              <p class="text-[11px] text-purple-300/80 mt-0.5">You received ₦2,000 welcome bonus for delivery orders across Kaduna and Kano.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== TAB 5: PROFILE VIEW ==================== -->
+        <div id="cview-profile" class="hidden space-y-4 text-center pt-4">
+          <div class="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 mx-auto flex items-center justify-center text-2xl font-extrabold text-white shadow-xl">
+            US
+          </div>
+          <div>
+            <h2 class="text-lg font-extrabold text-white">Usman</h2>
+            <p class="text-xs text-purple-300 mt-0.5">Customer • Kaduna & Kano</p>
+          </div>
+          <button type="button" onclick="alert('Signed out successfully')" class="w-full bg-[#2a1b4e] border border-purple-500/20 py-3.5 rounded-2xl text-xs font-semibold text-purple-300 hover:text-white transition">
+            Sign Out
+          </button>
+        </div>
+
+      </div>
     </div>
 
-    <!-- LOGIN FORM -->
-    <div id="login-form-box" class="space-y-4">
-      <div class="space-y-1.5">
-        <label class="text-xs font-semibold text-slate-300">Email or username</label>
-        <input id="login-identifier" type="text" placeholder="Email or username" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3.5 text-sm text-white placeholder-slate-500" />
-      </div>
-
-      <div class="space-y-1.5">
-        <label class="text-xs font-semibold text-slate-300">Password</label>
-        <div class="relative">
-          <input id="login-password" type="password" placeholder="Password" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3.5 pr-12 text-sm text-white placeholder-slate-500 font-mono" />
-          <button type="button" onclick="toggleLoginPassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">👁️</button>
+    <!-- ==================== ADD MONEY MODAL ==================== -->
+    <div id="add-money-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
+      <div class="bg-[#23143c] border-t border-purple-500/40 rounded-t-3xl w-full max-w-md p-6 space-y-5">
+        <div class="flex items-center justify-between">
+          <div class="w-8"></div>
+          <div class="text-center">
+            <h3 class="text-base font-extrabold text-white">Add Money</h3>
+            <p class="text-[11px] text-purple-300/80 mt-0.5">Choose how you'd like to fund your wallet</p>
+          </div>
+          <button type="button" onclick="closeAddMoneyModal()" class="w-8 h-8 rounded-full bg-purple-950/60 border border-purple-800 flex items-center justify-center text-purple-300 hover:text-white">✕</button>
         </div>
-        <div class="text-right pt-1">
-          <button type="button" onclick="alert('Password reset link sent.')" class="text-xs text-slate-400 hover:text-white">Forgot Password?</button>
+
+        <div class="space-y-3">
+          <button type="button" onclick="alert('Opening Paystack online checkout...')" class="w-full text-left p-4 rounded-2xl bg-[#2a1b4e] border border-purple-500/20 hover:border-purple-500 flex items-center justify-between transition group">
+            <div class="flex items-center gap-3.5">
+              <div class="w-11 h-11 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-300 text-lg">💳</div>
+              <div>
+                <p class="text-xs font-extrabold text-white group-hover:text-purple-300 transition">Pay Online</p>
+                <p class="text-[11px] text-purple-300/70 mt-0.5">Card, bank transfer via Paystack</p>
+              </div>
+            </div>
+            <span class="text-purple-400 font-bold text-base">›</span>
+          </button>
+
+          <button type="button" onclick="alert('Dedicated Wema Bank Account: 9819473522')" class="w-full text-left p-4 rounded-2xl bg-[#2a1b4e] border border-purple-500/20 hover:border-purple-500 flex items-center justify-between transition group">
+            <div class="flex items-center gap-3.5">
+              <div class="w-11 h-11 rounded-xl bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-purple-300 text-lg">🏦</div>
+              <div>
+                <p class="text-xs font-extrabold text-white group-hover:text-purple-300 transition">Bank Transfer</p>
+                <p class="text-[11px] text-purple-300/70 mt-0.5">Transfer to your dedicated account number</p>
+              </div>
+            </div>
+            <span class="text-purple-400 font-bold text-base">›</span>
+          </button>
         </div>
       </div>
+    </div>
 
-      <button type="button" onclick="handleLogin()" class="w-full bg-orange-600 hover:bg-orange-500 active:scale-[0.99] transition py-4 rounded-2xl text-sm font-extrabold text-white shadow-xl shadow-orange-600/20 mt-2">
-        Login
-      </button>
-
-      <div class="text-center pt-3">
-        <button type="button" onclick="switchAuthView('REGISTER')" class="text-xs text-slate-400 hover:text-white">
-          Don't have an account? <span class="text-orange-400 font-bold underline">Sign Up</span>
+    <!-- ==================== WITHDRAW MODAL ==================== -->
+    <div id="withdraw-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
+      <div class="bg-[#23143c] border-t border-purple-500/40 rounded-t-3xl w-full max-w-md p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-extrabold text-white">Withdraw Cash</h3>
+          <button type="button" onclick="closeWithdrawModal()" class="w-8 h-8 rounded-full bg-purple-950/60 border border-purple-800 flex items-center justify-center text-purple-300">✕</button>
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-purple-200">Amount (₦)</label>
+          <input type="number" placeholder="Minimum ₦500" class="w-full bg-[#2a1b4e] border border-purple-500/30 rounded-2xl px-4 py-3 text-sm font-extrabold text-white placeholder-purple-400/50 outline-none" />
+        </div>
+        <button type="button" onclick="closeWithdrawModal()" class="w-full bg-purple-700 hover:bg-purple-600 py-3.5 rounded-2xl text-xs font-extrabold text-white shadow-lg">
+          Submit Withdrawal Request
         </button>
       </div>
     </div>
 
-    <!-- SIGN UP FORM (MATCHING YOUR SCREENSHOT EXACTLY) -->
-    <div id="register-form-box" class="hidden space-y-3.5">
-      <div class="space-y-1">
-        <label class="text-xs font-semibold text-slate-300">Full Name</label>
-        <input id="reg-fullname" type="text" placeholder="Enter your full name" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500" />
-      </div>
-
-      <div class="space-y-1">
-        <label class="text-xs font-semibold text-slate-300">Email Address</label>
-        <input id="reg-email" type="email" placeholder="Enter your email address" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500" />
-      </div>
-
-      <div class="space-y-1">
-        <label class="text-xs font-semibold text-slate-300">Phone Number</label>
-        <input id="reg-phone" type="tel" placeholder="e.g 09011223344 or +234901122..." class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500"[cite: 13] />
-      </div>
-
-      <div class="space-y-1">
-        <label class="text-xs font-semibold text-slate-300">Your state</label>
-        <div class="relative">
-          <select id="reg-state" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-slate-300 appearance-none">
-            <option value="" disabled selected>Select a state</option>
-            <option value="Kaduna">Kaduna State</option>
-            <option value="Kano">Kano State</option>
-            <option value="Lagos">Lagos State</option>
-            <option value="Abuja">FCT Abuja</option>
-          </select>
-          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">⌄</span>
-        </div>
-        <p class="text-[11px] text-slate-400 px-1 pt-0.5">We show logistics partners in your state first. You can choose another when ordering.</p>
-      </div>
-
-      <div class="space-y-1">
-        <label class="text-xs font-semibold text-slate-300">Password</label>
-        <div class="relative">
-          <input id="reg-password" type="password" placeholder="••••••••••••" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 pr-12 text-sm text-white placeholder-slate-500 font-mono" />
-          <button type="button" onclick="toggleRegPassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">👁️</button>
-        </div>
-      </div>
-
-      <div class="space-y-1">
-        <label class="text-xs font-semibold text-slate-300">Referral Code (optional)</label>
-        <input id="reg-ref" type="text" placeholder="Enter a referral code" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 uppercase font-mono" />
-      </div>
-
-      <!-- Terms Checkbox -->
-      <div class="flex items-start gap-2.5 pt-1">
-        <input id="reg-terms" type="checkbox" class="mt-0.5 rounded accent-orange-600 w-4 h-4" />
-        <label for="reg-terms" class="text-xs text-slate-300 leading-snug">
-          I agree to the <a href="#" class="text-orange-400 underline">Terms of Service</a> and <a href="#" class="text-orange-400 underline">Privacy Policy</a>[cite: 13]
-        </label>
-      </div>
-
-      <button type="button" onclick="handleRegister()" class="w-full bg-orange-600 hover:bg-orange-500 active:scale-[0.99] transition py-3.5 rounded-2xl text-sm font-extrabold text-white shadow-xl shadow-orange-600/20 mt-1">
-        Create Account
-      </button>
-
-      <div class="text-center pt-2">
-        <button type="button" onclick="switchAuthView('LOGIN')" class="text-xs text-slate-400 hover:text-white">
-          Already have an account? <span class="text-orange-400 font-bold underline">Login</span>
+    <!-- ==================== BOTTOM 5-TAB NAVIGATION BAR ==================== -->
+    <nav class="fixed bottom-0 inset-x-0 z-40 bg-[#160b28]/95 backdrop-blur border-t border-purple-900/50">
+      <div class="max-w-md mx-auto grid grid-cols-5 py-2">
+        <button type="button" onclick="switchCustTab('home')" id="ctab-home" class="flex flex-col items-center gap-1 text-purple-400 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span class="text-[10px] font-bold">Home</span>
         </button>
-      </div>
-    </div>
 
-    <p id="auth-msg" class="text-xs text-center hidden pt-2"></p>
-  </div>
+        <button type="button" onclick="switchCustTab('orders')" id="ctab-orders" class="flex flex-col items-center gap-1 text-purple-400/50 hover:text-purple-300 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          <span class="text-[10px] font-medium">Orders</span>
+        </button>
 
-  <!-- ==================== 2. CUSTOMER APP DASHBOARD SHELL ==================== -->
-  <div id="cust-shell" class="hidden max-w-md mx-auto">
-    <section class="space-y-4 px-4 pt-6">
-      <div class="bg-gradient-to-br from-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-xl">
-        <p class="text-xs text-orange-100">Wallet Balance (Welcome Bonus)</p>
-        <p class="text-3xl font-extrabold mt-1">₦2,000.00</p>
-      </div>
-      <button type="button" onclick="logoutCustomer()" class="w-full bg-slate-900 border border-slate-800 py-3 rounded-2xl text-xs font-semibold text-slate-400">Sign Out</button>
-    </section>
-  </div>
+        <button type="button" onclick="switchCustTab('wallet')" id="ctab-wallet" class="flex flex-col items-center gap-1 text-purple-400/50 hover:text-purple-300 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 12h.01"/></svg>
+          <span class="text-[10px] font-medium">Wallet</span>
+        </button>
 
-  <script>
-    function switchAuthView(mode) {
-      const isReg = mode === 'REGISTER';
-      document.getElementById('login-form-box').classList.toggle('hidden', isReg);
-      document.getElementById('register-form-box').classList.toggle('hidden', !isReg);
-      document.getElementById('auth-main-title').textContent = isReg ? 'Create Account' : 'Welcome Back';
-      document.getElementById('auth-main-sub').textContent = isReg ? 'Fill in your details to get started' : 'Login to continue';
-      document.getElementById('auth-msg').classList.add('hidden');
-    }
-
-    function toggleLoginPassword() {
-      const p = document.getElementById('login-password');
-      p.type = p.type === 'password' ? 'text' : 'password';
-    }
-
-    function toggleRegPassword() {
-      const p = document.getElementById('reg-password');
-      p.type = p.type === 'password' ? 'text' : 'password';
-    }
-
-    function handleLogin() {
-      document.getElementById('cust-auth-screen').classList.add('hidden');
-      document.getElementById('cust-shell').classList.remove('hidden');
-    }
-
-    function handleRegister() {
-      const terms = document.getElementById('reg-terms').checked;
-      if (!terms) {
-        alert('Please agree to the Terms of Service and Privacy Policy.');
-        return;
-      }
-      document.getElementById('cust-auth-screen').classList.add('hidden');
-      document.getElementById('cust-shell').classList.remove('hidden');
-    }
-
-    function logoutCustomer() {
-      document.getElementById('cust-shell').classList.add('hidden');
-      document.getElementById('cust-auth-screen').classList.remove('hidden');
-    }
-  </script>
-</body>
-</html>
+        <button type="button" onclick="switchCustTab('alerts')" id="ctab-alerts" class="flex flex-col items-center gap-1 text-purple-400/50 hover:text-purple-300 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8
