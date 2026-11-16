@@ -28,7 +28,7 @@ db.query(`
   );
 `).catch(() => {});
 
-// 1. GET /api/wallet/:phone — Fetch balance, linked bank & transaction history
+// 1. GET /api/wallet/:phone — Fetch individual customer balance & history
 router.get('/:phone', async (req, res) => {
   try {
     const phone = String(req.params.phone || '').trim();
@@ -43,36 +43,20 @@ router.get('/:phone', async (req, res) => {
       [phone, role]
     );
 
-    let walletBalance = 0;
-    let bonusBalance = role === 'CUSTOMER' ? 2000 : 0;
-    let bankInfo = null;
-
-    if (userRes.rows.length > 0) {
-      const u = userRes.rows[0];
-      walletBalance = Number(u.wallet_balance || 0);
-      bonusBalance = Number(u.bonus_balance || 0);
-      if (u.account_number) {
-        bankInfo = {
-          bank_name: u.bank_name,
-          account_number: u.account_number,
-          account_name: u.account_name
-        };
-      }
+    if (userRes.rows.length === 0) {
+      return res.json({
+        success: true,
+        wallet_balance: 0,
+        bonus_balance: role === 'CUSTOMER' ? 2000 : 0,
+        available_total: role === 'CUSTOMER' ? 2000 : 0,
+        bank: null,
+        transactions: []
+      });
     }
 
-    // For Riders, also include delivered order fares if wallet_balance hasn't been synced
-    if (role === 'RIDER') {
-      const delivRes = await db.query(
-        `SELECT COALESCE(SUM(amount), 0) AS earned FROM orders WHERE status = 'DELIVERED'`
-      );
-      const wdRes = await db.query(
-        `SELECT COALESCE(SUM(amount), 0) AS withdrawn FROM wallet_transactions
-         WHERE user_phone = $1 AND role = 'RIDER' AND tx_type = 'WITHDRAWAL' AND status != 'REJECTED'`,
-        [phone]
-      );
-      walletBalance = Math.max(0, Number(delivRes.rows[0].earned) - Number(wdRes.rows[0].withdrawn));
-      bonusBalance = 0;
-    }
+    const u = userRes.rows[0];
+    const walletBalance = Number(u.wallet_balance || 0);
+    const bonusBalance = Number(u.bonus_balance || 2000);
 
     const txRes = await db.query(
       `SELECT * FROM wallet_transactions WHERE user_phone = $1 AND role = $2 ORDER BY id DESC LIMIT 30`,
@@ -84,7 +68,7 @@ router.get('/:phone', async (req, res) => {
       wallet_balance: walletBalance,
       bonus_balance: bonusBalance,
       available_total: walletBalance + bonusBalance,
-      bank: bankInfo,
+      bank: u.account_number ? { bank_name: u.bank_name, account_number: u.account_number, account_name: u.account_name } : null,
       transactions: txRes.rows
     });
   } catch (err) {
@@ -92,7 +76,7 @@ router.get('/:phone', async (req, res) => {
   }
 });
 
-// 2. POST /api/wallet/fund — Fund wallet via OPay Transfer or Paystack
+// 2. POST /api/wallet/fund — Fund individual customer wallet
 router.post('/fund', async (req, res) => {
   try {
     const phone = String(req.body.phone || '').trim();
@@ -105,37 +89,6 @@ router.post('/fund', async (req, res) => {
       return res.status(400).json({ error: 'Valid phone number and minimum amount of ₦100 required.' });
     }
 
-    // Optional Paystack Checkout Initialization if PAYSTACK_SECRET_KEY is configured
-    if (method === 'PAYSTACK' && process.env.PAYSTACK_SECRET_KEY) {
-      const psRes = await fetch('https://api.paystack.co/transaction/initialize', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          email,
-          amount: Math.round(amount * 100), // kobo
-          reference,
-          callback_url: req.body.callback_url || 'https://speedial-express.onrender.com/'
-        })
-      });
-      const psData = await psRes.json();
-      if (psData.status && psData.data?.authorization_url) {
-        await db.query(
-          `INSERT INTO wallet_transactions (user_phone, role, tx_type, method, amount, reference, status)
-           VALUES ($1, 'CUSTOMER', 'FUNDING', 'PAYSTACK', $2, $3, 'PENDING')`,
-          [phone, amount, reference]
-        );
-        return res.json({
-          success: true,
-          authorization_url: psData.data.authorization_url,
-          reference
-        });
-      }
-    }
-
-    // OPay Bank Transfer (6152624923) — Logs as PENDING for Admin confirmation (or instant credit in test mode)
     const autoCredit = process.env.AUTO_CREDIT_WALLET === 'true';
     const txStatus = autoCredit ? 'COMPLETED' : 'PENDING';
 
@@ -165,7 +118,7 @@ router.post('/fund', async (req, res) => {
   }
 });
 
-// 3. POST /api/wallet/withdraw — Request payout to Nigerian Bank Account
+// 3. POST /api/wallet/withdraw — Request payout to bank
 router.post('/withdraw', async (req, res) => {
   try {
     const phone = String(req.body.phone || '').trim();
@@ -182,13 +135,11 @@ router.post('/withdraw', async (req, res) => {
       return res.status(400).json({ error: 'Bank name, account number, and account name are required.' });
     }
 
-    // Save linked withdrawal account on user profile
     await db.query(
       `UPDATE users SET bank_name = $1, account_number = $2, account_name = $3 WHERE phone = $4 AND role = $5`,
       [bank_name, account_number, account_name, phone, role]
     );
 
-    // Check withdrawable cash balance (Welcome bonus is non-withdrawable)
     if (role === 'CUSTOMER') {
       const uRes = await db.query(
         `SELECT COALESCE(wallet_balance, 0) AS bal FROM users WHERE phone = $1 AND role = 'CUSTOMER' LIMIT 1`,
@@ -226,7 +177,7 @@ router.post('/withdraw', async (req, res) => {
   }
 });
 
-// 4. GET /api/wallet/admin/pending — Admin view pending wallet funding & withdrawals
+// 4. GET /api/wallet/admin/pending — Admin pending queue
 router.get('/admin/pending', async (req, res) => {
   const pin = String(req.headers['x-admin-pin'] || '').trim();
   if (pin !== ADMIN_PIN) return res.status(401).json({ error: 'Invalid Admin PIN.' });
@@ -241,13 +192,13 @@ router.get('/admin/pending', async (req, res) => {
   }
 });
 
-// 5. PATCH /api/wallet/admin/:id/approve — Admin approve or reject funding/withdrawal
+// 5. PATCH /api/wallet/admin/:id/approve — Admin approve/reject
 router.patch('/admin/:id/approve', async (req, res) => {
   const pin = String(req.headers['x-admin-pin'] || '').trim();
   if (pin !== ADMIN_PIN) return res.status(401).json({ error: 'Invalid Admin PIN.' });
 
   try {
-    const action = String(req.body.action || 'COMPLETED').trim().toUpperCase(); // COMPLETED or REJECTED
+    const action = String(req.body.action || 'COMPLETED').trim().toUpperCase();
     const txRes = await db.query(`SELECT * FROM wallet_transactions WHERE id = $1 LIMIT 1`, [req.params.id]);
     if (txRes.rows.length === 0) return res.status(404).json({ error: 'Transaction not found.' });
 
