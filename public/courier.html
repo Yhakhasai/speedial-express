@@ -2,294 +2,566 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SpeeDial Express • Rider & Dispatch Terminal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SpeeDial Express • Rider & Dispatch App</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { -webkit-tap-highlight-color: transparent; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans pb-24">
-  <div class="max-w-lg mx-auto p-4 space-y-4">
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans pb-24 select-none">
 
-    <!-- Header & Hub Switcher -->
-    <div class="bg-slate-900 border border-orange-500/30 rounded-2xl p-4 space-y-3 shadow-lg">
-      <div class="flex items-center justify-between">
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-lg font-extrabold text-orange-400 tracking-tight">SpeeDial Express</h1>
-            <span class="text-[10px] font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">RC: 8937370</span>
+  <!-- ==================== 1. AUTH GATE (LOGIN / REGISTER) ==================== -->
+  <div id="auth-screen" class="hidden min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 flex flex-col justify-center px-6 py-10 max-w-md mx-auto">
+    <div class="mb-8">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 mb-4">
+        <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+        <span class="text-[11px] font-bold text-orange-400 tracking-wide">SPEEDIAL EXPRESS • RC: 8937370</span>
+      </div>
+      <h1 id="auth-title" class="text-3xl font-extrabold text-white tracking-tight">Welcome Back</h1>
+      <p id="auth-subtitle" class="text-sm text-slate-400 mt-1">Login to your dispatch rider terminal</p>
+    </div>
+
+    <div class="space-y-3.5">
+      <div id="reg-name-wrap" class="hidden">
+        <input id="auth-name" type="text" placeholder="Rider Full Name" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3.5 text-sm text-white placeholder-slate-400" />
+      </div>
+
+      <div>
+        <input id="auth-phone" type="tel" placeholder="Phone Number (e.g. 08166317937)" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3.5 text-sm text-white placeholder-slate-400" />
+      </div>
+
+      <div class="relative">
+        <input id="auth-pin" type="password" maxlength="4" inputmode="numeric" placeholder="4-Digit PIN" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3.5 text-sm text-white placeholder-slate-400 font-mono tracking-widest" />
+        <button type="button" onclick="togglePinVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-orange-400">
+          Show
+        </button>
+      </div>
+
+      <div id="reg-extras-wrap" class="hidden grid grid-cols-2 gap-3">
+        <select id="auth-city" class="bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-3.5 py-3.5 text-sm text-white">
+          <option value="KD">Hub: Kaduna (KD)</option>
+          <option value="KN">Hub: Kano (KN)</option>
+        </select>
+        <input id="auth-plate" type="text" placeholder="Bike/Scooter Plate" class="bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-3.5 py-3.5 text-sm text-white uppercase placeholder-slate-400" />
+      </div>
+
+      <div class="flex items-center justify-between text-xs pt-1">
+        <button type="button" onclick="continueAsSolo()" class="text-slate-400 hover:text-orange-400">
+          Continue in Solo Mode →
+        </button>
+        <a href="/index.html" class="text-orange-400 font-semibold hover:underline">Customer App</a>
+      </div>
+
+      <button type="button" id="auth-submit-btn" onclick="submitRiderAuth()" class="w-full bg-orange-600 hover:bg-orange-500 active:scale-[0.99] transition py-3.5 rounded-2xl text-sm font-bold text-white shadow-lg shadow-orange-600/25 mt-2">
+        Login
+      </button>
+
+      <p id="auth-msg" class="text-xs text-center hidden pt-1"></p>
+
+      <p class="text-center text-xs text-slate-400 pt-4">
+        <span id="auth-switch-text">Don't have a rider account?</span>
+        <button type="button" id="auth-switch-btn" onclick="switchAuthMode()" class="text-orange-400 font-bold ml-1 hover:underline">
+          Sign Up
+        </button>
+      </p>
+    </div>
+  </div>
+
+  <!-- ==================== 2. MAIN APP SHELL ==================== -->
+  <div id="app-shell" class="max-w-md mx-auto">
+
+    <!-- ---------- TAB 1: HOME DASHBOARD ---------- -->
+    <section id="view-home" class="space-y-4">
+      <!-- Top Curved Brand Header -->
+      <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-orange-950/40 border-b border-orange-500/20 rounded-b-3xl px-4 pt-5 pb-6 space-y-4 shadow-lg">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 id="home-greeting" class="text-xl font-extrabold text-white tracking-tight">Hello, Rider 👋</h1>
+            <p id="home-date" class="text-xs text-slate-400 mt-0.5">Kaduna Metro • RC: 8937370</p>
           </div>
-          <p id="hub-subtitle" class="text-xs text-slate-400 mt-0.5">Kaduna Metro • Solo Dispatch Mode</p>
+          <div class="flex items-center gap-2">
+            <button type="button" id="online-pill" onclick="toggleOnlineStatus()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-xs font-bold text-emerald-400">
+              <span id="online-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span id="online-text">Online</span>
+            </button>
+            <button type="button" onclick="openSosModal()" title="Emergency SOS" class="w-9 h-9 rounded-full bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400 hover:bg-red-500/25">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 3.75h.008v.008H12v-.008zM10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+            </button>
+          </div>
         </div>
-        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-          ONLINE
-        </span>
+
+        <!-- Global Search Bar -->
+        <div class="relative">
+          <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="home-search" type="text" oninput="handleSearch(this.value)" placeholder="Search orders by waybill, area, or name..." class="w-full bg-slate-950/90 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl pl-10 pr-4 py-3 text-xs text-slate-100 placeholder-slate-500" />
+        </div>
       </div>
 
-      <!-- Active Hub Filter & Admin Toggle -->
-      <div class="grid grid-cols-4 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
-        <button type="button" id="tab-KD" onclick="switchHub('KD')" class="py-1.5 text-xs font-bold rounded-lg bg-orange-600 text-white transition">
-          Kaduna (KD)
-        </button>
-        <button type="button" id="tab-KN" onclick="switchHub('KN')" class="py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">
-          Kano (KN)
-        </button>
-        <button type="button" id="tab-ALL" onclick="switchHub('ALL')" class="py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">
-          All Hubs
-        </button>
-        <button type="button" id="tab-admin" onclick="openAdminTab()" class="py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-orange-400 transition">
-          Admin
-        </button>
+      <div class="px-4 space-y-4">
+        <!-- Earnings & Wallet Hero Card -->
+        <div class="bg-gradient-to-br from-orange-600 via-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-xl shadow-orange-600/20 relative overflow-hidden">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 text-xs font-semibold text-orange-100">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 12h.01"/></svg>
+              <span>Delivered Earnings</span>
+            </div>
+            <button type="button" onclick="toggleBalanceMask()" class="p-1.5 rounded-full bg-black/15 hover:bg-black/25">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+
+          <div id="home-wallet-amount" class="text-3xl font-extrabold tracking-tight mt-2">₦0.00</div>
+          <div class="inline-block mt-2 px-3 py-1 rounded-full bg-black/20 text-[11px] font-semibold text-orange-50">
+            OPay Settlement: 6152624923
+          </div>
+
+          <div class="grid grid-cols-2 gap-2.5 mt-4">
+            <button type="button" onclick="switchNav('jobs')" class="bg-white text-slate-950 hover:bg-orange-50 font-bold text-xs py-2.5 rounded-xl flex items-center justify-center gap-1.5 shadow">
+              <span>+ Available Jobs</span>
+            </button>
+            <button type="button" onclick="switchNav('wallet')" class="bg-black/25 hover:bg-black/35 text-white font-bold text-xs py-2.5 rounded-xl flex items-center justify-center gap-1.5">
+              <span>↗ Wallet & Ledger</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2x2 KPI Grid -->
+        <div class="grid grid-cols-2 gap-3">
+          <div onclick="switchNav('orders')" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-end justify-between cursor-pointer hover:border-orange-500/40 transition">
+            <div>
+              <div id="stat-total" class="text-2xl font-extrabold text-white">0</div>
+              <div class="text-xs text-slate-400 mt-1">Total Deliveries</div>
+            </div>
+            <div class="w-9 h-9 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/></svg>
+            </div>
+          </div>
+
+          <div onclick="openOrdersWithFilter('COMPLETED')" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-end justify-between cursor-pointer hover:border-emerald-500/40 transition">
+            <div>
+              <div id="stat-completed" class="text-2xl font-extrabold text-emerald-400">0</div>
+              <div class="text-xs text-slate-400 mt-1">Completed</div>
+            </div>
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            </div>
+          </div>
+
+          <div onclick="openOrdersWithFilter('PENDING')" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-end justify-between cursor-pointer hover:border-amber-500/40 transition">
+            <div>
+              <div id="stat-pending" class="text-2xl font-extrabold text-amber-400">0</div>
+              <div class="text-xs text-slate-400 mt-1">Pending Queue</div>
+            </div>
+            <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-end justify-between">
+            <div>
+              <div id="stat-hub" class="text-xl font-extrabold text-orange-400">KD</div>
+              <div class="text-xs text-slate-400 mt-1">Active Hub</div>
+            </div>
+            <button type="button" onclick="cycleHub()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-slate-200">
+              Switch
+            </button>
+          </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="space-y-2.5 pt-1">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold text-slate-200">Recent Orders</h2>
+            <button type="button" onclick="fetchAllOrders()" class="text-xs font-semibold text-orange-400 hover:underline">Refresh</button>
+          </div>
+          <div id="home-recent-list" class="space-y-2.5"></div>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Active Dispatches Queue -->
-    <div id="orders-container" class="space-y-4">
-      <div class="text-center text-slate-400 text-sm py-8">Loading active dispatches...</div>
-    </div>
+    <!-- ---------- TAB 2: MY ORDERS ---------- -->
+    <section id="view-orders" class="hidden space-y-4">
+      <div class="bg-slate-900 border-b border-orange-500/20 rounded-b-3xl px-4 pt-5 pb-5 space-y-3.5 shadow-lg">
+        <div class="flex items-center justify-between">
+          <h1 class="text-xl font-extrabold text-white">My Orders</h1>
+          <div class="flex gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800">
+            <button type="button" onclick="setHub('KD')" id="hub-btn-KD" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-orange-600 text-white">KD</button>
+            <button type="button" onclick="setHub('KN')" id="hub-btn-KN" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-400">KN</button>
+            <button type="button" onclick="setHub('ALL')" id="hub-btn-ALL" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-400">ALL</button>
+          </div>
+        </div>
 
-    <!-- Admin Rider Approval Panel -->
-    <div id="admin-container" class="hidden bg-slate-900 border border-orange-500/40 rounded-2xl p-4 space-y-3">
-      <div class="flex items-center justify-between">
+        <!-- Search Input -->
+        <div class="relative">
+          <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="orders-search" type="text" oninput="handleSearch(this.value)" placeholder="Search orders..." class="w-full bg-slate-950 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl pl-10 pr-4 py-3 text-xs text-slate-100 placeholder-slate-500" />
+        </div>
+
+        <!-- Status Filter Pills -->
+        <div class="flex gap-2 overflow-x-auto no-scrollbar">
+          <button type="button" onclick="setOrderFilter('ALL')" id="pill-ALL" class="px-4 py-1.5 rounded-full text-xs font-bold bg-orange-600 text-white shrink-0">ALL</button>
+          <button type="button" onclick="setOrderFilter('ACTIVE')" id="pill-ACTIVE" class="px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 shrink-0">ACTIVE</button>
+          <button type="button" onclick="setOrderFilter('PENDING')" id="pill-PENDING" class="px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 shrink-0">PENDING</button>
+          <button type="button" onclick="setOrderFilter('COMPLETED')" id="pill-COMPLETED" class="px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 shrink-0">COMPLETED</button>
+        </div>
+      </div>
+
+      <div id="orders-list" class="px-4 space-y-3"></div>
+    </section>
+
+    <!-- ---------- TAB 3: AVAILABLE JOBS ---------- -->
+    <section id="view-jobs" class="hidden space-y-4">
+      <div class="bg-slate-900 border-b border-orange-500/20 rounded-b-3xl px-4 pt-5 pb-5 flex items-center justify-between shadow-lg">
         <div>
-          <h2 class="text-sm font-bold text-orange-400">Admin • Rider Approvals</h2>
-          <p class="text-[11px] text-slate-400">Approve or suspend dispatch riders</p>
+          <h1 class="text-xl font-extrabold text-white">Available Jobs</h1>
+          <p id="jobs-count-label" class="text-xs text-slate-400 mt-0.5">0 orders awaiting pickup</p>
         </div>
-        <button type="button" onclick="closeAdminTab()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-[11px] rounded-lg text-slate-300">
-          Back to Queue
+        <button type="button" onclick="fetchAllOrders()" class="w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-orange-400">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
         </button>
       </div>
 
-      <div id="admin-pin-gate" class="flex gap-2">
-        <input id="admin-pin-input" type="password" maxlength="8" placeholder="Admin PIN (8937)" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono" />
-        <button type="button" onclick="unlockAdminPanel()" class="px-4 py-2 bg-orange-600 hover:bg-orange-500 rounded-xl text-xs font-bold text-white">
-          Unlock
+      <div id="jobs-list" class="px-4 space-y-3"></div>
+    </section>
+
+    <!-- ---------- TAB 4: WALLET & EARNINGS ---------- -->
+    <section id="view-wallet" class="hidden space-y-4">
+      <div class="bg-slate-900 border-b border-orange-500/20 rounded-b-3xl px-4 pt-5 pb-5 flex items-center justify-between shadow-lg">
+        <h1 class="text-xl font-extrabold text-white">Wallet</h1>
+        <a href="/index.html" class="px-3 py-1.5 rounded-full bg-orange-600/20 border border-orange-500/40 text-xs font-bold text-orange-400">
+          + New Booking
+        </a>
+      </div>
+
+      <div class="px-4 space-y-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 flex items-center justify-between">
+          <div>
+            <p class="text-xs text-slate-400">Collected Fare Balance</p>
+            <p id="wallet-tab-balance" class="text-3xl font-extrabold text-white mt-1">₦0</p>
+          </div>
+          <span class="px-3.5 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-xs font-bold text-emerald-400">
+            Active Ledger
+          </span>
+        </div>
+
+        <!-- OPay Business Account Card -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center justify-between gap-3">
+          <div>
+            <span class="inline-block px-2 py-0.5 rounded bg-orange-500/15 text-orange-400 text-[10px] font-bold">Collection Account</span>
+            <p class="text-xs text-slate-400 mt-1">Clients transfer dispatch fees to SpeeDial Digital Services</p>
+          </div>
+          <button type="button" onclick="copyOpayAccount()" class="bg-orange-600 hover:bg-orange-500 text-white rounded-2xl px-3.5 py-2.5 text-right shrink-0">
+            <div class="text-[10px] text-orange-100">OPay Bank</div>
+            <div id="opay-copy-label" class="text-xs font-extrabold font-mono">6152624923 📋</div>
+          </button>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+          <h2 class="text-sm font-bold text-white">Transaction History</h2>
+          <div id="wallet-tx-list" class="space-y-2.5"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- TAB 5: PROFILE & ADMIN ---------- -->
+    <section id="view-profile" class="hidden space-y-4">
+      <div class="bg-gradient-to-b from-slate-900 to-slate-950 border-b border-orange-500/20 rounded-b-3xl px-4 pt-5 pb-6 text-center space-y-3 shadow-lg">
+        <div class="flex items-center justify-between">
+          <h1 class="text-xl font-extrabold text-white">Profile</h1>
+          <button type="button" onclick="openAuthModal()" class="px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-orange-400">
+            Switch / Login
+          </button>
+        </div>
+
+        <div id="profile-initials" class="w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 mx-auto flex items-center justify-center text-xl font-extrabold text-white shadow-lg">
+          SD
+        </div>
+        <div>
+          <h2 id="profile-name" class="text-base font-extrabold text-white">Solo Dispatch Rider</h2>
+          <p id="profile-meta" class="text-xs text-slate-400 mt-0.5">Kaduna Hub • SpeeDial Express</p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 pt-2">
+          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-2.5">
+            <div id="prof-stat-deliv" class="text-sm font-extrabold text-white">0</div>
+            <div class="text-[10px] text-slate-400">Deliveries</div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-2.5">
+            <div id="prof-stat-earn" class="text-sm font-extrabold text-orange-400">₦0</div>
+            <div class="text-[10px] text-slate-400">Earned</div>
+          </div>
+          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-2.5">
+            <div class="text-sm font-extrabold text-emerald-400">5.0 ★</div>
+            <div class="text-[10px] text-slate-400">Rating</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-4 space-y-3">
+        <!-- Admin Rider Approval Section -->
+        <div class="bg-slate-900 border border-orange-500/30 rounded-2xl p-4 space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-orange-400">Admin • Rider Approvals</h3>
+              <p class="text-[11px] text-slate-400">Approve or suspend dispatch riders</p>
+            </div>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">RC: 8937370</span>
+          </div>
+
+          <div class="flex gap-2">
+            <input id="admin-pin-input" type="password" maxlength="8" placeholder="Admin PIN (8937)" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono" />
+            <button type="button" onclick="unlockAdminPanel()" class="px-4 py-2 bg-orange-600 hover:bg-orange-500 rounded-xl text-xs font-bold text-white">
+              Unlock
+            </button>
+          </div>
+          <p id="admin-msg" class="text-xs hidden"></p>
+          <div id="admin-riders-list" class="space-y-2"></div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl divide-y divide-slate-800">
+          <a href="/index.html" class="p-3.5 flex items-center justify-between text-xs hover:bg-slate-800/50 rounded-t-2xl">
+            <span class="font-semibold text-slate-200">Switch to Customer Booking & Tracker</span>
+            <span class="text-orange-400 font-bold">Open →</span>
+          </a>
+          <button type="button" onclick="openSosModal()" class="w-full p-3.5 flex items-center justify-between text-xs hover:bg-slate-800/50 text-left">
+            <span class="font-semibold text-red-400">Report Safety Incident / Emergency SOS</span>
+            <span class="text-red-400 font-bold">SOS →</span>
+          </button>
+          <button type="button" onclick="logoutRider()" class="w-full p-3.5 flex items-center justify-between text-xs hover:bg-slate-800/50 rounded-b-2xl text-left">
+            <span class="font-semibold text-slate-400">Sign Out of Rider Session</span>
+            <span class="text-slate-500">Exit</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== 3. ACTIVE ORDER DETAIL MODAL ==================== -->
+    <div id="order-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
+      <div class="bg-slate-900 border-t border-orange-500/30 rounded-t-3xl w-full max-w-md p-5 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="closeOrderModal()" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-slate-300">←</button>
+            <div>
+              <h3 id="modal-code" class="text-base font-extrabold text-white font-mono">SDX-000000</h3>
+              <p id="modal-route-sub" class="text-[11px] text-slate-400">Waybill Details</p>
+            </div>
+          </div>
+          <span id="modal-status-badge" class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-orange-500/20 text-orange-300">PENDING</span>
+        </div>
+
+        <!-- 4-Step Lifecycle Progress Bar -->
+        <div id="modal-stepper" class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 grid grid-cols-4 gap-1 text-center"></div>
+
+        <!-- Route & Contact Info -->
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 space-y-2 text-xs">
+          <div>
+            <span class="text-[10px] uppercase text-slate-500 font-bold">Pickup</span>
+            <p id="modal-pickup" class="text-slate-100 font-semibold"></p>
+            <p id="modal-sender" class="text-slate-400 text-[11px]"></p>
+          </div>
+          <div class="border-t border-slate-800 pt-2">
+            <span class="text-[10px] uppercase text-slate-500 font-bold">Dropoff</span>
+            <p id="modal-dropoff" class="text-slate-100 font-semibold"></p>
+            <p id="modal-recipient" class="text-slate-400 text-[11px]"></p>
+          </div>
+          <div class="border-t border-slate-800 pt-2 flex items-center justify-between">
+            <span id="modal-note" class="text-slate-400"></span>
+            <span id="modal-amount" class="text-sm font-extrabold text-orange-400"></span>
+          </div>
+        </div>
+
+        <!-- OPay Verification Box -->
+        <div id="modal-pay-box" class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 space-y-2">
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-slate-400">Payment Status</span>
+            <span id="modal-pay-status" class="font-bold text-amber-400">UNPAID</span>
+          </div>
+          <div id="modal-pay-form" class="flex gap-2">
+            <input id="modal-pay-ref" type="text" placeholder="OPay Session / Ref ID" class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono" />
+            <button type="button" onclick="confirmModalPayment()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs font-bold text-white">
+              Mark Paid
+            </button>
+          </div>
+        </div>
+
+        <!-- Lifecycle Action Buttons -->
+        <div class="grid grid-cols-3 gap-2">
+          <button type="button" onclick="changeModalStatus('PICKED_UP')" class="py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white">
+            Picked Up
+          </button>
+          <button type="button" onclick="changeModalStatus('IN_TRANSIT')" class="py-3 rounded-xl bg-blue-600/20 border border-blue-500/40 text-xs font-bold text-blue-300">
+            In Transit
+          </button>
+          <button type="button" onclick="changeModalStatus('DELIVERED')" class="py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white">
+            Delivered
+          </button>
+        </div>
+
+        <button type="button" onclick="openSosModal()" class="w-full py-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-xs font-bold text-red-400">
+          ⚠ Report Safety Incident / SOS
         </button>
       </div>
-      <p id="admin-msg" class="text-xs hidden"></p>
-
-      <div id="admin-riders-list" class="space-y-2"></div>
     </div>
 
-    <!-- Navigation Link -->
-    <div class="text-center pt-1">
-      <a href="/index.html" class="text-xs text-slate-400 hover:text-orange-400 transition">
-        ← Switch to Customer Booking & Tracker
-      </a>
-    </div>
-
-    <!-- Rider Registration / Sign In Bar -->
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3.5 space-y-2.5">
-      <div class="flex items-center justify-between">
-        <span id="rider-session-label" class="text-xs font-semibold text-slate-300">Solo Dispatch Rider</span>
-        <div class="flex gap-1.5">
-          <button type="button" onclick="toggleRiderAuth('LOGIN')" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-[11px] font-semibold rounded-lg text-slate-200">
-            Rider Login
-          </button>
-          <button type="button" onclick="toggleRiderAuth('REGISTER')" class="px-2.5 py-1 bg-orange-600 hover:bg-orange-500 text-[11px] font-bold rounded-lg text-white">
-            + Register Rider
-          </button>
+    <!-- ==================== 4. SAFETY INCIDENT / SOS MODAL ==================== -->
+    <div id="sos-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
+      <div class="bg-slate-900 border-t border-red-500/40 rounded-t-3xl w-full max-w-md p-5 space-y-4">
+        <div class="w-10 h-1 bg-slate-700 rounded-full mx-auto"></div>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-red-500/15 text-red-400 flex items-center justify-center font-bold">⚠</div>
+          <div>
+            <h3 class="text-base font-extrabold text-white">Report Safety Incident / SOS</h3>
+            <p id="sos-order-ref" class="text-xs text-slate-400">SpeeDial Trust & Safety</p>
+          </div>
         </div>
-      </div>
 
-      <div id="rider-auth-panel" class="hidden space-y-2 pt-2 border-t border-slate-800">
-        <input id="rider-auth-name" type="text" placeholder="Rider Full Name" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100" />
-        <div class="grid grid-cols-2 gap-2">
-          <input id="rider-auth-phone" type="tel" placeholder="Phone Number" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100" />
-          <input id="rider-auth-pin" type="password" maxlength="4" placeholder="4-Digit PIN" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 font-mono tracking-widest" />
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3 text-xs text-slate-300">
+          Incident alerts route immediately to SpeeDial Dispatch Control (+234 724 066 6600) with your active hub details.
         </div>
-        <div id="rider-reg-extras" class="grid grid-cols-2 gap-2">
-          <select id="rider-auth-city" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100">
-            <option value="KD">Hub: Kaduna (KD)</option>
-            <option value="KN">Hub: Kano (KN)</option>
+
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-slate-300">Incident Category</label>
+          <select id="sos-category" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white">
+            <option>Traffic Accident / Mechanical Breakdown</option>
+            <option>Security / Route Hazard</option>
+            <option>Customer Unreachable at Dropoff</option>
+            <option>Medical Emergency</option>
           </select>
-          <input id="rider-auth-plate" type="text" placeholder="Scooter/Bike Plate" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 uppercase" />
         </div>
-        <button type="button" onclick="submitRiderAuth()" id="rider-auth-submit" class="w-full bg-orange-600 hover:bg-orange-500 py-2 rounded-xl text-xs font-bold text-white">
-          Submit Rider Registration
-        </button>
-        <p id="rider-auth-msg" class="text-xs hidden"></p>
+
+        <div class="space-y-2">
+          <label class="text-xs font-semibold text-slate-300">Details & Location</label>
+          <textarea id="sos-details" rows="2" placeholder="Describe what happened and your landmark..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white"></textarea>
+        </div>
+
+        <div class="flex gap-2">
+          <button type="button" onclick="closeSosModal()" class="flex-1 py-3 rounded-xl bg-slate-800 text-xs font-bold text-slate-300">
+            Cancel
+          </button>
+          <button type="button" onclick="sendEmergencySos()" class="flex-[2] py-3 rounded-xl bg-red-600 hover:bg-red-500 text-xs font-bold text-white">
+            Send Emergency SOS via WhatsApp
+          </button>
+        </div>
       </div>
     </div>
 
+    <!-- ==================== 5. BOTTOM 5-TAB NAVIGATION BAR ==================== -->
+    <nav class="fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 backdrop-blur border-t border-slate-800">
+      <div class="max-w-md mx-auto grid grid-cols-5 py-2">
+        <button type="button" onclick="switchNav('home')" id="nav-home" class="flex flex-col items-center gap-1 text-orange-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span class="text-[10px] font-bold">Home</span>
+        </button>
+
+        <button type="button" onclick="switchNav('orders')" id="nav-orders" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          <span class="text-[10px] font-semibold">Orders</span>
+        </button>
+
+        <button type="button" onclick="switchNav('jobs')" id="nav-jobs" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="text-[10px] font-semibold">Jobs</span>
+        </button>
+
+        <button type="button" onclick="switchNav('wallet')" id="nav-wallet" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 12h.01"/></svg>
+          <span class="text-[10px] font-semibold">Wallet</span>
+        </button>
+
+        <button type="button" onclick="switchNav('profile')" id="nav-profile" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <span class="text-[10px] font-semibold">Profile</span>
+        </button>
+      </div>
+    </nav>
   </div>
 
   <script>
+    // ==================== STATE ====================
+    let allOrders = [];
     let currentHub = 'KD';
+    let currentFilter = 'ALL';
+    let searchQuery = '';
+    let isOnline = true;
+    let balanceMasked = false;
+    let activeModalOrder = null;
+    let authMode = 'LOGIN';
+    let savedAdminPin = sessionStorage.getItem('speedial_admin_pin') || '';
 
-    function switchHub(hub) {
-      currentHub = hub;
-      closeAdminTab();
+    // ==================== INIT ====================
+    function initApp() {
+      const today = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+      document.getElementById('home-date').textContent = `${today} • RC: 8937370`;
 
-      ['KD', 'KN', 'ALL'].forEach(id => {
-        const btn = document.getElementById(`tab-${id}`);
-        if (!btn) return;
-        if (id === hub) {
-          btn.className = 'py-1.5 text-xs font-bold rounded-lg bg-orange-600 text-white transition';
-        } else {
-          btn.className = 'py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition';
-        }
-      });
-
-      const subtitle = document.getElementById('hub-subtitle');
-      if (hub === 'KD') subtitle.textContent = 'Kaduna Metro • Solo Dispatch Mode';
-      else if (hub === 'KN') subtitle.textContent = 'Kano Metro • Solo Dispatch Mode';
-      else subtitle.textContent = 'All Active Hubs • Solo Dispatch Mode';
-
-      loadActiveOrders();
-    }
-
-    async function loadActiveOrders() {
-      const container = document.getElementById('orders-container');
-      try {
-        const res = await fetch(`/api/orders?city=${encodeURIComponent(currentHub)}`);
-        const data = await res.json();
-        const orders = (data.orders || []).filter(o => o.status !== 'DELIVERED' && o.status !== 'CANCELLED');
-
-        if (orders.length === 0) {
-          const hubLabel = currentHub === 'KD' ? 'Kaduna' : currentHub === 'KN' ? 'Kano' : 'any hub';
-          container.innerHTML = `
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center space-y-2">
-              <p class="text-sm font-bold text-slate-200">No active dispatches in ${hubLabel}</p>
-              <p class="text-xs text-slate-400">New bookings auto-assign directly to your dispatch queue.</p>
-              <button type="button" onclick="loadActiveOrders()" class="mt-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-xs font-semibold text-slate-200">
-                Refresh Queue
-              </button>
-            </div>
-          `;
-          return;
-        }
-
-        container.innerHTML = orders.map(o => {
-          const isPaid = o.payment_status === 'PAID';
-          const statusBadge = isPaid
-            ? `<span class="px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">PAID • ${o.payment_ref || 'OPAY'}</span>`
-            : `<span class="px-2 py-0.5 text-[10px] font-bold rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">UNPAID • ₦${Number(o.amount || 0).toLocaleString()}</span>`;
-
-          return `
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 shadow">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <span class="font-mono text-sm font-extrabold text-orange-400">${o.tracking_code}</span>
-                  <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-semibold">${o.status}</span>
-                </div>
-                ${statusBadge}
-              </div>
-
-              <div class="space-y-1 text-xs">
-                <p><span class="text-slate-400">Pickup:</span> <span class="text-slate-100 font-medium">${o.pickup_address}</span></p>
-                <p><span class="text-slate-400">Dropoff:</span> <span class="text-slate-100 font-medium">${o.dropoff_address}</span></p>
-                <p><span class="text-slate-400">Sender:</span> ${o.sender_name} (${o.sender_phone})</p>
-                <p><span class="text-slate-400">Recipient:</span> ${o.recipient_name} (${o.recipient_phone})</p>
-                ${o.package_note ? `<p><span class="text-slate-400">Item:</span> ${o.package_note}</p>` : ''}
-              </div>
-
-              ${!isPaid ? `
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-2.5 space-y-2">
-                  <p class="text-[11px] text-slate-400">Verify OPay Transfer (Account: <span class="text-slate-200 font-mono">6152624923</span>)</p>
-                  <div class="flex gap-2">
-                    <input id="ref-${o.tracking_code}" type="text" placeholder="OPay Session / Ref ID" class="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 font-mono" />
-                    <button type="button" onclick="verifyPayment('${o.tracking_code}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg">
-                      Confirm Paid
-                    </button>
-                  </div>
-                  <p id="pay-msg-${o.tracking_code}" class="text-xs hidden"></p>
-                </div>
-              ` : ''}
-
-              <div class="grid grid-cols-3 gap-2 pt-1">
-                <button type="button" onclick="updateOrderStatus('${o.tracking_code}', 'PICKED_UP')" class="py-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-[11px] font-bold text-slate-200">
-                  Picked Up
-                </button>
-                <button type="button" onclick="updateOrderStatus('${o.tracking_code}', 'IN_TRANSIT')" class="py-2 bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 rounded-xl text-[11px] font-bold text-blue-300">
-                  In Transit
-                </button>
-                <button type="button" onclick="updateOrderStatus('${o.tracking_code}', 'DELIVERED')" class="py-2 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-[11px] font-bold text-white">
-                  Delivered
-                </button>
-              </div>
-            </div>
-          `;
-        }).join('');
-      } catch (err) {
-        container.innerHTML = `<div class="text-center text-red-400 text-xs py-6">Failed to load dispatch queue.</div>`;
-      }
-    }
-
-    async function updateOrderStatus(trackingCode, status) {
-      try {
-        const res = await fetch(`/api/orders/${trackingCode}/status`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ status })
-        });
-        if (res.ok) loadActiveOrders();
-      } catch (err) {}
-    }
-
-    async function verifyPayment(trackingCode) {
-      const refInput = document.getElementById(`ref-${trackingCode}`);
-      const msgEl = document.getElementById(`pay-msg-${trackingCode}`);
-      const paymentRef = refInput ? refInput.value.trim() : '';
-
-      if (msgEl) {
-        msgEl.classList.remove('hidden');
-        msgEl.textContent = 'Verifying...';
-        msgEl.className = 'text-xs text-slate-400 mt-1';
+      const savedRider = localStorage.getItem('speedial_rider');
+      if (savedRider) {
+        try {
+          applyRiderProfile(JSON.parse(savedRider));
+        } catch (e) {}
       }
 
-      try {
-        const res = await fetch(`/api/orders/${trackingCode}/verify-payment`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ payment_ref: paymentRef || 'OPAY-CONFIRMED' })
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          if (msgEl) {
-            msgEl.textContent = data.error || 'Verification failed.';
-            msgEl.className = 'text-xs text-red-400 mt-1';
-          }
-          return;
-        }
-        if (msgEl) {
-          msgEl.textContent = data.message || 'Verified!';
-          msgEl.className = 'text-xs text-emerald-400 mt-1';
-        }
-        setTimeout(() => loadActiveOrders(), 800);
-      } catch (err) {
-        if (msgEl) {
-          msgEl.textContent = 'Network error. Check connection and retry.';
-          msgEl.className = 'text-xs text-red-400 mt-1';
-        }
-      }
+      fetchAllOrders();
     }
 
-    // --- Rider Authentication ---
-    let riderAuthMode = 'REGISTER';
+    function applyRiderProfile(rider) {
+      if (!rider) return;
+      const firstName = (rider.full_name || 'Rider').split(' ')[0];
+      const initials = (rider.full_name || 'SD').split(' ').slice(0, 2).map(s => s[0]).join('').toUpperCase();
+      document.getElementById('home-greeting').textContent = `Hello, ${firstName} 👋`;
+      document.getElementById('profile-name').textContent = rider.full_name || 'Solo Dispatch Rider';
+      document.getElementById('profile-meta').textContent = `${rider.phone || ''} • Hub: ${rider.city || 'KD'} • Plate: ${rider.vehicle_plate || 'N/A'}`;
+      document.getElementById('profile-initials').textContent = initials || 'SD';
+      if (rider.city) setHub(rider.city, false);
+    }
 
-    function toggleRiderAuth(mode) {
-      riderAuthMode = mode;
-      const panel = document.getElementById('rider-auth-panel');
-      const isReg = mode === 'REGISTER';
-      panel.classList.remove('hidden');
-      document.getElementById('rider-auth-name').classList.toggle('hidden', !isReg);
-      document.getElementById('rider-reg-extras').classList.toggle('hidden', !isReg);
-      document.getElementById('rider-auth-submit').textContent = isReg ? 'Submit Rider Registration' : 'Sign In as Rider';
+    // ==================== AUTH FLOW ====================
+    function openAuthModal() {
+      document.getElementById('app-shell').classList.add('hidden');
+      document.getElementById('auth-screen').classList.remove('hidden');
+    }
+
+    function continueAsSolo() {
+      document.getElementById('auth-screen').classList.add('hidden');
+      document.getElementById('app-shell').classList.remove('hidden');
+    }
+
+    function switchAuthMode() {
+      authMode = authMode === 'LOGIN' ? 'REGISTER' : 'LOGIN';
+      const isReg = authMode === 'REGISTER';
+      document.getElementById('auth-title').textContent = isReg ? 'Create Rider Account' : 'Welcome Back';
+      document.getElementById('auth-subtitle').textContent = isReg ? 'Register to start accepting Kaduna & Kano deliveries' : 'Login to your dispatch rider terminal';
+      document.getElementById('reg-name-wrap').classList.toggle('hidden', !isReg);
+      document.getElementById('reg-extras-wrap').classList.toggle('hidden', !isReg);
+      document.getElementById('auth-submit-btn').textContent = isReg ? 'Sign Up as Rider' : 'Login';
+      document.getElementById('auth-switch-text').textContent = isReg ? 'Already registered?' : "Don't have a rider account?";
+      document.getElementById('auth-switch-btn').textContent = isReg ? 'Login' : 'Sign Up';
+      document.getElementById('auth-msg').classList.add('hidden');
+    }
+
+    function togglePinVisibility() {
+      const inp = document.getElementById('auth-pin');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
     }
 
     async function submitRiderAuth() {
-      const msgEl = document.getElementById('rider-auth-msg');
-      const phone = document.getElementById('rider-auth-phone').value.trim();
-      const pin = document.getElementById('rider-auth-pin').value.trim();
-      const full_name = document.getElementById('rider-auth-name').value.trim();
-      const city = document.getElementById('rider-auth-city').value;
-      const vehicle_plate = document.getElementById('rider-auth-plate').value.trim();
+      const msgEl = document.getElementById('auth-msg');
+      const phone = document.getElementById('auth-phone').value.trim();
+      const pin = document.getElementById('auth-pin').value.trim();
+      const full_name = document.getElementById('auth-name').value.trim();
+      const city = document.getElementById('auth-city').value;
+      const vehicle_plate = document.getElementById('auth-plate').value.trim();
 
       msgEl.classList.remove('hidden');
       msgEl.textContent = 'Processing...';
-      msgEl.className = 'text-xs text-slate-400';
+      msgEl.className = 'text-xs text-center text-slate-400';
 
-      const endpoint = riderAuthMode === 'REGISTER' ? '/api/auth/register' : '/api/auth/login';
-      const payload = riderAuthMode === 'REGISTER'
+      const endpoint = authMode === 'REGISTER' ? '/api/auth/register' : '/api/auth/login';
+      const payload = authMode === 'REGISTER'
         ? { role: 'RIDER', full_name, phone, pin, city, vehicle_plate }
         : { role: 'RIDER', phone, pin };
 
@@ -301,150 +573,401 @@
         });
         const data = await res.json();
         if (!res.ok) {
-          msgEl.textContent = data.error || 'Rider auth failed.';
-          msgEl.className = 'text-xs text-red-400';
+          msgEl.textContent = data.error || 'Authentication failed.';
+          msgEl.className = 'text-xs text-center text-red-400 bg-red-500/10 border border-red-500/30 rounded-xl p-2.5';
           return;
         }
-        if (riderAuthMode === 'REGISTER') {
+        if (authMode === 'REGISTER') {
           msgEl.textContent = data.message;
-          msgEl.className = 'text-xs text-emerald-400';
+          msgEl.className = 'text-xs text-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-2.5';
           return;
         }
         localStorage.setItem('speedial_rider', JSON.stringify(data.user));
-        document.getElementById('rider-session-label').textContent = `Rider: ${data.user.full_name} (${data.user.vehicle_plate || data.user.city})`;
-        document.getElementById('rider-auth-panel').classList.add('hidden');
-        switchHub(data.user.city || 'KD');
+        applyRiderProfile(data.user);
+        continueAsSolo();
+        fetchAllOrders();
       } catch (err) {
-        msgEl.textContent = 'Network error. Please retry.';
-        msgEl.className = 'text-xs text-red-400';
+        msgEl.textContent = 'Network error. Please check your connection.';
+        msgEl.className = 'text-xs text-center text-red-400';
       }
     }
 
-    const savedRider = localStorage.getItem('speedial_rider');
-    if (savedRider) {
-      try {
-        const r = JSON.parse(savedRider);
-        document.getElementById('rider-session-label').textContent = `Rider: ${r.full_name} (${r.vehicle_plate || r.city})`;
-      } catch (e) {}
+    function logoutRider() {
+      localStorage.removeItem('speedial_rider');
+      openAuthModal();
     }
 
-    // --- Admin Rider Approval Tab ---
-    let savedAdminPin = sessionStorage.getItem('speedial_admin_pin') || '';
-
-    function openAdminTab() {
-      document.getElementById('orders-container').classList.add('hidden');
-      document.getElementById('admin-container').classList.remove('hidden');
-      document.getElementById('tab-admin').className = 'py-1.5 text-xs font-bold rounded-lg bg-orange-600 text-white transition';
-      if (savedAdminPin) {
+    // ==================== NAVIGATION & HUBS ====================
+    function switchNav(tab) {
+      ['home', 'orders', 'jobs', 'wallet', 'profile'].forEach(id => {
+        document.getElementById(`view-${id}`).classList.toggle('hidden', id !== tab);
+        const navBtn = document.getElementById(`nav-${id}`);
+        navBtn.className = id === tab
+          ? 'flex flex-col items-center gap-1 text-orange-400'
+          : 'flex flex-col items-center gap-1 text-slate-400';
+      });
+      if (tab === 'profile' && savedAdminPin) {
         document.getElementById('admin-pin-input').value = savedAdminPin;
         unlockAdminPanel();
       }
     }
 
-    function closeAdminTab() {
-      document.getElementById('admin-container').classList.add('hidden');
-      document.getElementById('orders-container').classList.remove('hidden');
-      const adminTab = document.getElementById('tab-admin');
-      if (adminTab) {
-        adminTab.className = 'py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-orange-400 transition';
+    function setHub(hub, reload = true) {
+      currentHub = hub;
+      document.getElementById('stat-hub').textContent = hub;
+      ['KD', 'KN', 'ALL'].forEach(h => {
+        const b = document.getElementById(`hub-btn-${h}`);
+        if (b) {
+          b.className = h === hub
+            ? 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-orange-600 text-white'
+            : 'px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-400';
+        }
+      });
+      if (reload) fetchAllOrders();
+    }
+
+    function cycleHub() {
+      const next = currentHub === 'KD' ? 'KN' : currentHub === 'KN' ? 'ALL' : 'KD';
+      setHub(next, true);
+    }
+
+    function toggleOnlineStatus() {
+      isOnline = !isOnline;
+      const pill = document.getElementById('online-pill');
+      const dot = document.getElementById('online-dot');
+      const txt = document.getElementById('online-text');
+      if (isOnline) {
+        pill.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-xs font-bold text-emerald-400';
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+        txt.textContent = 'Online';
+      } else {
+        pill.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs font-bold text-slate-400';
+        dot.className = 'w-2 h-2 rounded-full bg-slate-500';
+        txt.textContent = 'Offline';
       }
     }
 
+    function toggleBalanceMask() {
+      balanceMasked = !balanceMasked;
+      renderAllViews();
+    }
+
+    function handleSearch(val) {
+      searchQuery = String(val || '').trim().toLowerCase();
+      document.getElementById('home-search').value = val;
+      document.getElementById('orders-search').value = val;
+      renderAllViews();
+    }
+
+    function setOrderFilter(filter) {
+      currentFilter = filter;
+      ['ALL', 'ACTIVE', 'PENDING', 'COMPLETED'].forEach(f => {
+        const el = document.getElementById(`pill-${f}`);
+        if (el) {
+          el.className = f === filter
+            ? 'px-4 py-1.5 rounded-full text-xs font-bold bg-orange-600 text-white shrink-0'
+            : 'px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 shrink-0';
+        }
+      });
+      renderOrdersList();
+    }
+
+    function openOrdersWithFilter(filter) {
+      switchNav('orders');
+      setOrderFilter(filter);
+    }
+
+    // ==================== DATA FETCH & RENDER ====================
+    async function fetchAllOrders() {
+      try {
+        const res = await fetch(`/api/orders?city=${encodeURIComponent(currentHub)}`);
+        const data = await res.json();
+        allOrders = Array.isArray(data.orders) ? data.orders : [];
+        renderAllViews();
+      } catch (err) {
+        document.getElementById('home-recent-list').innerHTML =
+          '<div class="bg-slate-900 border border-red-500/30 rounded-2xl p-4 text-xs text-red-400 text-center">Unable to reach dispatch server. Tap Refresh.</div>';
+      }
+    }
+
+    function renderAllViews() {
+      const completed = allOrders.filter(o => o.status === 'DELIVERED');
+      const pending = allOrders.filter(o => o.status === 'PENDING');
+      const earnings = completed.reduce((sum, o) => sum + Number(o.amount || 0), 0);
+
+      document.getElementById('stat-total').textContent = allOrders.length;
+      document.getElementById('stat-completed').textContent = completed.length;
+      document.getElementById('stat-pending').textContent = pending.length;
+      document.getElementById('prof-stat-deliv').textContent = completed.length;
+      document.getElementById('prof-stat-earn').textContent = `₦${earnings.toLocaleString()}`;
+
+      document.getElementById('home-wallet-amount').textContent = balanceMasked ? '₦••••••' : `₦${earnings.toLocaleString()}.00`;
+      document.getElementById('wallet-tab-balance').textContent = `₦${earnings.toLocaleString()}`;
+
+      // Home Recent Orders
+      const recentFiltered = filterBySearch(allOrders).slice(0, 4);
+      document.getElementById('home-recent-list').innerHTML = recentFiltered.length
+        ? recentFiltered.map(o => orderCardHTML(o)).join('')
+        : '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center text-xs text-slate-400">No recent orders in this hub.</div>';
+
+      // Orders List
+      renderOrdersList();
+
+      // Jobs List (PENDING orders)
+      document.getElementById('jobs-count-label').textContent = `${pending.length} order${pending.length === 1 ? '' : 's'} nearby`;
+      document.getElementById('jobs-list').innerHTML = pending.length
+        ? pending.map(o => orderCardHTML(o, true)).join('')
+        : `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-2 mt-4">
+            <p class="text-sm font-bold text-slate-200">No jobs nearby</p>
+            <p class="text-xs text-slate-400">Pull or tap refresh to check for new customer bookings</p>
+            <button type="button" onclick="fetchAllOrders()" class="mt-2 px-4 py-2 rounded-xl bg-slate-800 text-xs font-bold text-orange-400">↻ Refresh</button>
+          </div>`;
+
+      // Wallet Transactions
+      const paidOrDelivered = allOrders.filter(o => o.payment_status === 'PAID' || o.status === 'DELIVERED');
+      document.getElementById('wallet-tx-list').innerHTML = paidOrDelivered.length
+        ? paidOrDelivered.map(o => `
+            <div class="flex items-center justify-between py-2 border-b border-slate-800 last:border-0">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-xs font-bold">+</div>
+                <div>
+                  <p class="text-xs font-bold text-slate-100">Waybill ${o.tracking_code}</p>
+                  <p class="text-[11px] text-slate-400">${o.pickup_address} → ${o.dropoff_address}</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="text-xs font-extrabold text-emerald-400">+₦${Number(o.amount || 0).toLocaleString()}</p>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300">${o.payment_status || 'PAID'}</span>
+              </div>
+            </div>
+          `).join('')
+        : '<p class="text-xs text-slate-400 text-center py-4">Completed & paid deliveries will appear here.</p>';
+    }
+
+    function filterBySearch(list) {
+      if (!searchQuery) return list;
+      return list.filter(o =>
+        String(o.tracking_code || '').toLowerCase().includes(searchQuery) ||
+        String(o.pickup_address || '').toLowerCase().includes(searchQuery) ||
+        String(o.dropoff_address || '').toLowerCase().includes(searchQuery) ||
+        String(o.sender_name || '').toLowerCase().includes(searchQuery) ||
+        String(o.recipient_name || '').toLowerCase().includes(searchQuery)
+      );
+    }
+
+    function renderOrdersList() {
+      let list = filterBySearch(allOrders);
+      if (currentFilter === 'ACTIVE') {
+        list = list.filter(o => ['ASSIGNED', 'PICKED_UP', 'IN_TRANSIT'].includes(o.status));
+      } else if (currentFilter === 'PENDING') {
+        list = list.filter(o => o.status === 'PENDING');
+      } else if (currentFilter === 'COMPLETED') {
+        list = list.filter(o => o.status === 'DELIVERED');
+      }
+
+      document.getElementById('orders-list').innerHTML = list.length
+        ? list.map(o => orderCardHTML(o)).join('')
+        : `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-1.5 mt-4">
+            <p class="text-sm font-bold text-slate-200">No orders yet</p>
+            <p class="text-xs text-slate-400">Accept jobs or switch hub filter to see dispatches</p>
+          </div>`;
+    }
+
+    function statusBadgeStyle(status) {
+      if (status === 'DELIVERED') return 'bg-emerald-500 text-white';
+      if (status === 'PICKED_UP' || status === 'IN_TRANSIT') return 'bg-blue-500 text-white';
+      if (status === 'CANCELLED') return 'bg-red-500 text-white';
+      return 'bg-amber-500 text-slate-950';
+    }
+
+    function orderCardHTML(o, showAcceptBtn = false) {
+      return `
+        <div onclick="openOrderModal('${o.tracking_code}')" class="bg-slate-900 border border-slate-800 hover:border-orange-500/40 rounded-2xl p-4 space-y-2.5 cursor-pointer transition shadow">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-extrabold text-white font-mono">Order ID: ${o.tracking_code}</span>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${statusBadgeStyle(o.status)}">${o.status}</span>
+          </div>
+          <p class="text-xs text-slate-300 truncate">Route: ${o.pickup_address} → ${o.dropoff_address}</p>
+          <div class="flex items-center justify-between text-[11px] text-slate-400">
+            <span>Hub: ${o.city || 'KD'} • ${o.package_note || 'Standard Parcel'}</span>
+            <span>${o.payment_status === 'PAID' ? '✓ PAID' : 'UNPAID'}</span>
+          </div>
+          <div class="flex items-center justify-between pt-1 border-t border-slate-800/80">
+            <span class="text-sm font-extrabold text-orange-400">₦${Number(o.amount || 0).toLocaleString()}</span>
+            ${showAcceptBtn
+              ? `<button type="button" onclick="event.stopPropagation(); quickAcceptJob('${o.tracking_code}')" class="px-3.5 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-xs font-bold text-white">Accept Job</button>`
+              : `<span class="text-xs font-bold text-orange-400">View Details →</span>`}
+          </div>
+        </div>
+      `;
+    }
+
+    // ==================== ORDER MODAL & ACTIONS ====================
+    function openOrderModal(code) {
+      const o = allOrders.find(x => x.tracking_code === code);
+      if (!o) return;
+      activeModalOrder = o;
+
+      document.getElementById('modal-code').textContent = o.tracking_code;
+      document.getElementById('modal-route-sub').textContent = `Hub: ${o.city || 'KD'} • Sender: ${o.sender_name}`;
+      document.getElementById('modal-status-badge').textContent = o.status;
+      document.getElementById('modal-status-badge').className = `px-2.5 py-1 rounded-full text-[10px] font-extrabold ${statusBadgeStyle(o.status)}`;
+
+      document.getElementById('modal-pickup').textContent = o.pickup_address;
+      document.getElementById('modal-sender').textContent = `${o.sender_name} • ${o.sender_phone}`;
+      document.getElementById('modal-dropoff').textContent = o.dropoff_address;
+      document.getElementById('modal-recipient').textContent = `${o.recipient_name} • ${o.recipient_phone}`;
+      document.getElementById('modal-note').textContent = o.package_note ? `Item: ${o.package_note}` : 'Standard Parcel';
+      document.getElementById('modal-amount').textContent = `₦${Number(o.amount || 0).toLocaleString()}`;
+
+      const isPaid = o.payment_status === 'PAID';
+      document.getElementById('modal-pay-status').textContent = isPaid ? `PAID (${o.payment_ref || 'OPAY'})` : 'UNPAID';
+      document.getElementById('modal-pay-status').className = isPaid ? 'font-bold text-emerald-400' : 'font-bold text-amber-400';
+      document.getElementById('modal-pay-form').classList.toggle('hidden', isPaid);
+
+      // 4-step progress tracker
+      const steps = ['PENDING', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED'];
+      const labels = ['Accepted', 'Picked Up', 'In Transit', 'Delivered'];
+      const activeIdx = Math.max(0, steps.indexOf(o.status));
+      document.getElementById('modal-stepper').innerHTML = labels.map((lbl, idx) => {
+        const done = idx <= activeIdx;
+        return `
+          <div class="flex flex-col items-center gap-1">
+            <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${done ? 'bg-orange-600 text-white' : 'bg-slate-800 text-slate-500'}">
+              ${done ? '✓' : idx + 1}
+            </div>
+            <span class="text-[10px] font-semibold ${done ? 'text-white' : 'text-slate-500'}">${lbl}</span>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('order-modal').classList.remove('hidden');
+    }
+
+    function closeOrderModal() {
+      document.getElementById('order-modal').classList.add('hidden');
+      activeModalOrder = null;
+    }
+
+    async function quickAcceptJob(code) {
+      await updateStatusApi(code, 'PICKED_UP');
+    }
+
+    async function changeModalStatus(status) {
+      if (!activeModalOrder) return;
+      await updateStatusApi(activeModalOrder.tracking_code, status);
+      closeOrderModal();
+    }
+
+    async function updateStatusApi(code, status) {
+      try {
+        const res = await fetch(`/api/orders/${encodeURIComponent(code)}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+        if (res.ok) await fetchAllOrders();
+      } catch (e) {}
+    }
+
+    async function confirmModalPayment() {
+      if (!activeModalOrder) return;
+      const ref = document.getElementById('modal-pay-ref').value.trim() || 'OPAY-CONFIRMED';
+      try {
+        const res = await fetch(`/api/orders/${encodeURIComponent(activeModalOrder.tracking_code)}/verify-payment`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ payment_ref: ref })
+        });
+        if (res.ok) {
+          await fetchAllOrders();
+          openOrderModal(activeModalOrder.tracking_code);
+        }
+      } catch (e) {}
+    }
+
+    // ==================== SOS & WALLET HELPERS ====================
+    function openSosModal() {
+      document.getElementById('sos-order-ref').textContent = activeModalOrder
+        ? `Order #${activeModalOrder.tracking_code} • SpeeDial Trust & Safety`
+        : 'SpeeDial Trust & Safety';
+      document.getElementById('sos-modal').classList.remove('hidden');
+    }
+
+    function closeSosModal() {
+      document.getElementById('sos-modal').classList.add('hidden');
+    }
+
+    function sendEmergencySos() {
+      const cat = document.getElementById('sos-category').value;
+      const details = document.getElementById('sos-details').value.trim();
+      const orderTag = activeModalOrder ? `Order #${activeModalOrder.tracking_code}` : `Hub ${currentHub}`;
+      const text = encodeURIComponent(`🚨 EMERGENCY SOS (${orderTag})\nCategory: ${cat}\nDetails: ${details || 'Immediate assistance requested'}`);
+      window.open(`https://wa.me/2347240666600?text=${text}`, '_blank');
+      closeSosModal();
+    }
+
+    function copyOpayAccount() {
+      navigator.clipboard?.writeText('6152624923');
+      const el = document.getElementById('opay-copy-label');
+      el.textContent = 'Copied! ✓';
+      setTimeout(() => { el.textContent = '6152624923 📋'; }, 1500);
+    }
+
+    // ==================== ADMIN RIDER APPROVALS ====================
     async function unlockAdminPanel() {
       const pin = document.getElementById('admin-pin-input').value.trim();
       const msgEl = document.getElementById('admin-msg');
       const listEl = document.getElementById('admin-riders-list');
 
-      if (!pin) {
-        msgEl.classList.remove('hidden');
-        msgEl.textContent = 'Please enter Admin PIN (8937).';
-        msgEl.className = 'text-xs text-amber-400';
-        return;
-      }
-
+      if (!pin) return;
       msgEl.classList.remove('hidden');
       msgEl.textContent = 'Loading riders...';
       msgEl.className = 'text-xs text-slate-400';
 
       try {
-        const res = await fetch('/api/auth/riders', {
-          headers: { 'x-admin-pin': pin }
-        });
+        const res = await fetch('/api/auth/riders', { headers: { 'x-admin-pin': pin } });
         const data = await res.json();
         if (!res.ok) {
-          msgEl.textContent = data.error || 'Access denied.';
+          msgEl.textContent = data.error || 'Invalid Admin PIN.';
           msgEl.className = 'text-xs text-red-400';
           listEl.innerHTML = '';
           return;
         }
-
         savedAdminPin = pin;
         sessionStorage.setItem('speedial_admin_pin', pin);
         msgEl.classList.add('hidden');
 
-        if (!data.riders || data.riders.length === 0) {
-          listEl.innerHTML = '<p class="text-xs text-slate-400 text-center py-3">No riders registered yet.</p>';
-          return;
-        }
-
-        listEl.innerHTML = data.riders.map(r => {
-          const badgeColor = r.status === 'ACTIVE'
-            ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-            : r.status === 'PENDING'
-              ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-              : 'bg-red-500/20 text-red-300 border-red-500/40';
-
-          return `
-            <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 flex items-center justify-between gap-2">
-              <div class="space-y-0.5">
-                <div class="flex items-center gap-2">
-                  <span class="text-xs font-bold text-slate-100">${r.full_name}</span>
-                  <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${badgeColor}">${r.status}</span>
-                </div>
-                <p class="text-[11px] text-slate-400">${r.phone} • Hub: ${r.city} • Plate: ${r.vehicle_plate || 'N/A'}</p>
+        listEl.innerHTML = (data.riders || []).map(r => `
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 flex items-center justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-white">${r.full_name}</span>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded ${r.status === 'ACTIVE' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}">${r.status}</span>
               </div>
-              <div class="flex gap-1.5">
-                ${r.status !== 'ACTIVE' ? `
-                  <button type="button" onclick="setRiderStatus(${r.id}, 'ACTIVE')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-lg">
-                    Approve
-                  </button>
-                ` : `
-                  <button type="button" onclick="setRiderStatus(${r.id}, 'SUSPENDED')" class="px-2.5 py-1.5 bg-red-600/80 hover:bg-red-600 text-white text-[11px] font-semibold rounded-lg">
-                    Suspend
-                  </button>
-                `}
-              </div>
+              <p class="text-[11px] text-slate-400">${r.phone} • ${r.city} • ${r.vehicle_plate || 'N/A'}</p>
             </div>
-          `;
-        }).join('');
-      } catch (err) {
-        msgEl.textContent = 'Network error loading riders.';
+            ${r.status !== 'ACTIVE'
+              ? `<button type="button" onclick="setRiderStatus(${r.id}, 'ACTIVE')" class="px-2.5 py-1.5 bg-emerald-600 text-white text-[11px] font-bold rounded-lg">Approve</button>`
+              : `<button type="button" onclick="setRiderStatus(${r.id}, 'SUSPENDED')" class="px-2.5 py-1.5 bg-red-600/80 text-white text-[11px] font-semibold rounded-lg">Suspend</button>`}
+          </div>
+        `).join('') || '<p class="text-xs text-slate-400 text-center py-2">No riders registered yet.</p>';
+      } catch (e) {
+        msgEl.textContent = 'Network error.';
         msgEl.className = 'text-xs text-red-400';
       }
     }
 
-    async function setRiderStatus(riderId, newStatus) {
-      try {
-        const res = await fetch(`/api/auth/riders/${riderId}/status`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-admin-pin': savedAdminPin
-          },
-          body: JSON.stringify({ status: newStatus })
-        });
-        if (res.ok) {
-          unlockAdminPanel();
-        }
-      } catch (e) {}
+    async function setRiderStatus(id, status) {
+      await fetch(`/api/auth/riders/${id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', 'x-admin-pin': savedAdminPin },
+        body: JSON.stringify({ status })
+      });
+      unlockAdminPanel();
     }
 
-    switchHub(currentHub);
+    initApp();
   </script>
-
-  <a href="https://wa.me/2347240666600?text=Hello%20SpeeDial%20Express%20Dispatch%2C%20I%20need%20rider%20support." target="_blank" rel="noopener noreferrer" class="fixed bottom-5 right-5 z-50 flex items-center gap-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-4 py-3 rounded-full shadow-lg transition">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.5 0 .16 5.34.16 11.9c0 2.1.55 4.15 1.6 5.96L0 24l6.32-1.66a11.86 11.86 0 0 0 5.74 1.46h.01c6.55 0 11.89-5.34 11.89-11.9 0-3.18-1.24-6.16-3.44-8.42zM12.07 21.8h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.75.98 1-3.65-.24-.38a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.89 9.9-9.89 2.64 0 5.13 1.03 7 2.9a9.83 9.83 0 0 1 2.9 7c0 5.46-4.44 9.89-9.9 9.89zm5.43-7.41c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.21 3.07c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/></svg>
-    <span>Chat</span>
-  </a>
 </body>
 </html>
