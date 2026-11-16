@@ -13,9 +13,9 @@
     .no-scrollbar::-webkit-scrollbar { display: none; }
   </style>
 </head>
-<body class="bg-[#1e1035] text-slate-100 min-h-screen select-none">
+<body class="bg-[#1e1035] text-slate-900 min-h-screen select-none">
 
-  <!-- ==================== 1. CUSTOMER DASHBOARD SHELL ==================== -->
+  <!-- ==================== 1. MAIN CUSTOMER DASHBOARD SHELL ==================== -->
   <div id="screen-app" class="min-h-screen bg-[#1e1035] max-w-md mx-auto flex flex-col justify-between pb-24">
     <div class="px-5 pt-6 pb-5 flex items-center justify-between text-white">
       <div>
@@ -25,11 +25,12 @@
       <button type="button" onclick="switchTab('alerts')" class="w-10 h-10 rounded-full bg-purple-900/60 border border-purple-700/50 flex items-center justify-center text-white relative shadow">🔔</button>
     </div>
 
-    <div class="flex-1 bg-[#e8e5f0] rounded-t-[30px] px-4 pt-4 pb-8 space-y-4 text-slate-900">
+    <div class="flex-1 bg-[#e8e5f0] rounded-t-[30px] px-4 pt-5 pb-10 space-y-4">
       <!-- HOME TAB -->
       <div id="tab-home" class="space-y-4">
+        <!-- Wallet Hero Card -->
         <div class="bg-gradient-to-br from-[#2e1065] via-[#4c1d95] to-[#ea580c] rounded-[26px] p-5 text-white shadow-xl relative overflow-hidden">
-          <div class="flex items-center justify-between text-xs text-orange-100">
+          <div class="flex items-center justify-between text-xs text-orange-100 font-medium">
             <span>💳 Available for orders</span>
             <button type="button" onclick="toggleBalanceMask()" class="p-1">👁️</button>
           </div>
@@ -37,10 +38,11 @@
           <div class="inline-block mt-2 px-3 py-1 rounded-full bg-white/15 text-[11px] font-semibold text-white">Bonus: ₦2,000 • OPay: 6152624923</div>
           <div class="grid grid-cols-2 gap-3 mt-4">
             <button type="button" onclick="openModal('modal-add-money')" class="bg-white text-[#2e1065] font-bold text-xs py-3.5 rounded-2xl shadow">+ Fund wallet</button>
-            <button type="button" onclick="openModal('modal-withdraw')" class="bg-white/20 text-white font-bold text-xs py-3.5 rounded-2xl">↗ Withdraw</button>
+            <button type="button" onclick="openModal('modal-withdraw')" class="bg-white/20 text-white font-bold text-xs py-3.5 rounded-2xl backdrop-blur-sm">↗ Withdraw</button>
           </div>
         </div>
 
+        <!-- Send a Package Action Banner -->
         <button type="button" onclick="showScreen('screen-send-package')" class="w-full bg-gradient-to-r from-[#2e1065] to-[#4c1d95] rounded-[22px] p-4 flex items-center justify-between text-left text-white shadow-md">
           <div class="flex items-center gap-3.5">
             <div class="w-10 h-10 rounded-xl bg-orange-500/20 border border-orange-400/30 flex items-center justify-center text-orange-400">📦</div>
@@ -49,4 +51,233 @@
               <p class="text-[11px] text-purple-200 mt-0.5">Get a price estimate and book a rider now</p>
             </div>
           </div>
-          <span class="text-orange-400 font-
+          <span class="text-orange-400 font-bold text-lg">›</span>
+        </button>
+
+        <!-- 2x2 White Stats Cards -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-white rounded-[22px] p-4 h-28 flex flex-col justify-between shadow-sm">
+            <div><div id="stat-total" class="text-xl font-extrabold text-slate-900">0</div><div class="text-xs text-slate-500 font-medium mt-1">Total Orders</div></div>
+            <div class="flex justify-end text-slate-700">📦</div>
+          </div>
+          <div class="bg-white rounded-[22px] p-4 h-28 flex flex-col justify-between shadow-sm">
+            <div><div id="stat-completed" class="text-xl font-extrabold text-slate-900">0</div><div class="text-xs text-slate-500 font-medium mt-1">Completed</div></div>
+            <div class="flex justify-end text-emerald-600">✓</div>
+          </div>
+          <div class="bg-white rounded-[22px] p-4 h-28 flex flex-col justify-between shadow-sm">
+            <div><div id="stat-active" class="text-xl font-extrabold text-slate-900">0</div><div class="text-xs text-slate-500 font-medium mt-1">Active Deliveries</div></div>
+            <div class="flex justify-end text-amber-600">⏳</div>
+          </div>
+          <div class="bg-white rounded-[22px] p-4 h-28 flex flex-col justify-between shadow-sm">
+            <div><div id="stat-spent" class="text-xl font-extrabold text-slate-900">₦0</div><div class="text-xs text-slate-500 font-medium mt-1">Total Spent</div></div>
+            <div class="flex justify-end text-orange-600">💳</div>
+          </div>
+        </div>
+
+        <!-- Recent Orders Section -->
+        <div class="space-y-2.5 pt-1">
+          <h2 class="text-base font-extrabold text-slate-900">Recent Orders</h2>
+          <div id="home-recent-orders">
+            <div class="bg-white rounded-[22px] p-8 text-center space-y-2 shadow-sm">
+              <p class="text-xs font-bold text-slate-800">No orders yet</p>
+              <p class="text-[11px] text-slate-500">Book your first delivery to see waybills here</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ORDERS TAB -->
+      <div id="tab-orders" class="hidden space-y-4">
+        <h2 class="text-lg font-extrabold text-slate-900">My Orders</h2>
+        <div id="orders-full-list" class="space-y-3"><div class="bg-white rounded-[22px] p-8 text-center text-xs text-slate-500 shadow-sm">No orders yet</div></div>
+      </div>
+
+      <!-- WALLET TAB -->
+      <div id="tab-wallet" class="hidden space-y-4">
+        <h2 class="text-lg font-extrabold text-slate-900">Wallet</h2>
+        <div class="bg-gradient-to-br from-[#2e1065] to-[#ea580c] rounded-[26px] p-5 text-white shadow-xl space-y-3">
+          <p class="text-xs text-orange-100">Available Balance</p>
+          <p class="text-3xl font-extrabold">₦2,000.00</p>
+        </div>
+      </div>
+
+      <!-- ALERTS TAB -->
+      <div id="tab-alerts" class="hidden space-y-3">
+        <h2 class="text-lg font-extrabold text-slate-900">Notifications</h2>
+        <div class="bg-white rounded-[22px] p-4 text-xs text-slate-600 shadow-sm">You received a ₦2,000 welcome bonus.</div>
+      </div>
+
+      <!-- PROFILE TAB -->
+      <div id="tab-profile" class="hidden space-y-4">
+        <div class="bg-white rounded-[24px] p-6 text-center space-y-3 shadow-sm">
+          <div class="w-16 h-16 rounded-full bg-[#2e1065] text-white text-xl font-extrabold flex items-center justify-center mx-auto">US</div>
+          <h2 class="text-base font-extrabold text-slate-900">usman</h2>
+          <p class="text-xs text-slate-500">Kaduna & Kano • RC: 8937370</p>
+        </div>
+        <button type="button" onclick="showScreen('screen-app')" class="w-full bg-white text-red-600 font-bold text-xs py-4 rounded-[20px] shadow-sm">Sign Out</button>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-slate-200">
+      <div class="max-w-md mx-auto grid grid-cols-5 py-2.5">
+        <button type="button" onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center gap-1 text-[#2e1065]"><span class="text-[10px] font-bold">Home</span></button>
+        <button type="button" onclick="switchTab('orders')" id="nav-orders" class="flex flex-col items-center gap-1 text-slate-400"><span class="text-[10px]">Orders</span></button>
+        <button type="button" onclick="switchTab('wallet')" id="nav-wallet" class="flex flex-col items-center gap-1 text-slate-400"><span class="text-[10px]">Wallet</span></button>
+        <button type="button" onclick="switchTab('alerts')" id="nav-alerts" class="flex flex-col items-center gap-1 text-slate-400"><span class="text-[10px]">Alerts</span></button>
+        <button type="button" onclick="switchTab('profile')" id="nav-profile" class="flex flex-col items-center gap-1 text-slate-400"><span class="text-[10px]">Profile</span></button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ==================== 2. SEND A PACKAGE SCREEN ==================== -->
+  <div id="screen-send-package" class="hidden min-h-screen bg-[#f4f1f8] max-w-md mx-auto pb-28 text-slate-900">
+    <div class="sticky top-0 z-30 bg-[#f4f1f8] px-5 py-4 flex items-center justify-between border-b border-slate-200/60">
+      <div class="flex items-center gap-3">
+        <button type="button" onclick="showScreen('screen-app')" class="w-9 h-9 rounded-full bg-white border border-slate-300 flex items-center justify-center text-slate-800 shadow-sm">←</button>
+        <h1 class="text-base font-extrabold text-slate-900">Send a Package</h1>
+      </div>
+    </div>
+
+    <div class="p-5 space-y-4">
+      <div class="space-y-2">
+        <label class="text-xs font-bold text-slate-800">Delivery service</label>
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button" onclick="selectService('MOTO')" id="srv-moto" class="text-left bg-white rounded-2xl p-3.5 border-2 border-[#2e1065] shadow-sm transition space-y-1">
+            <div class="text-lg">🛵</div>
+            <p class="text-xs font-bold text-slate-900">On-demand motorcycle</p>
+            <p class="text-[10px] text-slate-500 leading-tight">Instant booking in the city.</p>
+          </button>
+          <button type="button" onclick="selectService('FLEET')" id="srv-fleet" class="text-left bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm transition space-y-1">
+            <div class="text-lg">🚚</div>
+            <p class="text-xs font-bold text-slate-900">Logistics partner</p>
+            <p class="text-[10px] text-slate-500 leading-tight">Intra & interstate fleets.</p>
+          </button>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <div class="relative rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+          <div class="absolute top-3 inset-x-3 z-[400] grid grid-cols-2 gap-2">
+            <button type="button" class="py-2 px-3 rounded-full bg-[#2e1065] text-white text-xs font-bold shadow flex items-center justify-center gap-1">📍 Set pickup pin</button>
+            <button type="button" class="py-2 px-3 rounded-full bg-white border border-emerald-500 text-emerald-600 text-xs font-bold shadow flex items-center justify-center gap-1">📍 Set dropoff pin</button>
+          </div>
+          <div id="booking-map" class="w-full h-52 bg-slate-100"></div>
+        </div>
+      </div>
+
+      <div class="space-y-2.5">
+        <h2 class="text-xs font-bold text-slate-800">Pickup details</h2>
+        <input id="pkg-pickup" type="text" placeholder="e.g. No. A4 Saiha Mall, Kaduna" class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 text-xs outline-none shadow-sm" />
+      </div>
+
+      <div class="space-y-2.5">
+        <h2 class="text-xs font-bold text-slate-800">Dropoff details</h2>
+        <input id="pkg-dropoff" type="text" placeholder="e.g. Barnawa, Kaduna" class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 text-xs outline-none shadow-sm" />
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="text-xs font-bold text-slate-800">Preferred pickup time (optional)</label>
+        <div class="bg-white rounded-2xl border border-slate-200 p-3.5 shadow-sm flex items-center gap-2">
+          <span>🕒</span>
+          <select class="bg-transparent outline-none text-xs font-semibold text-slate-800 w-full">
+            <option>Pick up as soon as possible</option>
+            <option>Within 1 hour</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-xs font-bold text-slate-800">Payment method</label>
+        <button type="button" class="w-full text-left bg-white rounded-2xl p-4 border-2 border-[#2e1065] shadow-sm flex items-center gap-3">
+          <span class="w-5 h-5 rounded-full border-2 border-[#2e1065] flex items-center justify-center shrink-0"><span class="w-2.5 h-2.5 rounded-full bg-[#2e1065]"></span></span>
+          <span class="text-base">💳</span>
+          <p class="text-xs font-bold text-slate-900">Pay Online (Card/Bank)</p>
+        </button>
+      </div>
+
+      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+        <p class="text-[11px] font-semibold text-slate-400">Price estimate</p>
+        <p class="text-xs font-medium text-slate-700">Set pickup and dropoff pins to see a price estimate.</p>
+      </div>
+    </div>
+
+    <div class="fixed bottom-0 inset-x-0 z-40 bg-[#f4f1f8]/95 backdrop-blur p-4 border-t border-slate-200">
+      <div class="max-w-md mx-auto">
+        <button type="button" onclick="submitOrder()" class="w-full bg-[#2e1065] hover:bg-[#3d1685] text-white font-extrabold text-sm py-4 rounded-2xl shadow-lg transition">
+          Send Package
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div id="modal-add-money" class="hidden fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-5">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-6 space-y-4 relative">
+      <button type="button" onclick="closeModal('modal-add-money')" class="absolute top-4 right-4 text-slate-500 font-bold">✕</button>
+      <h3 class="text-base font-extrabold text-[#2e1065]">Add Money</h3>
+      <button type="button" onclick="closeModal('modal-add-money')" class="w-full bg-slate-100 p-3 rounded-xl text-xs font-bold text-left">💳 Pay Online (Paystack)</button>
+      <button type="button" onclick="closeModal('modal-add-money')" class="w-full bg-slate-100 p-3 rounded-xl text-xs font-bold text-left">🏦 Bank Transfer (OPay: 6152624923)</button>
+    </div>
+  </div>
+
+  <div id="modal-withdraw" class="hidden fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-5">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-6 space-y-4 relative">
+      <button type="button" onclick="closeModal('modal-withdraw')" class="absolute top-4 right-4 text-slate-500 font-bold">✕</button>
+      <h3 class="text-base font-extrabold text-[#2e1065]">Withdraw Funds</h3>
+      <input type="number" placeholder="Amount" class="w-full border p-3 rounded-xl text-xs" />
+      <button type="button" onclick="closeModal('modal-withdraw')" class="w-full bg-[#2e1065] text-white py-3 rounded-xl text-xs font-bold">Submit</button>
+    </div>
+  </div>
+
+  <script>
+    let mapInstance = null;
+
+    function showScreen(id) {
+      ['screen-app', 'screen-send-package'].forEach(s => document.getElementById(s).classList.toggle('hidden', s !== id));
+      if (id === 'screen-send-package') {
+        setTimeout(() => {
+          if (!mapInstance) {
+            mapInstance = L.map('booking-map', { zoomControl: false }).setView([10.5105, 7.4165], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstance);
+          } else { mapInstance.invalidateSize(); }
+        }, 150);
+      }
+      window.scrollTo(0, 0);
+    }
+
+    function switchTab(t) {
+      ['home', 'orders', 'wallet', 'alerts', 'profile'].forEach(tab => {
+        document.getElementById(`tab-${tab}`).classList.toggle('hidden', tab !== t);
+        document.getElementById(`nav-${tab}`).className = tab === t ? 'flex flex-col items-center gap-1 text-[#2e1065]' : 'flex flex-col items-center gap-1 text-slate-400';
+      });
+      window.scrollTo(0, 0);
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    function toggleBalanceMask() {
+      const el = document.getElementById('wallet-balance-text');
+      el.textContent = el.textContent.includes('•') ? '₦2,000.00' : '₦••••••';
+    }
+
+    async function submitOrder() {
+      const pickup = document.getElementById('pkg-pickup').value.trim();
+      const dropoff = document.getElementById('pkg-dropoff').value.trim();
+      if (!pickup || !dropoff) { alert('Please enter pickup and dropoff addresses.'); return; }
+      
+      try {
+        await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ city: 'KD', pickup_address: pickup, dropoff_address: dropoff, amount: 1500 })
+        });
+      } catch (e) {}
+
+      alert('Package booked successfully!');
+      showScreen('screen-app');
+      switchTab('orders');
+    }
+  </script>
+</body>
+</html>
