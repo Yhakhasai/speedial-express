@@ -6,102 +6,159 @@
   <title>SpeeDial Express • Customer Portal</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans select-none">
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans select-none pb-12">
 
-  <!-- ==================== 1. CUSTOMER AUTH PORTAL ==================== -->
-  <div id="cust-auth-screen" class="min-h-screen bg-gradient-to-b from-purple-950 via-slate-950 to-slate-950 flex flex-col justify-between px-6 py-12 max-w-md mx-auto">
-    <div class="space-y-2 pt-6">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 mb-2">
+  <!-- ==================== 1. AUTH PORTAL (LOGIN / SIGN UP) ==================== -->
+  <div id="cust-auth-screen" class="min-h-screen bg-gradient-to-b from-purple-950 via-slate-950 to-slate-950 flex flex-col justify-center px-6 py-8 max-w-md mx-auto">
+    
+    <!-- Header Title -->
+    <div class="mb-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 mb-3">
         <span class="w-2 h-2 rounded-full bg-orange-500"></span>
         <span class="text-[11px] font-bold text-orange-400">SPEEDIAL EXPRESS • RC: 8937370</span>
       </div>
-      <h1 class="text-3xl font-extrabold text-white tracking-tight">Welcome Back</h1>
-      <p class="text-xs text-slate-400">Login to continue</p>
+      <h1 id="auth-main-title" class="text-3xl font-extrabold text-white tracking-tight">Welcome Back</h1>
+      <p id="auth-main-sub" class="text-xs text-slate-400 mt-1">Login to continue</p>
     </div>
 
-    <!-- Login Form matching your screenshot -->
-    <div class="space-y-4 my-auto w-full">
-      <div id="reg-name-group" class="hidden space-y-1.5">
-        <label class="text-xs font-medium text-slate-300">Full Name</label>
-        <input id="auth-name" type="text" placeholder="Enter your full name" class="w-full bg-slate-900/90 border border-slate-700/80 focus:border-orange-500 outline-none rounded-2xl px-4 py-3.5 text-sm text-white placeholder-slate-500 transition" />
+    <!-- LOGIN FORM -->
+    <div id="login-form-box" class="space-y-4">
+      <div class="space-y-1.5">
+        <label class="text-xs font-semibold text-slate-300">Email or username</label>
+        <input id="login-identifier" type="text" placeholder="Email or username" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3.5 text-sm text-white placeholder-slate-500" />
       </div>
 
       <div class="space-y-1.5">
-        <label class="text-xs font-medium text-slate-300">Email or username</label>
-        <input id="auth-identifier" type="text" placeholder="Email or username" class="w-full bg-slate-900/90 border border-slate-700/80 focus:border-orange-500 outline-none rounded-2xl px-4 py-3.5 text-sm text-white placeholder-slate-500 transition" />
-      </div>
-
-      <div class="space-y-1.5">
-        <label class="text-xs font-medium text-slate-300">Password</label>
+        <label class="text-xs font-semibold text-slate-300">Password</label>
         <div class="relative">
-          <input id="auth-password" type="password" placeholder="Password" class="w-full bg-slate-900/90 border border-slate-700/80 focus:border-orange-500 outline-none rounded-2xl px-4 py-3.5 pr-12 text-sm text-white placeholder-slate-500 transition font-mono" />
-          <button type="button" onclick="togglePasswordVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-base">
-            👁️
-          </button>
+          <input id="login-password" type="password" placeholder="Password" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3.5 pr-12 text-sm text-white placeholder-slate-500 font-mono" />
+          <button type="button" onclick="toggleLoginPassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">👁️</button>
         </div>
         <div class="text-right pt-1">
-          <button type="button" onclick="alert('Password reset link sent to your email.')" class="text-xs text-slate-400 hover:text-white">Forgot Password?</button>
+          <button type="button" onclick="alert('Password reset link sent.')" class="text-xs text-slate-400 hover:text-white">Forgot Password?</button>
         </div>
       </div>
 
-      <button type="button" onclick="handleAuthSubmit()" id="auth-submit-btn" class="w-full bg-orange-600 hover:bg-orange-500 active:scale-[0.99] transition py-4 rounded-2xl text-sm font-extrabold text-white shadow-xl shadow-orange-600/20 mt-2">
+      <button type="button" onclick="handleLogin()" class="w-full bg-orange-600 hover:bg-orange-500 active:scale-[0.99] transition py-4 rounded-2xl text-sm font-extrabold text-white shadow-xl shadow-orange-600/20 mt-2">
         Login
       </button>
 
-      <p id="auth-msg" class="text-xs text-center hidden"></p>
+      <div class="text-center pt-3">
+        <button type="button" onclick="switchAuthView('REGISTER')" class="text-xs text-slate-400 hover:text-white">
+          Don't have an account? <span class="text-orange-400 font-bold underline">Sign Up</span>
+        </button>
+      </div>
     </div>
 
-    <div class="text-center pb-4">
-      <button type="button" onclick="toggleAuthMode()" id="auth-switch-btn" class="text-xs text-slate-400 hover:text-white">
-        Don't have an account? <span class="text-orange-400 font-bold underline">Sign Up</span>
+    <!-- SIGN UP FORM (MATCHING YOUR SCREENSHOT EXACTLY) -->
+    <div id="register-form-box" class="hidden space-y-3.5">
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-slate-300">Full Name</label>
+        <input id="reg-fullname" type="text" placeholder="Enter your full name" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-slate-300">Email Address</label>
+        <input id="reg-email" type="email" placeholder="Enter your email address" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500" />
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-slate-300">Phone Number</label>
+        <input id="reg-phone" type="tel" placeholder="e.g 09011223344 or +234901122..." class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500"[cite: 13] />
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-slate-300">Your state</label>
+        <div class="relative">
+          <select id="reg-state" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-slate-300 appearance-none">
+            <option value="" disabled selected>Select a state</option>
+            <option value="Kaduna">Kaduna State</option>
+            <option value="Kano">Kano State</option>
+            <option value="Lagos">Lagos State</option>
+            <option value="Abuja">FCT Abuja</option>
+          </select>
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">⌄</span>
+        </div>
+        <p class="text-[11px] text-slate-400 px-1 pt-0.5">We show logistics partners in your state first. You can choose another when ordering.</p>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-slate-300">Password</label>
+        <div class="relative">
+          <input id="reg-password" type="password" placeholder="••••••••••••" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 pr-12 text-sm text-white placeholder-slate-500 font-mono" />
+          <button type="button" onclick="toggleRegPassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">👁️</button>
+        </div>
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-semibold text-slate-300">Referral Code (optional)</label>
+        <input id="reg-ref" type="text" placeholder="Enter a referral code" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white placeholder-slate-500 uppercase font-mono" />
+      </div>
+
+      <!-- Terms Checkbox -->
+      <div class="flex items-start gap-2.5 pt-1">
+        <input id="reg-terms" type="checkbox" class="mt-0.5 rounded accent-orange-600 w-4 h-4" />
+        <label for="reg-terms" class="text-xs text-slate-300 leading-snug">
+          I agree to the <a href="#" class="text-orange-400 underline">Terms of Service</a> and <a href="#" class="text-orange-400 underline">Privacy Policy</a>[cite: 13]
+        </label>
+      </div>
+
+      <button type="button" onclick="handleRegister()" class="w-full bg-orange-600 hover:bg-orange-500 active:scale-[0.99] transition py-3.5 rounded-2xl text-sm font-extrabold text-white shadow-xl shadow-orange-600/20 mt-1">
+        Create Account
       </button>
+
+      <div class="text-center pt-2">
+        <button type="button" onclick="switchAuthView('LOGIN')" class="text-xs text-slate-400 hover:text-white">
+          Already have an account? <span class="text-orange-400 font-bold underline">Login</span>
+        </button>
+      </div>
     </div>
+
+    <p id="auth-msg" class="text-xs text-center hidden pt-2"></p>
   </div>
 
-  <!-- ==================== 2. CUSTOMER APP DASHBOARD ==================== -->
+  <!-- ==================== 2. CUSTOMER APP DASHBOARD SHELL ==================== -->
   <div id="cust-shell" class="hidden max-w-md mx-auto">
     <section class="space-y-4 px-4 pt-6">
       <div class="bg-gradient-to-br from-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-xl">
-        <p class="text-xs text-orange-100">Available Wallet Balance</p>
+        <p class="text-xs text-orange-100">Wallet Balance (Welcome Bonus)</p>
         <p class="text-3xl font-extrabold mt-1">₦2,000.00</p>
-        <p class="text-[11px] text-orange-100 mt-1">Welcome Bonus: ₦2,000</p>
       </div>
       <button type="button" onclick="logoutCustomer()" class="w-full bg-slate-900 border border-slate-800 py-3 rounded-2xl text-xs font-semibold text-slate-400">Sign Out</button>
     </section>
   </div>
 
   <script>
-    let isRegisterMode = false;
-
-    function toggleAuthMode() {
-      isRegisterMode = !isRegisterMode;
-      document.querySelector('h1').textContent = isRegisterMode ? 'Create Account' : 'Welcome Back';
-      document.querySelector('p').textContent = isRegisterMode ? 'Sign up to get started' : 'Login to continue';
-      document.getElementById('reg-name-group').classList.toggle('hidden', !isRegisterMode);
-      document.getElementById('auth-submit-btn').textContent = isRegisterMode ? 'Sign Up' : 'Login';
-      document.getElementById('auth-switch-btn').innerHTML = isRegisterMode 
-        ? 'Already have an account? <span class="text-orange-400 font-bold underline">Login</span>' 
-        : "Don't have an account? <span class="text-orange-400 font-bold underline">Sign Up</span>";
+    function switchAuthView(mode) {
+      const isReg = mode === 'REGISTER';
+      document.getElementById('login-form-box').classList.toggle('hidden', isReg);
+      document.getElementById('register-form-box').classList.toggle('hidden', !isReg);
+      document.getElementById('auth-main-title').textContent = isReg ? 'Create Account' : 'Welcome Back';
+      document.getElementById('auth-main-sub').textContent = isReg ? 'Fill in your details to get started' : 'Login to continue';
+      document.getElementById('auth-msg').classList.add('hidden');
     }
 
-    function togglePasswordVisibility() {
-      const pwd = document.getElementById('auth-password');
-      pwd.type = pwd.type === 'password' ? 'text' : 'password';
+    function toggleLoginPassword() {
+      const p = document.getElementById('login-password');
+      p.type = p.type === 'password' ? 'text' : 'password';
     }
 
-    async function handleAuthSubmit() {
-      const identifier = document.getElementById('auth-identifier').value.trim();
-      const password = document.getElementById('auth-password').value.trim();
-      const msg = document.getElementById('auth-msg');
+    function toggleRegPassword() {
+      const p = document.getElementById('reg-password');
+      p.type = p.type === 'password' ? 'text' : 'password';
+    }
 
-      if (!identifier || !password) {
-        msg.classList.remove('hidden');
-        msg.textContent = 'Please enter your credentials.';
-        msg.className = 'text-xs text-center text-amber-400 mt-2';
+    function handleLogin() {
+      document.getElementById('cust-auth-screen').classList.add('hidden');
+      document.getElementById('cust-shell').classList.remove('hidden');
+    }
+
+    function handleRegister() {
+      const terms = document.getElementById('reg-terms').checked;
+      if (!terms) {
+        alert('Please agree to the Terms of Service and Privacy Policy.');
         return;
       }
-
-      // Transition to Customer Dashboard on successful login/signup mock
       document.getElementById('cust-auth-screen').classList.add('hidden');
       document.getElementById('cust-shell').classList.remove('hidden');
     }
