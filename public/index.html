@@ -133,7 +133,7 @@
   </div>
 
   <!-- ==================== 3. FULL-SCREEN SEND A PACKAGE VIEW ==================== -->
-  <div id="send-package-screen" class="hidden min-h-screen bg-slate-950 max-w-md mx-auto pb-10">
+  <div id="send-package-screen" class="hidden min-h-screen bg-slate-950 max-w-md mx-auto pb-28">
     <!-- Top Back Header -->
     <div class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur border-b border-slate-800/80 px-4 py-3.5 flex items-center justify-between">
       <div class="flex items-center gap-3">
@@ -170,7 +170,6 @@
       <!-- Interactive Map & Pin Mode Pills -->
       <div class="space-y-2.5">
         <div class="relative rounded-3xl overflow-hidden border border-slate-800 shadow-lg">
-          <!-- Overlaid Pin Mode Toggle Pills -->
           <div class="absolute top-3 inset-x-3 z-[400] grid grid-cols-2 gap-2">
             <button type="button" id="pin-mode-pickup" onclick="setActivePinMode('PICKUP')" class="py-2 px-3 rounded-full bg-orange-600 text-white text-xs font-bold shadow-lg flex items-center justify-center gap-1.5">
               <span>📍</span>
@@ -215,8 +214,8 @@
             <input id="b-sender-name" type="text" placeholder="Full name" class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-3.5 py-3 text-xs text-white placeholder-slate-500" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold text-slate-300">Pickup phone</label>
-            <input id="b-sender-phone" type="tel" placeholder="080..." class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-3.5 py-3 text-xs text-white placeholder-slate-500" />
+            <label class="text-xs font-semibold text-slate-300">Pickup contact phone</label>
+            <input id="b-sender-phone" type="tel" placeholder="08012345678" class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-3.5 py-3 text-xs text-white placeholder-slate-500" />
           </div>
         </div>
       </div>
@@ -237,38 +236,119 @@
 
         <div class="grid grid-cols-2 gap-2.5">
           <div class="space-y-1">
-            <label class="text-xs font-semibold text-slate-300">Recipient name</label>
+            <label class="text-xs font-semibold text-slate-300">Dropoff contact name</label>
             <input id="b-rec-name" type="text" placeholder="Full name" class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-3.5 py-3 text-xs text-white placeholder-slate-500" />
           </div>
           <div class="space-y-1">
-            <label class="text-xs font-semibold text-slate-300">Recipient phone</label>
-            <input id="b-rec-phone" type="tel" placeholder="080..." class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-3.5 py-3 text-xs text-white placeholder-slate-500" />
+            <label class="text-xs font-semibold text-slate-300">Dropoff contact phone</label>
+            <input id="b-rec-phone" type="tel" placeholder="08012345678" class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-3.5 py-3 text-xs text-white placeholder-slate-500" />
           </div>
         </div>
       </div>
 
-      <!-- Package & Fare Summary -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-        <div class="grid grid-cols-2 gap-2.5">
-          <div class="space-y-1">
-            <label class="text-[11px] font-semibold text-slate-400">Package description</label>
-            <input id="b-note" type="text" placeholder="e.g. Box, Documents" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white" />
-          </div>
-          <div class="space-y-1">
-            <label id="b-fare-label" class="text-[11px] font-semibold text-slate-400">Fixed Fare (₦)</label>
-            <input id="b-amount" type="number" value="1500" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-orange-400 font-extrabold" />
-          </div>
+      <!-- Package Items (Optional) -->
+      <div class="space-y-2.5 pt-1 border-t border-slate-800/80">
+        <div class="flex items-center justify-between pt-2">
+          <label class="text-xs font-bold text-slate-200">Package items (optional)</label>
+          <button type="button" onclick="promptAddPackageItem()" class="inline-flex items-center gap-1.5 text-xs font-bold text-orange-400 hover:text-orange-300">
+            <span class="w-4 h-4 rounded-full border border-orange-400 flex items-center justify-center text-[11px] leading-none">+</span>
+            <span>Add item</span>
+          </button>
         </div>
-        <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-800">
-          <span id="b-distance-info">Est. distance: 2.5 km • Motorcycle Dispatch</span>
-          <span class="text-emerald-400 font-semibold">Same-Day Delivery</span>
+
+        <div id="package-items-container" class="space-y-2">
+          <p id="no-items-placeholder" class="text-xs text-slate-500">No items added yet.</p>
         </div>
       </div>
 
-      <button type="button" onclick="submitCustomerBooking()" class="w-full bg-orange-600 hover:bg-orange-500 active:scale-[0.99] transition py-4 rounded-2xl text-sm font-extrabold text-white shadow-xl shadow-orange-600/25">
-        Send Package
-      </button>
+      <!-- Special Instructions -->
+      <div class="space-y-1.5">
+        <label class="text-xs font-bold text-slate-200">Special instructions</label>
+        <textarea id="b-instructions" rows="3" placeholder="e.g. Call on arrival, fragile handling, etc." class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-xs text-white placeholder-slate-500"></textarea>
+      </div>
+
+      <!-- Preferred Pickup Time (Optional) -->
+      <div class="space-y-1.5">
+        <label class="text-xs font-bold text-slate-200">Preferred pickup time (optional)</label>
+        <div class="relative">
+          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🕒</span>
+          <select id="b-pickup-time" class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl pl-10 pr-4 py-3.5 text-xs font-medium text-slate-100">
+            <option value="ASAP">Pick up as soon as possible</option>
+            <option value="Within 1 hour">Within 1 hour</option>
+            <option value="Today Afternoon (2 PM - 5 PM)">Today Afternoon (2 PM - 5 PM)</option>
+            <option value="Tomorrow Morning (9 AM - 12 PM)">Tomorrow Morning (9 AM - 12 PM)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Payment Method -->
+      <div class="space-y-2.5">
+        <label class="text-xs font-bold text-slate-200">Payment method</label>
+
+        <button type="button" id="pay-opt-ONLINE" onclick="selectPaymentMethod('ONLINE')" class="w-full text-left p-3.5 rounded-2xl bg-slate-900 border-2 border-orange-500 flex items-center gap-3 transition">
+          <span id="pay-radio-ONLINE" class="w-5 h-5 rounded-full border-2 border-orange-500 flex items-center justify-center shrink-0">
+            <span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
+          </span>
+          <span class="text-base">💳</span>
+          <div class="flex-1">
+            <p class="text-xs font-bold text-white">Pay Online (Card/Bank)</p>
+            <p class="text-[11px] text-slate-400">OPay Transfer: 6152624923 • SpeeDial Digital Services</p>
+          </div>
+        </button>
+
+        <button type="button" id="pay-opt-WALLET" onclick="selectPaymentMethod('WALLET')" class="w-full text-left p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex items-center gap-3 transition">
+          <span id="pay-radio-WALLET" class="w-5 h-5 rounded-full border-2 border-slate-600 flex items-center justify-center shrink-0"></span>
+          <span class="text-base">👛</span>
+          <div class="flex-1">
+            <p class="text-xs font-bold text-white">Wallet</p>
+            <p class="text-[11px] text-slate-400">Available: ₦2,000 (incl. ₦2,000 welcome bonus)</p>
+          </div>
+        </button>
+
+        <button type="button" id="pay-opt-COD" onclick="selectPaymentMethod('COD')" class="w-full text-left p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex items-center gap-3 transition">
+          <span id="pay-radio-COD" class="w-5 h-5 rounded-full border-2 border-slate-600 flex items-center justify-center shrink-0"></span>
+          <span class="text-base">💵</span>
+          <div class="flex-1">
+            <p class="text-xs font-bold text-white">Cash on Delivery</p>
+            <p class="text-[11px] text-slate-400">Pay cash to rider at pickup or dropoff</p>
+          </div>
+        </button>
+      </div>
+
+      <!-- Promo Code (Optional) & Fare Summary -->
+      <div class="space-y-2">
+        <label class="text-xs font-bold text-slate-200">Promo code (optional)</label>
+        <div class="flex gap-2">
+          <input id="b-promo" type="text" placeholder="Enter promo code (e.g. SPEED200)" class="flex-1 bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-xs text-white uppercase font-mono" />
+          <button type="button" onclick="applyPromoCode()" class="px-4 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-orange-400">
+            Apply
+          </button>
+        </div>
+        <p id="b-promo-msg" class="text-[11px] hidden"></p>
+      </div>
+
+      <!-- Fare Summary Strip -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+        <div>
+          <p id="b-distance-info" class="text-[11px] text-slate-400">Est. distance: 2.5 km • Motorcycle</p>
+          <p class="text-xs font-semibold text-slate-200 mt-0.5">Total Delivery Fare</p>
+        </div>
+        <div class="flex items-center gap-1">
+          <span class="text-sm font-extrabold text-orange-400">₦</span>
+          <input id="b-amount" type="number" value="1500" class="w-20 bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-right text-sm font-extrabold text-orange-400" />
+        </div>
+      </div>
+
       <p id="b-msg" class="text-xs text-center hidden"></p>
+    </div>
+
+    <!-- Sticky Bottom Send Package Button -->
+    <div class="fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur border-t border-slate-800 p-4">
+      <div class="max-w-md mx-auto">
+        <button type="button" onclick="submitCustomerBooking()" class="w-full bg-orange-600 hover:bg-orange-500 active:scale-[0.99] transition py-3.5 rounded-2xl text-sm font-extrabold text-white shadow-xl shadow-orange-600/25">
+          Send Package
+        </button>
+      </div>
     </div>
   </div>
 
@@ -301,10 +381,10 @@
       <div class="px-4 space-y-4">
         <div class="bg-gradient-to-br from-orange-600 via-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-xl shadow-orange-600/20">
           <div class="flex items-center justify-between text-xs text-orange-100 font-semibold">
-            <span>SpeeDial Express Pay</span>
-            <span class="px-2 py-0.5 rounded-full bg-black/20 text-[10px]">Kaduna • Kano</span>
+            <span>Available for orders</span>
+            <span class="px-2 py-0.5 rounded-full bg-black/20 text-[10px]">Bonus: ₦2,000</span>
           </div>
-          <div id="c-home-spent" class="text-3xl font-extrabold tracking-tight mt-2">₦0.00</div>
+          <div id="c-home-spent" class="text-3xl font-extrabold tracking-tight mt-2">₦2,000.00</div>
           <div class="inline-block mt-2 px-3 py-1 rounded-full bg-black/20 text-[11px] font-semibold text-orange-50">
             OPay Transfer: 6152624923
           </div>
@@ -313,7 +393,7 @@
               + Send Package
             </button>
             <button type="button" onclick="switchCustNav('wallet')" class="bg-black/25 hover:bg-black/35 text-white font-bold text-xs py-2.5 rounded-xl">
-              Payment Details
+              Wallet & OPay
             </button>
           </div>
         </div>
@@ -323,7 +403,7 @@
             <div class="w-10 h-10 rounded-xl bg-orange-600/20 text-orange-400 flex items-center justify-center text-lg">🚚</div>
             <div>
               <h2 class="text-sm font-extrabold text-white">Send a Package</h2>
-              <p class="text-[11px] text-slate-400">Pin pickup & dropoff on map and book a rider now</p>
+              <p class="text-[11px] text-slate-400">Get a price estimate and book a rider now</p>
             </div>
           </div>
           <span class="text-orange-400 font-bold text-lg">›</span>
@@ -401,13 +481,13 @@
 
       <div class="px-4 space-y-4">
         <div class="bg-gradient-to-br from-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-lg">
-          <p class="text-xs text-orange-100">Total Dispatch Spend</p>
-          <p id="c-wallet-spent" class="text-3xl font-extrabold mt-1">₦0.00</p>
-          <p class="text-[11px] text-orange-100 mt-2">Pay via OPay Transfer or Cash on Pickup</p>
+          <p class="text-xs text-orange-100">Available for orders (Welcome Bonus)</p>
+          <p class="text-3xl font-extrabold mt-1">₦2,000.00</p>
+          <p id="c-wallet-spent" class="text-[11px] text-orange-100 mt-2">Total Dispatch Spend: ₦0.00</p>
         </div>
 
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2.5">
-          <h2 class="text-sm font-bold text-white">Pay by Bank Transfer (OPay)</h2>
+          <h2 class="text-sm font-bold text-white">Fund / Pay by Bank Transfer (OPay)</h2>
           <p class="text-xs text-slate-400">Transfer your delivery fare to our official business account and share your waybill code:</p>
           <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 flex items-center justify-between">
             <div>
@@ -523,8 +603,8 @@
     ];
 
     const HUB_CENTERS = {
-      KD: [10.5105, 7.4165], // Kaduna Metro (Tafawa Balewa / Unguwan Rimi)
-      KN: [12.0022, 8.5920]  // Kano Metro
+      KD: [10.5105, 7.4165],
+      KN: [12.0022, 8.5920]
     };
 
     let slideIdx = 0;
@@ -533,6 +613,9 @@
     let bookingCity = 'KD';
     let deliveryService = 'MOTO';
     let activePinMode = 'PICKUP';
+    let selectedPaymentMethod = 'ONLINE';
+    let packageItemsList = [];
+    let promoDiscount = 0;
     let custFilter = 'ALL';
     let myWaybills = JSON.parse(localStorage.getItem('speedial_my_waybills') || '[]');
     let loadedOrders = [];
@@ -591,8 +674,68 @@
         ? 'text-left p-3.5 rounded-2xl bg-orange-500/10 border-2 border-orange-500 transition space-y-1.5'
         : 'text-left p-3.5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition space-y-1.5';
 
-      document.getElementById('b-fare-label').textContent = isMoto ? 'Fixed Fare (₦)' : 'Proposed Quote (₦)';
       recalculateFareAndLine();
+    }
+
+    function selectPaymentMethod(method) {
+      selectedPaymentMethod = method;
+      ['ONLINE', 'WALLET', 'COD'].forEach(m => {
+        const card = document.getElementById(`pay-opt-${m}`);
+        const radio = document.getElementById(`pay-radio-${m}`);
+        if (m === method) {
+          card.className = 'w-full text-left p-3.5 rounded-2xl bg-slate-900 border-2 border-orange-500 flex items-center gap-3 transition';
+          radio.className = 'w-5 h-5 rounded-full border-2 border-orange-500 flex items-center justify-center shrink-0';
+          radio.innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>';
+        } else {
+          card.className = 'w-full text-left p-3.5 rounded-2xl bg-slate-900 border border-slate-800 flex items-center gap-3 transition';
+          radio.className = 'w-5 h-5 rounded-full border-2 border-slate-600 flex items-center justify-center shrink-0';
+          radio.innerHTML = '';
+        }
+      });
+    }
+
+    function promptAddPackageItem() {
+      const item = prompt('Enter package item name & quantity (e.g. 1x Shoe Box, Documents):');
+      if (item && item.trim()) {
+        packageItemsList.push(item.trim());
+        renderPackageItems();
+      }
+    }
+
+    function removePackageItem(idx) {
+      packageItemsList.splice(idx, 1);
+      renderPackageItems();
+    }
+
+    function renderPackageItems() {
+      const container = document.getElementById('package-items-container');
+      if (packageItemsList.length === 0) {
+        container.innerHTML = '<p id="no-items-placeholder" class="text-xs text-slate-500">No items added yet.</p>';
+        return;
+      }
+      container.innerHTML = packageItemsList.map((item, idx) => `
+        <div class="bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2.5 flex items-center justify-between text-xs">
+          <span class="text-slate-100 font-medium">📦 ${item}</span>
+          <button type="button" onclick="removePackageItem(${idx})" class="text-red-400 font-bold text-[11px] hover:underline">Remove</button>
+        </div>
+      `).join('');
+    }
+
+    function applyPromoCode() {
+      const code = document.getElementById('b-promo').value.trim().toUpperCase();
+      const msg = document.getElementById('b-promo-msg');
+      if (!code) return;
+      msg.classList.remove('hidden');
+      if (code === 'SPEED200' || code === 'WELCOME') {
+        promoDiscount = 200;
+        msg.textContent = '✓ Promo applied: ₦200 discount!';
+        msg.className = 'text-[11px] text-emerald-400 font-semibold';
+        recalculateFareAndLine();
+      } else {
+        promoDiscount = 0;
+        msg.textContent = 'Promo code recorded for dispatch review.';
+        msg.className = 'text-[11px] text-slate-400';
+      }
     }
 
     function setActivePinMode(mode) {
@@ -720,11 +863,12 @@
       routeLine = L.polyline([p1, p2], { color: '#f97316', weight: 3, dashArray: '6, 6' }).addTo(mapInstance);
 
       const km = Math.max(0.5, mapInstance.distance(p1, p2) / 1000);
-      const rawFare = deliveryService === 'MOTO'
+      const baseFare = deliveryService === 'MOTO'
         ? Math.max(1000, Math.round((1000 + km * 200) / 50) * 50)
         : Math.max(3500, Math.round((3500 + km * 350) / 100) * 100);
 
-      document.getElementById('b-amount').value = rawFare;
+      const finalFare = Math.max(500, baseFare - promoDiscount);
+      document.getElementById('b-amount').value = finalFare;
       document.getElementById('b-distance-info').textContent =
         `Est. distance: ${km.toFixed(1)} km • ${deliveryService === 'MOTO' ? 'On-demand Motorcycle' : 'Logistics Fleet'}`;
     }
@@ -986,7 +1130,14 @@
     async function submitCustomerBooking() {
       const msgEl = document.getElementById('b-msg');
       const svcTag = deliveryService === 'MOTO' ? '[Motorcycle]' : '[Logistics Fleet]';
-      const rawNote = document.getElementById('b-note').value.trim();
+      const itemsSummary = packageItemsList.length ? `Items: ${packageItemsList.join(', ')}` : '';
+      const instructions = document.getElementById('b-instructions').value.trim();
+      const pickupTime = document.getElementById('b-pickup-time').value;
+      const payLabel = selectedPaymentMethod === 'ONLINE' ? 'Pay Online (OPay)' : selectedPaymentMethod === 'WALLET' ? 'Wallet' : 'Cash on Delivery';
+
+      const compiledNote = [svcTag, itemsSummary, instructions ? `Note: ${instructions}` : '', `Pickup: ${pickupTime}`, `Pay: ${payLabel}`]
+        .filter(Boolean)
+        .join(' • ');
 
       const payload = {
         city: bookingCity,
@@ -996,7 +1147,7 @@
         recipient_name: document.getElementById('b-rec-name').value.trim(),
         recipient_phone: document.getElementById('b-rec-phone').value.trim(),
         dropoff_address: document.getElementById('b-dropoff').value.trim(),
-        package_note: rawNote ? `${svcTag} ${rawNote}` : svcTag,
+        package_note: compiledNote,
         amount: Number(document.getElementById('b-amount').value) || 1500
       };
 
@@ -1097,8 +1248,7 @@
       document.getElementById('cstat-completed').textContent = completed.length;
       document.getElementById('cstat-active').textContent = active.length;
       document.getElementById('cstat-spent').textContent = `₦${spent.toLocaleString()}`;
-      document.getElementById('c-home-spent').textContent = `₦${spent.toLocaleString()}.00`;
-      document.getElementById('c-wallet-spent').textContent = `₦${spent.toLocaleString()}.00`;
+      document.getElementById('c-wallet-spent').textContent = `Total Dispatch Spend: ₦${spent.toLocaleString()}.00`;
 
       document.getElementById('c-recent-orders').innerHTML = loadedOrders.length
         ? loadedOrders.slice(0, 3).map(o => custOrderCard(o)).join('')
