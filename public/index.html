@@ -60,3 +60,480 @@
     </div>
 
     <div id="c-auth-form" class="space-y-3">
+      <div id="c-reg-name-wrap" class="hidden space-y-1">
+        <label class="text-[11px] font-semibold text-slate-400">Full Name</label>
+        <input id="c-name" type="text" placeholder="Enter your full name" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 rounded-2xl px-4 py-3 text-sm text-white" />
+      </div>
+      <div class="space-y-1">
+        <label id="c-phone-label" class="text-[11px] font-semibold text-slate-400">Phone Number</label>
+        <input id="c-phone" type="text" placeholder="e.g 08166317937" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 rounded-2xl px-4 py-3 text-sm text-white" />
+      </div>
+      <div class="space-y-1">
+        <label class="text-[11px] font-semibold text-slate-400">4-Digit PIN</label>
+        <input id="c-pin" type="password" maxlength="4" inputmode="numeric" placeholder="••••" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 rounded-2xl px-4 py-3 text-sm text-white font-mono tracking-widest" />
+      </div>
+
+      <button type="button" onclick="submitCustomerAuth()" class="w-full bg-orange-600 hover:bg-orange-500 py-3.5 rounded-2xl text-sm font-bold text-white shadow-lg shadow-orange-600/25 mt-2">
+        Login
+      </button>
+      <p id="c-auth-msg" class="text-xs text-center hidden"></p>
+
+      <div class="flex items-center justify-between text-xs pt-3">
+        <button type="button" onclick="switchCustomerAuthMode()" id="c-switch-btn" class="text-orange-400 font-bold hover:underline">
+          Don't have an account? Sign Up
+        </button>
+        <button type="button" onclick="enterCustomerApp()" class="text-slate-400 hover:text-white">
+          Guest Booking →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 3. CUSTOMER APP SHELL ==================== -->
+  <div id="cust-shell" class="max-w-md mx-auto">
+
+    <!-- TAB 1: HOME -->
+    <section id="cview-home" class="space-y-4">
+      <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-orange-950/40 border-b border-orange-500/20 rounded-b-3xl px-4 pt-5 pb-6 space-y-4 shadow-lg">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 id="c-greeting" class="text-xl font-extrabold text-white">Hello, Usman 👋</h1>
+            <p id="c-date" class="text-xs text-slate-400 mt-0.5">Mon • Nov 16, 2026</p>
+          </div>
+          <button type="button" onclick="switchCustNav('alerts')" class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-orange-400 relative">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span id="alert-dot" class="hidden w-2 h-2 rounded-full bg-orange-500 absolute top-1.5 right-1.5"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="px-4 space-y-4">
+        <!-- Wallet Hero Card (SpeeDial Orange Brand Gradient) -->
+        <div class="bg-gradient-to-br from-orange-600 via-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-xl shadow-orange-600/20 relative overflow-hidden">
+          <div class="flex items-center justify-between text-xs text-orange-100">
+            <span class="flex items-center gap-1.5">💳 Available for orders</span>
+            <button type="button" onclick="toggleCustBalanceMask()" class="p-1 rounded-full bg-black/20 hover:bg-black/40">👁</button>
+          </div>
+          <div id="c-home-balance" class="text-3xl font-extrabold tracking-tight mt-2">₦2,000.00</div>
+          <div class="inline-block mt-2 px-3 py-1 rounded-full bg-black/20 text-[11px] font-semibold text-orange-50">
+            Bonus: ₦2,000
+          </div>
+          <div class="grid grid-cols-2 gap-2.5 mt-4">
+            <button type="button" onclick="openAddMoneyModal()" class="bg-white text-slate-950 hover:bg-orange-50 font-bold text-xs py-3 rounded-2xl shadow flex items-center justify-center gap-1">
+              <span>+ Fund wallet</span>
+            </button>
+            <button type="button" onclick="openWithdrawModal()" class="bg-black/25 hover:bg-black/35 text-white font-bold text-xs py-3 rounded-2xl flex items-center justify-center gap-1">
+              <span>↗ Withdraw</span>
+            </button>
+          </div>
+        </div>
+
+        <button type="button" onclick="alert('Open Send Package flow')" class="w-full bg-slate-900 border border-orange-500/40 hover:border-orange-500 rounded-2xl p-4 flex items-center justify-between text-left shadow transition">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-orange-600/20 text-orange-400 flex items-center justify-center text-lg">🚚</div>
+            <div>
+              <h2 class="text-sm font-extrabold text-white">Send a Package</h2>
+              <p class="text-[11px] text-slate-400">Get a price estimate and book a rider now</p>
+            </div>
+          </div>
+          <span class="text-orange-400 font-bold text-lg">›</span>
+        </button>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-end justify-between">
+            <div><div class="text-2xl font-extrabold text-white">0</div><div class="text-xs text-slate-400 mt-1">Total Orders</div></div>
+            <span class="text-orange-400 text-lg">📦</span>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-end justify-between">
+            <div><div class="text-2xl font-extrabold text-emerald-400">0</div><div class="text-xs text-slate-400 mt-1">Completed</div></div>
+            <span class="text-emerald-400 text-lg">✓</span>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-end justify-between">
+            <div><div class="text-2xl font-extrabold text-amber-400">0</div><div class="text-xs text-slate-400 mt-1">Active Deliveries</div></div>
+            <span class="text-amber-400 text-lg">⏳</span>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-end justify-between">
+            <div><div class="text-xl font-extrabold text-orange-400">₦0</div><div class="text-xs text-slate-400 mt-1">Total Spent</div></div>
+            <span class="text-slate-400 text-lg">💳</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: ORDERS -->
+    <section id="cview-orders" class="hidden space-y-4 px-4 pt-5">
+      <h1 class="text-xl font-extrabold text-white">My Orders</h1>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center text-xs text-slate-400">No orders yet</div>
+    </section>
+
+    <!-- TAB 3: WALLET -->
+    <section id="cview-wallet" class="hidden space-y-4 px-4 pt-5">
+      <h1 class="text-xl font-extrabold text-white">Wallet</h1>
+      <div class="bg-gradient-to-br from-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-lg space-y-3">
+        <p class="text-xs text-orange-100">Available balance</p>
+        <p class="text-3xl font-extrabold">₦2,000.00</p>
+        <div class="flex gap-2 pt-2">
+          <button type="button" onclick="openAddMoneyModal()" class="flex-1 bg-white text-slate-950 font-bold text-xs py-2.5 rounded-xl shadow">+ Add money</button>
+          <button type="button" onclick="openWithdrawModal()" class="flex-1 bg-black/25 text-white font-bold text-xs py-2.5 rounded-xl">Withdraw</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: ALERTS -->
+    <section id="cview-alerts" class="hidden space-y-4 px-4 pt-5">
+      <h1 class="text-xl font-extrabold text-white">Notifications</h1>
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-xs text-slate-300">Welcome to SpeeDial Express! You have a ₦2,000 welcome bonus.</div>
+    </section>
+
+    <!-- TAB 5: PROFILE -->
+    <section id="cview-profile" class="hidden space-y-4 px-4 pt-5 text-center">
+      <div class="w-16 h-16 rounded-full bg-orange-600 mx-auto flex items-center justify-center text-xl font-extrabold text-white shadow-lg">US</div>
+      <h2 class="text-base font-extrabold text-white">Usman</h2>
+      <button type="button" onclick="logoutCustomer()" class="w-full bg-slate-900 border border-slate-800 py-3 rounded-2xl text-xs font-semibold text-slate-400">Sign Out</button>
+    </section>
+
+    <!-- ==================== 1. ADD MONEY SELECTION MODAL ==================== -->
+    <div id="add-money-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
+      <div class="bg-slate-900 border-t border-orange-500/40 rounded-t-3xl w-full max-w-md p-6 space-y-5">
+        <div class="flex items-center justify-between">
+          <div class="w-8"></div>
+          <div class="text-center">
+            <h3 class="text-base font-extrabold text-white">Add Money</h3>
+            <p class="text-[11px] text-slate-400 mt-0.5">Choose how you'd like to fund your wallet</p>
+          </div>
+          <button type="button" onclick="closeAddMoneyModal()" class="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-white">✕</button>
+        </div>
+
+        <div class="space-y-3">
+          <!-- Option 1: Pay Online -->
+          <button type="button" onclick="openPayOnlineModal()" class="w-full text-left p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-orange-500 flex items-center justify-between transition group">
+            <div class="flex items-center gap-3.5">
+              <div class="w-11 h-11 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400 text-lg">
+                💳
+              </div>
+              <div>
+                <p class="text-xs font-extrabold text-white group-hover:text-orange-400 transition">Pay Online</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Card, bank transfer via Paystack</p>
+              </div>
+            </div>
+            <span class="text-slate-500 group-hover:text-white font-bold text-base">›</span>
+          </button>
+
+          <!-- Option 2: Bank Transfer -->
+          <button type="button" onclick="openBankTransferModal()" class="w-full text-left p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-orange-500 flex items-center justify-between transition group">
+            <div class="flex items-center gap-3.5">
+              <div class="w-11 h-11 rounded-xl bg-orange-500/15 border border-orange-500/30 flex items-center justify-center text-orange-400 text-lg">
+                🏦
+              </div>
+              <div>
+                <p class="text-xs font-extrabold text-white group-hover:text-orange-400 transition">Bank Transfer</p>
+                <p class="text-[11px] text-slate-400 mt-0.5">Transfer to your dedicated account number</p>
+              </div>
+            </div>
+            <span class="text-slate-500 group-hover:text-white font-bold text-base">›</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== 2. PAY ONLINE -> AMOUNT ENTRY SCREEN ==================== -->
+    <div id="pay-online-amount-modal" class="hidden fixed inset-0 z-50 bg-slate-950 flex flex-col justify-between p-6 max-w-md mx-auto">
+      <div class="space-y-6">
+        <div class="flex items-center justify-between">
+          <button type="button" onclick="closePayOnlineAmountModal()" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-200">
+            ←
+          </button>
+          <h2 class="text-base font-extrabold text-white">Fund Wallet</h2>
+          <div class="w-9"></div>
+        </div>
+
+        <div class="text-center space-y-2 pt-6">
+          <div class="w-14 h-14 rounded-full bg-orange-500/15 border border-orange-500/30 mx-auto flex items-center justify-center text-2xl text-orange-400">
+            💳
+          </div>
+          <h3 class="text-lg font-extrabold text-white">How much do you want to add?</h3>
+          <p class="text-xs text-slate-400">You'll be redirected to Paystack to complete your payment securely.</p>
+        </div>
+
+        <div class="space-y-2 pt-4">
+          <label class="text-xs font-semibold text-slate-400">Amount (₦)</label>
+          <input id="paystack-amount-input" type="number" value="1016" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 rounded-2xl px-4 py-3.5 text-xl font-extrabold text-white" />
+        </div>
+      </div>
+
+      <button type="button" onclick="triggerPaystackCheckout()" class="w-full bg-orange-600 hover:bg-orange-500 py-4 rounded-2xl text-sm font-extrabold text-white shadow-lg shadow-orange-600/25">
+        Continue
+      </button>
+    </div>
+
+    <!-- ==================== 3. PAYSTACK CHECKOUT MODAL ==================== -->
+    <div id="paystack-checkout-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
+      <div class="bg-slate-900 border-t border-orange-500/40 rounded-t-3xl w-full max-w-md p-6 space-y-4">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div>
+            <p class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Paystack Checkout</p>
+            <h3 id="paystack-checkout-sub" class="text-xs text-slate-300 mt-0.5">Pay NGN 1,016 to edstream limited</h3>
+          </div>
+          <button type="button" onclick="closePaystackCheckout()" class="text-xs font-bold text-slate-400 hover:text-white">Done</button>
+        </div>
+
+        <div class="space-y-2 pt-1">
+          <button type="button" onclick="alert('Redirecting to Zap payment...')" class="w-full text-left p-3.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-orange-500 flex items-center justify-between text-xs font-bold text-white">
+            <span class="flex items-center gap-2"><span class="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 text-[10px]">NEW</span> Pay with Zap</span>
+            <span>›</span>
+          </button>
+          <button type="button" onclick="alert('Redirecting to Card payment...')" class="w-full text-left p-3.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-orange-500 flex items-center justify-between text-xs font-bold text-white">
+            <span class="flex items-center gap-2">💳 Pay with Card</span>
+            <span>›</span>
+          </button>
+          <button type="button" onclick="alert('Redirecting to Bank Transfer...')" class="w-full text-left p-3.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-orange-500 flex items-center justify-between text-xs font-bold text-white">
+            <span class="flex items-center gap-2">🏦 Pay with Transfer</span>
+            <span>›</span>
+          </button>
+          <button type="button" onclick="alert('Redirecting to USSD...')" class="w-full text-left p-3.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-orange-500 flex items-center justify-between text-xs font-bold text-white">
+            <span class="flex items-center gap-2"># Pay with USSD</span>
+            <span>›</span>
+          </button>
+          <button type="button" onclick="alert('Redirecting to OPay...')" class="w-full text-left p-3.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-orange-500 flex items-center justify-between text-xs font-bold text-white">
+            <span class="flex items-center gap-2">⚡ Pay with OPay</span>
+            <span>›</span>
+          </button>
+        </div>
+
+        <div class="pt-2">
+          <button type="button" onclick="closePaystackCheckout()" class="w-full py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300">
+            Cancel Payment
+          </button>
+        </div>
+        <p class="text-[10px] text-center text-slate-500">🔒 Secured by paystack</p>
+      </div>
+    </div>
+
+    <!-- ==================== 4. DEDICATED BANK TRANSFER MODAL ==================== -->
+    <div id="bank-transfer-modal" class="hidden fixed inset-0 z-50 bg-slate-950 flex flex-col justify-between p-6 max-w-md mx-auto">
+      <div class="space-y-5">
+        <div class="flex items-center justify-between">
+          <button type="button" onclick="closeBankTransferModal()" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-200">
+            ←
+          </button>
+          <h2 class="text-base font-extrabold text-white">Bank Transfer</h2>
+          <div class="w-9"></div>
+        </div>
+
+        <!-- Info Banner -->
+        <div class="bg-orange-950/40 border border-orange-500/30 rounded-2xl p-4 text-xs text-orange-200 leading-relaxed">
+          Transfer any amount to the account below and your wallet will be funded automatically within minutes.
+        </div>
+
+        <!-- Dedicated Account Card -->
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-4 shadow-xl">
+          <p class="text-[11px] font-bold text-slate-400">Your Dedicated Account</p>
+          <div class="space-y-1">
+            <p class="text-[10px] text-slate-500 uppercase">Bank Name</p>
+            <p class="text-sm font-extrabold text-white">Wema Bank</p>
+          </div>
+          <div class="space-y-1">
+            <p class="text-[10px] text-slate-500 uppercase">Account Name</p>
+            <p class="text-sm font-extrabold text-white">EDSTREAMLIMIT/USER USMAN</p>
+          </div>
+          <div class="space-y-1">
+            <p class="text-[10px] text-slate-500 uppercase">Account Number</p>
+            <div class="flex items-center justify-between">
+              <span id="ded-acct-num" class="text-xl font-extrabold font-mono text-orange-400">9819473522</span>
+              <button type="button" onclick="copyDedicatedAcct()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white flex items-center gap-1.5">
+                <span>📋</span> <span id="copy-btn-text">Copy</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- How it works -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3">
+          <h4 class="text-xs font-bold text-white">How it works</h4>
+          <div class="space-y-2 text-xs text-slate-300">
+            <div class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-orange-600/20 text-orange-400 flex items-center justify-center text-[10px] font-bold shrink-0">1</span>
+              <span>Open your bank app or USSD</span>
+            </div>
+            <div class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-orange-600/20 text-orange-400 flex items-center justify-center text-[10px] font-bold shrink-0">2</span>
+              <span>Transfer any amount to the account number above</span>
+            </div>
+            <div class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-orange-600/20 text-orange-400 flex items-center justify-center text-[10px] font-bold shrink-0">3</span>
+              <span>Your wallet will be funded automatically</span>
+            </div>
+            <div class="flex items-start gap-2.5">
+              <span class="w-5 h-5 rounded-full bg-orange-600/20 text-orange-400 flex items-center justify-center text-[10px] font-bold shrink-0">4</span>
+              <span>You'll receive a push notification once funding is confirmed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" onclick="closeBankTransferModal()" class="w-full bg-orange-600 hover:bg-orange-500 py-3.5 rounded-2xl text-xs font-extrabold text-white shadow-lg shadow-orange-600/25">
+        Done
+      </button>
+    </div>
+
+    <!-- ==================== 5. WITHDRAW MODAL ==================== -->
+    <div id="withdraw-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
+      <div class="bg-slate-900 border-t border-orange-500/40 rounded-t-3xl w-full max-w-md p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-base font-extrabold text-white">Withdraw Cash</h3>
+          <button type="button" onclick="closeWithdrawModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300">✕</button>
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-slate-300">Amount (₦)</label>
+          <input id="wd-amount" type="number" min="500" placeholder="Minimum ₦500" class="w-full bg-slate-950 border border-slate-700 focus:border-orange-500 rounded-2xl px-4 py-3 text-sm font-extrabold text-white" />
+        </div>
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-slate-300">Bank Name</label>
+          <select id="wd-bank" class="w-full bg-slate-950 border border-slate-700 focus:border-orange-500 rounded-2xl px-4 py-3 text-xs text-white">
+            <option value="OPay">OPay</option>
+            <option value="PalmPay">PalmPay</option>
+            <option value="Moniepoint MFB">Moniepoint MFB</option>
+            <option value="Kuda Bank">Kuda Bank</option>
+            <option value="GTBank">GTBank</option>
+            <option value="Access Bank">Access Bank</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <input id="wd-acct-num" type="tel" maxlength="10" placeholder="10-Digit Account No." class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white font-mono" />
+          <input id="wd-acct-name" type="text" placeholder="Account Name" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+        </div>
+        <button type="button" onclick="submitWithdrawal()" class="w-full bg-orange-600 hover:bg-orange-500 py-3.5 rounded-2xl text-xs font-extrabold text-white shadow-lg shadow-orange-600/25">
+          Submit Withdrawal Request
+        </button>
+        <p id="wd-msg" class="text-xs text-center hidden"></p>
+      </div>
+    </div>
+
+    <!-- BOTTOM 5-TAB NAVIGATION BAR -->
+    <nav class="fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 backdrop-blur border-t border-slate-800">
+      <div class="max-w-md mx-auto grid grid-cols-5 py-2">
+        <button type="button" onclick="switchCustNav('home')" id="cnav-home" class="flex flex-col items-center gap-1 text-orange-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span class="text-[10px] font-bold">Home</span>
+        </button>
+        <button type="button" onclick="switchCustNav('orders')" id="cnav-orders" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          <span class="text-[10px] font-semibold">Orders</span>
+        </button>
+        <button type="button" onclick="switchCustNav('wallet')" id="cnav-wallet" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 12h.01"/></svg>
+          <span class="text-[10px] font-semibold">Wallet</span>
+        </button>
+        <button type="button" onclick="switchCustNav('alerts')" id="cnav-alerts" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+          <span class="text-[10px] font-semibold">Alerts</span>
+        </button>
+        <button type="button" onclick="switchCustNav('profile')" id="cnav-profile" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <span class="text-[10px] font-semibold">Profile</span>
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <script>
+    let custBalanceMasked = false;
+
+    function finishOnboarding() {
+      document.getElementById('onboarding-screen').classList.add('hidden');
+      document.getElementById('cust-shell').classList.remove('hidden');
+    }
+
+    function switchCustNav(tab) {
+      ['home', 'orders', 'wallet', 'alerts', 'profile'].forEach(id => {
+        document.getElementById(`cview-${id}`).classList.toggle('hidden', id !== tab);
+        document.getElementById(`cnav-${id}`).className = id === tab ? 'flex flex-col items-center gap-1 text-orange-400' : 'flex flex-col items-center gap-1 text-slate-400';
+      });
+    }
+
+    function toggleCustBalanceMask() {
+      custBalanceMasked = !custBalanceMasked;
+      document.getElementById('c-home-balance').textContent = custBalanceMasked ? '₦••••••' : '₦2,000.00';
+    }
+
+    function openAddMoneyModal() {
+      document.getElementById('add-money-modal').classList.remove('hidden');
+    }
+
+    function closeAddMoneyModal() {
+      document.getElementById('add-money-modal').classList.add('hidden');
+    }
+
+    function openPayOnlineModal() {
+      closeAddMoneyModal();
+      document.getElementById('pay-online-amount-modal').classList.remove('hidden');
+    }
+
+    function closePayOnlineAmountModal() {
+      document.getElementById('pay-online-amount-modal').classList.add('hidden');
+    }
+
+    function triggerPaystackCheckout() {
+      const amt = document.getElementById('paystack-amount-input').value || 1016;
+      document.getElementById('paystack-checkout-sub').textContent = `Pay NGN ${Number(amt).toLocaleString()} to edstream limited`;
+      closePayOnlineAmountModal();
+      document.getElementById('paystack-checkout-modal').classList.remove('hidden');
+    }
+
+    function closePaystackCheckout() {
+      document.getElementById('paystack-checkout-modal').classList.add('hidden');
+    }
+
+    function openBankTransferModal() {
+      closeAddMoneyModal();
+      document.getElementById('bank-transfer-modal').classList.remove('hidden');
+    }
+
+    function closeBankTransferModal() {
+      document.getElementById('bank-transfer-modal').classList.add('hidden');
+    }
+
+    function copyDedicatedAcct() {
+      navigator.clipboard?.writeText('9819473522');
+      const btn = document.getElementById('copy-btn-text');
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+    }
+
+    function openWithdrawModal() {
+      document.getElementById('withdraw-modal').classList.remove('hidden');
+    }
+
+    function closeWithdrawModal() {
+      document.getElementById('withdraw-modal').classList.add('hidden');
+    }
+
+    async function submitWithdrawal() {
+      const amount = Number(document.getElementById('wd-amount').value) || 0;
+      const bank_name = document.getElementById('wd-bank').value;
+      const account_number = document.getElementById('wd-acct-num').value.trim();
+      const account_name = document.getElementById('wd-acct-name').value.trim();
+      const msg = document.getElementById('wd-msg');
+      msg.classList.remove('hidden');
+      msg.textContent = 'Submitting...';
+
+      const savedCust = JSON.parse(localStorage.getItem('speedial_customer') || '{"phone":"08166317937"}');
+      try {
+        const res = await fetch('/api/wallet/withdraw', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: savedCust.phone, role: 'CUSTOMER', amount, bank_name, account_number, account_name })
+        });
+        const data = await res.json();
+        if (!res.ok) { msg.textContent = data.error; msg.className = 'text-xs text-center text-red-400 mt-2'; return; }
+        msg.textContent = data.message;
+        msg.className = 'text-xs text-center text-emerald-400 mt-2';
+        setTimeout(() => closeWithdrawModal(), 1500);
+      } catch (e) {
+        msg.textContent = 'Network error.';
+        msg.className = 'text-xs text-center text-red-400 mt-2';
+      }
+    }
+  </script>
+</body>
+</html>
