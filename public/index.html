@@ -59,7 +59,6 @@
       <p id="c-auth-sub" class="text-xs text-slate-400 mt-1">Login to continue or book as a guest</p>
     </div>
 
-    <!-- Login / Register Form -->
     <div id="c-auth-form" class="space-y-3">
       <div id="c-reg-name-wrap" class="hidden space-y-1">
         <label class="text-[11px] font-semibold text-slate-400">Full Name</label>
@@ -105,7 +104,6 @@
       </div>
     </div>
 
-    <!-- Email OTP Verification Step -->
     <div id="c-verify-box" class="hidden bg-slate-900 border border-orange-500/40 rounded-3xl p-5 space-y-4">
       <div class="space-y-1">
         <span class="inline-block px-2.5 py-0.5 rounded-full bg-orange-500/15 text-orange-400 text-[10px] font-bold">STEP 2 OF 2</span>
@@ -134,7 +132,6 @@
 
   <!-- ==================== 3. FULL-SCREEN SEND A PACKAGE VIEW ==================== -->
   <div id="send-package-screen" class="hidden min-h-screen bg-slate-950 max-w-md mx-auto pb-28">
-    <!-- Top Back Header -->
     <div class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur border-b border-slate-800/80 px-4 py-3.5 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <button type="button" onclick="closeSendPackage()" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-200 hover:border-orange-500">
@@ -149,7 +146,6 @@
     </div>
 
     <div class="px-4 pt-4 space-y-5">
-      <!-- Delivery Service Cards -->
       <div class="space-y-2">
         <label class="text-xs font-bold text-slate-300">Delivery service</label>
         <div class="grid grid-cols-2 gap-3">
@@ -167,7 +163,6 @@
         </div>
       </div>
 
-      <!-- Interactive Map & Pin Mode Pills -->
       <div class="space-y-2.5">
         <div class="relative rounded-3xl overflow-hidden border border-slate-800 shadow-lg">
           <div class="absolute top-3 inset-x-3 z-[400] grid grid-cols-2 gap-2">
@@ -180,34 +175,26 @@
               <span>Set dropoff pin</span>
             </button>
           </div>
-
           <div id="booking-map" class="w-full h-56 bg-slate-900 z-10"></div>
         </div>
-
         <p class="text-[11px] text-slate-400 leading-relaxed">
           Search an address below, or tap the map to drop the selected pin. Drag a pin to fine-tune it.
         </p>
-
         <button type="button" onclick="useCurrentLocationForPickup()" class="inline-flex items-center gap-2 text-xs font-bold text-orange-400 hover:text-orange-300">
           <span>🎯</span>
           <span id="gps-btn-label">Use my current location for pickup</span>
         </button>
       </div>
 
-      <!-- Pickup Details Section -->
       <div class="space-y-3 pt-1">
         <h2 class="text-sm font-extrabold text-white">Pickup details</h2>
-
         <div class="space-y-1">
           <label class="text-xs font-semibold text-slate-300">Pickup address label</label>
           <div class="relative">
             <input id="b-pickup" type="text" placeholder="e.g. No. A4 Saiha Mall, Tafawa Balewa Way, Kaduna" class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl pl-4 pr-10 py-3.5 text-xs text-white placeholder-slate-500" />
-            <button type="button" onclick="geocodeAddressInput('PICKUP')" title="Locate on map" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-400">
-              🔍
-            </button>
+            <button type="button" onclick="geocodeAddressInput('PICKUP')" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-400">🔍</button>
           </div>
         </div>
-
         <div class="grid grid-cols-2 gap-2.5">
           <div class="space-y-1">
             <label class="text-xs font-semibold text-slate-300">Pickup contact name</label>
@@ -220,20 +207,15 @@
         </div>
       </div>
 
-      <!-- Dropoff Details Section -->
       <div class="space-y-3 pt-1 border-t border-slate-800/80">
         <h2 class="text-sm font-extrabold text-white pt-2">Dropoff details</h2>
-
         <div class="space-y-1">
           <label class="text-xs font-semibold text-slate-300">Dropoff address label</label>
           <div class="relative">
             <input id="b-dropoff" type="text" placeholder="e.g. Barnawa / Unguwan Rimi, Kaduna" class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl pl-4 pr-10 py-3.5 text-xs text-white placeholder-slate-500" />
-            <button type="button" onclick="geocodeAddressInput('DROPOFF')" title="Locate on map" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-400">
-              🔍
-            </button>
+            <button type="button" onclick="geocodeAddressInput('DROPOFF')" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-400">🔍</button>
           </div>
         </div>
-
         <div class="grid grid-cols-2 gap-2.5">
           <div class="space-y-1">
             <label class="text-xs font-semibold text-slate-300">Dropoff contact name</label>
@@ -246,7 +228,6 @@
         </div>
       </div>
 
-      <!-- Package Items (Optional) -->
       <div class="space-y-2.5 pt-1 border-t border-slate-800/80">
         <div class="flex items-center justify-between pt-2">
           <label class="text-xs font-bold text-slate-200">Package items (optional)</label>
@@ -255,19 +236,16 @@
             <span>Add item</span>
           </button>
         </div>
-
         <div id="package-items-container" class="space-y-2">
-          <p id="no-items-placeholder" class="text-xs text-slate-500">No items added yet.</p>
+          <p class="text-xs text-slate-500">No items added yet.</p>
         </div>
       </div>
 
-      <!-- Special Instructions -->
       <div class="space-y-1.5">
         <label class="text-xs font-bold text-slate-200">Special instructions</label>
         <textarea id="b-instructions" rows="3" placeholder="e.g. Call on arrival, fragile handling, etc." class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-xs text-white placeholder-slate-500"></textarea>
       </div>
 
-      <!-- Preferred Pickup Time (Optional) -->
       <div class="space-y-1.5">
         <label class="text-xs font-bold text-slate-200">Preferred pickup time (optional)</label>
         <div class="relative">
@@ -281,7 +259,6 @@
         </div>
       </div>
 
-      <!-- Payment Method -->
       <div class="space-y-2.5">
         <label class="text-xs font-bold text-slate-200">Payment method</label>
 
@@ -301,7 +278,7 @@
           <span class="text-base">👛</span>
           <div class="flex-1">
             <p class="text-xs font-bold text-white">Wallet</p>
-            <p class="text-[11px] text-slate-400">Available: ₦2,000 (incl. ₦2,000 welcome bonus)</p>
+            <p id="b-wallet-avail-label" class="text-[11px] text-slate-400">Available: ₦2,000 (incl. ₦2,000 bonus)</p>
           </div>
         </button>
 
@@ -315,19 +292,15 @@
         </button>
       </div>
 
-      <!-- Promo Code (Optional) & Fare Summary -->
       <div class="space-y-2">
         <label class="text-xs font-bold text-slate-200">Promo code (optional)</label>
         <div class="flex gap-2">
           <input id="b-promo" type="text" placeholder="Enter promo code (e.g. SPEED200)" class="flex-1 bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-xs text-white uppercase font-mono" />
-          <button type="button" onclick="applyPromoCode()" class="px-4 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-orange-400">
-            Apply
-          </button>
+          <button type="button" onclick="applyPromoCode()" class="px-4 py-3 rounded-2xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-orange-400">Apply</button>
         </div>
         <p id="b-promo-msg" class="text-[11px] hidden"></p>
       </div>
 
-      <!-- Fare Summary Strip -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center justify-between">
         <div>
           <p id="b-distance-info" class="text-[11px] text-slate-400">Est. distance: 2.5 km • Motorcycle</p>
@@ -342,7 +315,6 @@
       <p id="b-msg" class="text-xs text-center hidden"></p>
     </div>
 
-    <!-- Sticky Bottom Send Package Button -->
     <div class="fixed bottom-0 inset-x-0 z-40 bg-slate-950/95 backdrop-blur border-t border-slate-800 p-4">
       <div class="max-w-md mx-auto">
         <button type="button" onclick="submitCustomerBooking()" class="w-full bg-orange-600 hover:bg-orange-500 active:scale-[0.99] transition py-3.5 rounded-2xl text-sm font-extrabold text-white shadow-xl shadow-orange-600/25">
@@ -379,21 +351,24 @@
       </div>
 
       <div class="px-4 space-y-4">
+        <!-- Wallet Hero Card with + Fund wallet & Withdraw -->
         <div class="bg-gradient-to-br from-orange-600 via-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-xl shadow-orange-600/20">
           <div class="flex items-center justify-between text-xs text-orange-100 font-semibold">
-            <span>Available for orders</span>
-            <span class="px-2 py-0.5 rounded-full bg-black/20 text-[10px]">Bonus: ₦2,000</span>
+            <span class="flex items-center gap-1.5">💳 Available for orders</span>
+            <button type="button" onclick="toggleCustBalanceMask()" class="p-1.5 rounded-full bg-black/15 hover:bg-black/25">
+              👁
+            </button>
           </div>
-          <div id="c-home-spent" class="text-3xl font-extrabold tracking-tight mt-2">₦2,000.00</div>
-          <div class="inline-block mt-2 px-3 py-1 rounded-full bg-black/20 text-[11px] font-semibold text-orange-50">
-            OPay Transfer: 6152624923
+          <div id="c-home-balance" class="text-3xl font-extrabold tracking-tight mt-2">₦2,000.00</div>
+          <div id="c-home-bonus-pill" class="inline-block mt-2 px-3 py-1 rounded-full bg-black/20 text-[11px] font-semibold text-orange-50">
+            Bonus: ₦2,000
           </div>
           <div class="grid grid-cols-2 gap-2.5 mt-4">
-            <button type="button" onclick="openSendPackage()" class="bg-white text-slate-950 hover:bg-orange-50 font-bold text-xs py-2.5 rounded-xl shadow">
-              + Send Package
+            <button type="button" onclick="openFundModal()" class="bg-white text-slate-950 hover:bg-orange-50 font-bold text-xs py-2.5 rounded-xl shadow flex items-center justify-center gap-1">
+              <span>+ Fund wallet</span>
             </button>
-            <button type="button" onclick="switchCustNav('wallet')" class="bg-black/25 hover:bg-black/35 text-white font-bold text-xs py-2.5 rounded-xl">
-              Wallet & OPay
+            <button type="button" onclick="openWithdrawModal()" class="bg-black/25 hover:bg-black/35 text-white font-bold text-xs py-2.5 rounded-xl flex items-center justify-center gap-1">
+              <span>↗ Withdraw</span>
             </button>
           </div>
         </div>
@@ -475,20 +450,27 @@
 
     <!-- ---------- TAB 3: WALLET & PAYMENT ---------- -->
     <section id="cview-wallet" class="hidden space-y-4">
-      <div class="bg-slate-900 border-b border-orange-500/20 rounded-b-3xl px-4 pt-5 pb-5 shadow-lg">
-        <h1 class="text-xl font-extrabold text-white">Wallet & Payments</h1>
+      <div class="bg-slate-900 border-b border-orange-500/20 rounded-b-3xl px-4 pt-5 pb-5 flex items-center justify-between shadow-lg">
+        <h1 class="text-xl font-extrabold text-white">Wallet</h1>
+        <button type="button" onclick="openFundModal()" class="px-3.5 py-1.5 rounded-full bg-orange-600 text-xs font-bold text-white">
+          + Add money
+        </button>
       </div>
 
       <div class="px-4 space-y-4">
         <div class="bg-gradient-to-br from-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-lg">
-          <p class="text-xs text-orange-100">Available for orders (Welcome Bonus)</p>
-          <p class="text-3xl font-extrabold mt-1">₦2,000.00</p>
-          <p id="c-wallet-spent" class="text-[11px] text-orange-100 mt-2">Total Dispatch Spend: ₦0.00</p>
+          <p class="text-xs text-orange-100">Available for orders</p>
+          <p id="c-wallet-total" class="text-3xl font-extrabold mt-1">₦2,000.00</p>
+          <p id="c-wallet-breakdown" class="text-[11px] text-orange-100 mt-1.5">Withdrawable cash: ₦0.00 • Bonuses: ₦2,000</p>
+          <div class="grid grid-cols-2 gap-2.5 mt-4">
+            <button type="button" onclick="openFundModal()" class="bg-white text-slate-950 font-bold text-xs py-2.5 rounded-xl">+ Add money</button>
+            <button type="button" onclick="openWithdrawModal()" class="bg-black/25 text-white font-bold text-xs py-2.5 rounded-xl">↓ Withdraw</button>
+          </div>
         </div>
 
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2.5">
-          <h2 class="text-sm font-bold text-white">Fund / Pay by Bank Transfer (OPay)</h2>
-          <p class="text-xs text-slate-400">Transfer your delivery fare to our official business account and share your waybill code:</p>
+          <h2 class="text-sm font-bold text-white">Fund by bank transfer (OPay)</h2>
+          <p class="text-xs text-slate-400">Transfer to our official business account, then tap "+ Add money" to submit your reference:</p>
           <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 flex items-center justify-between">
             <div>
               <p class="text-[11px] text-slate-400">OPay • SpeeDial Digital Services</p>
@@ -501,7 +483,7 @@
         </div>
 
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2.5">
-          <h2 class="text-sm font-bold text-white">Order Payment History</h2>
+          <h2 class="text-sm font-bold text-white">Wallet Transactions</h2>
           <div id="c-wallet-history" class="space-y-2"></div>
         </div>
       </div>
@@ -552,7 +534,94 @@
       </div>
     </section>
 
-    <!-- ==================== 5. BOTTOM 5-TAB NAVIGATION BAR ==================== -->
+    <!-- ==================== 5. FUND WALLET MODAL ==================== -->
+    <div id="fund-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
+      <div class="bg-slate-900 border-t border-orange-500/30 rounded-t-3xl w-full max-w-md p-5 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-extrabold text-white">Fund Wallet</h3>
+            <p class="text-[11px] text-slate-400">Top up your SpeeDial Express wallet</p>
+          </div>
+          <button type="button" onclick="closeFundModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300">✕</button>
+        </div>
+
+        <div class="grid grid-cols-4 gap-2">
+          <button type="button" onclick="setFundAmount(1000)" class="py-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-orange-500 text-xs font-bold text-orange-400">₦1,000</button>
+          <button type="button" onclick="setFundAmount(2000)" class="py-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-orange-500 text-xs font-bold text-orange-400">₦2,000</button>
+          <button type="button" onclick="setFundAmount(5000)" class="py-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-orange-500 text-xs font-bold text-orange-400">₦5,000</button>
+          <button type="button" onclick="setFundAmount(10000)" class="py-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-orange-500 text-xs font-bold text-orange-400">₦10,000</button>
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-slate-300">Amount (₦)</label>
+          <input id="fund-amount-input" type="number" value="2000" min="100" class="w-full bg-slate-950 border border-slate-700 rounded-2xl px-4 py-3 text-sm font-extrabold text-white" />
+        </div>
+
+        <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 text-xs space-y-1.5">
+          <p class="text-slate-400">Transfer to OPay Business Account:</p>
+          <div class="flex items-center justify-between">
+            <span class="font-mono font-extrabold text-orange-400 text-sm">6152624923 • SpeeDial Digital</span>
+            <button type="button" onclick="copyCustOpay()" class="text-[11px] font-bold text-orange-400 underline">Copy</button>
+          </div>
+          <input id="fund-ref-input" type="text" placeholder="Enter OPay Session / Transfer Ref" class="w-full mt-2 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono" />
+        </div>
+
+        <button type="button" onclick="submitWalletFunding('OPAY_TRANSFER')" class="w-full bg-orange-600 hover:bg-orange-500 py-3.5 rounded-2xl text-xs font-extrabold text-white shadow-lg shadow-orange-600/25">
+          Confirm Bank Transfer Funding
+        </button>
+
+        <button type="button" onclick="submitWalletFunding('PAYSTACK')" class="w-full bg-slate-800 hover:bg-slate-700 py-3 rounded-2xl text-xs font-bold text-slate-200">
+          Pay Instantly with Card / Paystack
+        </button>
+
+        <p id="fund-msg" class="text-xs text-center hidden"></p>
+      </div>
+    </div>
+
+    <!-- ==================== 6. WITHDRAW MODAL ==================== -->
+    <div id="withdraw-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
+      <div class="bg-slate-900 border-t border-orange-500/30 rounded-t-3xl w-full max-w-md p-5 space-y-3.5">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-extrabold text-white">Withdraw Cash</h3>
+            <p id="wd-avail-sub" class="text-[11px] text-slate-400">Withdrawable cash: ₦0.00</p>
+          </div>
+          <button type="button" onclick="closeWithdrawModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300">✕</button>
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-slate-300">Withdrawal Amount (₦)</label>
+          <input id="wd-amount" type="number" min="500" placeholder="Minimum ₦500" class="w-full bg-slate-950 border border-slate-700 rounded-2xl px-4 py-3 text-sm font-extrabold text-white" />
+        </div>
+
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-slate-300">Select Bank</label>
+          <select id="wd-bank" class="w-full bg-slate-950 border border-slate-700 rounded-2xl px-4 py-3 text-xs text-white">
+            <option value="OPay">OPay</option>
+            <option value="PalmPay">PalmPay</option>
+            <option value="Moniepoint MFB">Moniepoint MFB</option>
+            <option value="Kuda Bank">Kuda Bank</option>
+            <option value="Access Bank">Access Bank</option>
+            <option value="First Bank">First Bank</option>
+            <option value="GTBank">GTBank</option>
+            <option value="UBA">UBA</option>
+            <option value="Zenith Bank">Zenith Bank</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <input id="wd-acct-num" type="tel" maxlength="10" placeholder="10-Digit Account No." class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white font-mono" />
+          <input id="wd-acct-name" type="text" placeholder="Account Name" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+        </div>
+
+        <button type="button" onclick="submitWalletWithdrawal()" class="w-full bg-orange-600 hover:bg-orange-500 py-3.5 rounded-2xl text-xs font-extrabold text-white shadow-lg shadow-orange-600/25">
+          Submit Withdrawal Request
+        </button>
+        <p id="wd-msg" class="text-xs text-center hidden"></p>
+      </div>
+    </div>
+
+    <!-- ==================== 7. BOTTOM 5-TAB NAVIGATION BAR ==================== -->
     <nav class="fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 backdrop-blur border-t border-slate-800">
       <div class="max-w-md mx-auto grid grid-cols-5 py-2">
         <button type="button" onclick="switchCustNav('home')" id="cnav-home" class="flex flex-col items-center gap-1 text-orange-400">
@@ -585,27 +654,12 @@
 
   <script>
     const slides = [
-      {
-        icon: '📦',
-        title: 'Send Packages Instantly',
-        desc: "Book a delivery in seconds. Just set your pickup and drop-off and we'll match you with a rider nearby."
-      },
-      {
-        icon: '🛵',
-        title: 'Track Every Delivery Live',
-        desc: 'Follow your waybill status in real time from pickup to doorstep across Kaduna and Kano.'
-      },
-      {
-        icon: '💳',
-        title: 'Pay Your Way',
-        desc: 'Pay smoothly via OPay instant transfer (6152624923) or pay on pickup — whatever works best for you.'
-      }
+      { icon: '📦', title: 'Send Packages Instantly', desc: "Book a delivery in seconds. Just set your pickup and drop-off and we'll match you with a rider nearby." },
+      { icon: '🛵', title: 'Track Every Delivery Live', desc: 'Follow your waybill status in real time from pickup to doorstep across Kaduna and Kano.' },
+      { icon: '💳', title: 'Pay Your Way', desc: 'Pay smoothly via wallet, OPay transfer (6152624923), or cash on delivery — whatever works best for you.' }
     ];
 
-    const HUB_CENTERS = {
-      KD: [10.5105, 7.4165],
-      KN: [12.0022, 8.5920]
-    };
+    const HUB_CENTERS = { KD: [10.5105, 7.4165], KN: [12.0022, 8.5920] };
 
     let slideIdx = 0;
     let cAuthMode = 'LOGIN';
@@ -617,6 +671,8 @@
     let packageItemsList = [];
     let promoDiscount = 0;
     let custFilter = 'ALL';
+    let custBalanceMasked = false;
+    let walletState = { wallet_balance: 0, bonus_balance: 2000, available_total: 2000, transactions: [] };
     let myWaybills = JSON.parse(localStorage.getItem('speedial_my_waybills') || '[]');
     let loadedOrders = [];
 
@@ -629,29 +685,217 @@
       const today = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
       document.getElementById('c-date').textContent = `${today} • RC: 8937370`;
 
-      const seenOnb = localStorage.getItem('speedial_seen_onb');
-      if (!seenOnb) {
+      if (!localStorage.getItem('speedial_seen_onb')) {
         document.getElementById('cust-shell').classList.add('hidden');
         document.getElementById('onboarding-screen').classList.remove('hidden');
       }
 
       const savedCust = localStorage.getItem('speedial_customer');
       if (savedCust) {
-        try {
-          applyCustomerProfile(JSON.parse(savedCust));
-        } catch (e) {}
+        try { applyCustomerProfile(JSON.parse(savedCust)); } catch (e) {}
       }
 
       loadMyOrders();
+      loadCustomerWallet();
     }
 
-    // ==================== SEND A PACKAGE + INTERACTIVE MAP ====================
+    // ==================== WALLET FUNDING & WITHDRAWAL ====================
+    async function loadCustomerWallet() {
+      const savedCust = JSON.parse(localStorage.getItem('speedial_customer') || 'null');
+      if (!savedCust || !savedCust.phone) {
+        updateWalletUI();
+        return;
+      }
+      try {
+        const res = await fetch(`/api/wallet/${encodeURIComponent(savedCust.phone)}?role=CUSTOMER`);
+        const data = await res.json();
+        if (res.ok && data.success) {
+          walletState = data;
+          if (data.bank) {
+            document.getElementById('wd-bank').value = data.bank.bank_name || 'OPay';
+            document.getElementById('wd-acct-num').value = data.bank.account_number || '';
+            document.getElementById('wd-acct-name').value = data.bank.account_name || '';
+          }
+          updateWalletUI();
+        }
+      } catch (e) {}
+    }
+
+    function updateWalletUI() {
+      const total = Number(walletState.available_total ?? 2000);
+      const cash = Number(walletState.wallet_balance ?? 0);
+      const bonus = Number(walletState.bonus_balance ?? 2000);
+
+      document.getElementById('c-home-balance').textContent = custBalanceMasked ? '₦••••••' : `₦${total.toLocaleString()}.00`;
+      document.getElementById('c-home-bonus-pill').textContent = `Bonus: ₦${bonus.toLocaleString()}`;
+      document.getElementById('c-wallet-total').textContent = `₦${total.toLocaleString()}.00`;
+      document.getElementById('c-wallet-breakdown').textContent = `Withdrawable cash: ₦${cash.toLocaleString()}.00 • Bonuses: ₦${bonus.toLocaleString()}`;
+      document.getElementById('b-wallet-avail-label').textContent = `Available: ₦${total.toLocaleString()} (incl. ₦${bonus.toLocaleString()} bonus)`;
+      document.getElementById('wd-avail-sub').textContent = `Withdrawable cash: ₦${cash.toLocaleString()}.00 (Bonus is order-only)`;
+
+      const txs = walletState.transactions || [];
+      document.getElementById('c-wallet-history').innerHTML = txs.length
+        ? txs.map(t => {
+            const isCredit = t.tx_type === 'FUNDING';
+            return `
+              <div class="flex items-center justify-between py-2.5 border-b border-slate-800 last:border-0 text-xs">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-full ${isCredit ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'} flex items-center justify-center font-bold">
+                    ${isCredit ? '+' : '−'}
+                  </div>
+                  <div>
+                    <p class="font-bold text-white">${isCredit ? 'Wallet Funding' : 'Withdrawal'}</p>
+                    <p class="text-[11px] text-slate-400">${t.bank_details || t.reference || t.method}</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="font-extrabold ${isCredit ? 'text-emerald-400' : 'text-red-400'}">${isCredit ? '+' : '-'}₦${Number(t.amount).toLocaleString()}</p>
+                  <span class="text-[10px] px-2 py-0.5 rounded-full ${t.status === 'COMPLETED' ? 'bg-emerald-500/15 text-emerald-300' : 'bg-amber-500/15 text-amber-300'}">${t.status}</span>
+                </div>
+              </div>
+            `;
+          }).join('')
+        : `<div class="flex items-center justify-between py-2 text-xs">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center font-bold">+</div>
+              <div>
+                <p class="font-bold text-white">Wallet Funding</p>
+                <p class="text-[11px] text-slate-400">Welcome bonus (usable for orders)</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="font-extrabold text-emerald-400">+₦2,000</p>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300">Active</span>
+            </div>
+          </div>`;
+    }
+
+    function toggleCustBalanceMask() {
+      custBalanceMasked = !custBalanceMasked;
+      updateWalletUI();
+    }
+
+    function openFundModal() {
+      const savedCust = JSON.parse(localStorage.getItem('speedial_customer') || 'null');
+      if (!savedCust || !savedCust.phone) {
+        openCustAuth();
+        return;
+      }
+      document.getElementById('fund-msg').classList.add('hidden');
+      document.getElementById('fund-modal').classList.remove('hidden');
+    }
+
+    function closeFundModal() {
+      document.getElementById('fund-modal').classList.add('hidden');
+    }
+
+    function setFundAmount(amt) {
+      document.getElementById('fund-amount-input').value = amt;
+    }
+
+    async function submitWalletFunding(method) {
+      const savedCust = JSON.parse(localStorage.getItem('speedial_customer') || 'null');
+      const amount = Number(document.getElementById('fund-amount-input').value) || 0;
+      const reference = document.getElementById('fund-ref-input').value.trim() || `OPAY-${Date.now().toString().slice(-6)}`;
+      const msgEl = document.getElementById('fund-msg');
+
+      msgEl.classList.remove('hidden');
+      msgEl.textContent = 'Processing funding request...';
+      msgEl.className = 'text-xs text-center text-slate-400';
+
+      try {
+        const res = await fetch('/api/wallet/fund', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: savedCust.phone,
+            email: savedCust.email,
+            amount,
+            method,
+            reference
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          msgEl.textContent = data.error || 'Funding failed.';
+          msgEl.className = 'text-xs text-center text-red-400';
+          return;
+        }
+        if (data.authorization_url) {
+          window.location.href = data.authorization_url;
+          return;
+        }
+        msgEl.textContent = data.message;
+        msgEl.className = 'text-xs text-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-2.5';
+        await loadCustomerWallet();
+        setTimeout(() => closeFundModal(), 1500);
+      } catch (e) {
+        msgEl.textContent = 'Network error. Please retry.';
+        msgEl.className = 'text-xs text-center text-red-400';
+      }
+    }
+
+    function openWithdrawModal() {
+      const savedCust = JSON.parse(localStorage.getItem('speedial_customer') || 'null');
+      if (!savedCust || !savedCust.phone) {
+        openCustAuth();
+        return;
+      }
+      document.getElementById('wd-msg').classList.add('hidden');
+      document.getElementById('withdraw-modal').classList.remove('hidden');
+    }
+
+    function closeWithdrawModal() {
+      document.getElementById('withdraw-modal').classList.add('hidden');
+    }
+
+    async function submitWalletWithdrawal() {
+      const savedCust = JSON.parse(localStorage.getItem('speedial_customer') || 'null');
+      const amount = Number(document.getElementById('wd-amount').value) || 0;
+      const bank_name = document.getElementById('wd-bank').value;
+      const account_number = document.getElementById('wd-acct-num').value.trim();
+      const account_name = document.getElementById('wd-acct-name').value.trim();
+      const msgEl = document.getElementById('wd-msg');
+
+      msgEl.classList.remove('hidden');
+      msgEl.textContent = 'Submitting withdrawal...';
+      msgEl.className = 'text-xs text-center text-slate-400';
+
+      try {
+        const res = await fetch('/api/wallet/withdraw', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: savedCust.phone,
+            role: 'CUSTOMER',
+            amount,
+            bank_name,
+            account_number,
+            account_name
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          msgEl.textContent = data.error || 'Withdrawal failed.';
+          msgEl.className = 'text-xs text-center text-red-400';
+          return;
+        }
+        msgEl.textContent = data.message;
+        msgEl.className = 'text-xs text-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-2.5';
+        await loadCustomerWallet();
+        setTimeout(() => closeWithdrawModal(), 1500);
+      } catch (e) {
+        msgEl.textContent = 'Network error. Please retry.';
+        msgEl.className = 'text-xs text-center text-red-400';
+      }
+    }
+
+    // ==================== SEND A PACKAGE + MAP ====================
     function openSendPackage() {
       document.getElementById('b-msg').classList.add('hidden');
       document.getElementById('cust-shell').classList.add('hidden');
       document.getElementById('send-package-screen').classList.remove('hidden');
       window.scrollTo(0, 0);
-
       setTimeout(() => {
         initBookingMap();
         if (mapInstance) mapInstance.invalidateSize();
@@ -666,14 +910,12 @@
     function selectDeliveryService(svc) {
       deliveryService = svc;
       const isMoto = svc === 'MOTO';
-
       document.getElementById('svc-MOTO').className = isMoto
         ? 'text-left p-3.5 rounded-2xl bg-orange-500/10 border-2 border-orange-500 transition space-y-1.5'
         : 'text-left p-3.5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition space-y-1.5';
       document.getElementById('svc-FLEET').className = !isMoto
         ? 'text-left p-3.5 rounded-2xl bg-orange-500/10 border-2 border-orange-500 transition space-y-1.5'
         : 'text-left p-3.5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition space-y-1.5';
-
       recalculateFareAndLine();
     }
 
@@ -710,7 +952,7 @@
     function renderPackageItems() {
       const container = document.getElementById('package-items-container');
       if (packageItemsList.length === 0) {
-        container.innerHTML = '<p id="no-items-placeholder" class="text-xs text-slate-500">No items added yet.</p>';
+        container.innerHTML = '<p class="text-xs text-slate-500">No items added yet.</p>';
         return;
       }
       container.innerHTML = packageItemsList.map((item, idx) => `
@@ -761,12 +1003,8 @@
     function initBookingMap() {
       if (mapInstance) return;
       const center = HUB_CENTERS[bookingCity] || HUB_CENTERS.KD;
-
       mapInstance = L.map('booking-map', { zoomControl: false }).setView(center, 13);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap'
-      }).addTo(mapInstance);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(mapInstance);
 
       pickupMarker = L.marker(center, { draggable: true, icon: createPinIcon('#ea580c') }).addTo(mapInstance);
       dropoffMarker = L.marker([center[0] + 0.014, center[1] + 0.014], { draggable: true, icon: createPinIcon('#059669') }).addTo(mapInstance);
@@ -776,13 +1014,11 @@
         reverseGeocodePin(pos.lat, pos.lng, 'PICKUP');
         recalculateFareAndLine();
       });
-
       dropoffMarker.on('dragend', () => {
         const pos = dropoffMarker.getLatLng();
         reverseGeocodePin(pos.lat, pos.lng, 'DROPOFF');
         recalculateFareAndLine();
       });
-
       mapInstance.on('click', (e) => {
         if (activePinMode === 'PICKUP') {
           pickupMarker.setLatLng(e.latlng);
@@ -793,26 +1029,21 @@
         }
         recalculateFareAndLine();
       });
-
       recalculateFareAndLine();
     }
 
     async function reverseGeocodePin(lat, lng, target) {
-      const inputId = target === 'PICKUP' ? 'b-pickup' : 'b-dropoff';
-      const el = document.getElementById(inputId);
+      const el = document.getElementById(target === 'PICKUP' ? 'b-pickup' : 'b-dropoff');
       el.value = `Pin (${lat.toFixed(4)}, ${lng.toFixed(4)})...`;
       try {
         const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
         const data = await res.json();
-        if (data && data.display_name) {
-          el.value = data.display_name.split(',').slice(0, 3).join(', ');
-        }
+        if (data && data.display_name) el.value = data.display_name.split(',').slice(0, 3).join(', ');
       } catch (e) {}
     }
 
     async function geocodeAddressInput(target) {
-      const inputId = target === 'PICKUP' ? 'b-pickup' : 'b-dropoff';
-      const q = document.getElementById(inputId).value.trim();
+      const q = document.getElementById(target === 'PICKUP' ? 'b-pickup' : 'b-dropoff').value.trim();
       if (!q || !mapInstance) return;
       const hubSuffix = bookingCity === 'KN' ? ', Kano, Nigeria' : ', Kaduna, Nigeria';
       try {
@@ -830,26 +1061,18 @@
 
     function useCurrentLocationForPickup() {
       const lbl = document.getElementById('gps-btn-label');
-      if (!navigator.geolocation) {
-        lbl.textContent = 'GPS not supported on this browser';
-        return;
-      }
+      if (!navigator.geolocation) { lbl.textContent = 'GPS not supported on this browser'; return; }
       lbl.textContent = 'Locating your GPS position...';
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const latlng = [pos.coords.latitude, pos.coords.longitude];
           setActivePinMode('PICKUP');
-          if (mapInstance && pickupMarker) {
-            pickupMarker.setLatLng(latlng);
-            mapInstance.setView(latlng, 15);
-          }
+          if (mapInstance && pickupMarker) { pickupMarker.setLatLng(latlng); mapInstance.setView(latlng, 15); }
           reverseGeocodePin(latlng[0], latlng[1], 'PICKUP');
           recalculateFareAndLine();
           lbl.textContent = 'Pickup pin set to current GPS location ✓';
         },
-        () => {
-          lbl.textContent = 'Location access denied — tap map to drop pin';
-        },
+        () => { lbl.textContent = 'Location access denied — tap map to drop pin'; },
         { enableHighAccuracy: true, timeout: 8000 }
       );
     }
@@ -858,7 +1081,6 @@
       if (!mapInstance || !pickupMarker || !dropoffMarker) return;
       const p1 = pickupMarker.getLatLng();
       const p2 = dropoffMarker.getLatLng();
-
       if (routeLine) mapInstance.removeLayer(routeLine);
       routeLine = L.polyline([p1, p2], { color: '#f97316', weight: 3, dashArray: '6, 6' }).addTo(mapInstance);
 
@@ -866,22 +1088,14 @@
       const baseFare = deliveryService === 'MOTO'
         ? Math.max(1000, Math.round((1000 + km * 200) / 50) * 50)
         : Math.max(3500, Math.round((3500 + km * 350) / 100) * 100);
-
-      const finalFare = Math.max(500, baseFare - promoDiscount);
-      document.getElementById('b-amount').value = finalFare;
-      document.getElementById('b-distance-info').textContent =
-        `Est. distance: ${km.toFixed(1)} km • ${deliveryService === 'MOTO' ? 'On-demand Motorcycle' : 'Logistics Fleet'}`;
+      document.getElementById('b-amount').value = Math.max(500, baseFare - promoDiscount);
+      document.getElementById('b-distance-info').textContent = `Est. distance: ${km.toFixed(1)} km • ${deliveryService === 'MOTO' ? 'On-demand Motorcycle' : 'Logistics Fleet'}`;
     }
 
     function setBookingCity(c) {
       bookingCity = c;
-      document.getElementById('bcity-KD').className = c === 'KD'
-        ? 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-orange-600 text-white'
-        : 'px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-400';
-      document.getElementById('bcity-KN').className = c === 'KN'
-        ? 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-orange-600 text-white'
-        : 'px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-400';
-
+      document.getElementById('bcity-KD').className = c === 'KD' ? 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-orange-600 text-white' : 'px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-400';
+      document.getElementById('bcity-KN').className = c === 'KN' ? 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-orange-600 text-white' : 'px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-400';
       if (mapInstance && pickupMarker && dropoffMarker) {
         const center = HUB_CENTERS[c] || HUB_CENTERS.KD;
         pickupMarker.setLatLng(center);
@@ -900,13 +1114,9 @@
         document.getElementById('onb-title').textContent = s.title;
         document.getElementById('onb-desc').textContent = s.desc;
         [0, 1, 2].forEach(i => {
-          document.getElementById(`dot-${i}`).className = i === slideIdx
-            ? 'w-6 h-1.5 rounded-full bg-orange-500 transition-all'
-            : 'w-2 h-1.5 rounded-full bg-slate-700 transition-all';
+          document.getElementById(`dot-${i}`).className = i === slideIdx ? 'w-6 h-1.5 rounded-full bg-orange-500 transition-all' : 'w-2 h-1.5 rounded-full bg-slate-700 transition-all';
         });
-        if (slideIdx === slides.length - 1) {
-          document.getElementById('onb-next-btn').textContent = 'Get Started';
-        }
+        if (slideIdx === slides.length - 1) document.getElementById('onb-next-btn').textContent = 'Get Started';
       } else {
         finishOnboarding();
       }
@@ -959,26 +1169,20 @@
       msgEl.className = 'text-xs text-center text-slate-400';
 
       const endpoint = cAuthMode === 'REGISTER' ? '/api/auth/register' : '/api/auth/login';
-      const payload = cAuthMode === 'REGISTER'
-        ? { role: 'CUSTOMER', full_name, email, phone, pin, city }
-        : { role: 'CUSTOMER', identifier: phone, pin };
+      const payload = cAuthMode === 'REGISTER' ? { role: 'CUSTOMER', full_name, email, phone, pin, city } : { role: 'CUSTOMER', identifier: phone, pin };
 
       try {
-        const res = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         const data = await res.json();
         if (!res.ok) {
           msgEl.textContent = data.error || 'Authentication failed.';
           msgEl.className = 'text-xs text-center text-red-400';
           return;
         }
-
         const userObj = data.user || { full_name, email, phone, city, email_verified: false };
         localStorage.setItem('speedial_customer', JSON.stringify(userObj));
         applyCustomerProfile(userObj);
+        loadCustomerWallet();
 
         if (cAuthMode === 'REGISTER' && data.requires_verification && email) {
           pendingVerifyEmail = email;
@@ -989,7 +1193,6 @@
             : `Enter your 6-digit verification code for ${email} (Code: ${data.dev_otp}).`;
           return;
         }
-
         enterCustomerApp();
         loadMyOrders();
       } catch (e) {
@@ -1003,40 +1206,22 @@
       const msgEl = document.getElementById('c-verify-msg');
       const saved = JSON.parse(localStorage.getItem('speedial_customer') || 'null');
       const targetEmail = pendingVerifyEmail || (saved && saved.email) || '';
-
       if (!code || code.length < 6) {
         msgEl.classList.remove('hidden');
         msgEl.textContent = 'Enter the 6-digit verification code.';
         msgEl.className = 'text-xs text-center text-amber-400';
         return;
       }
-
-      msgEl.classList.remove('hidden');
-      msgEl.textContent = 'Verifying email...';
-      msgEl.className = 'text-xs text-center text-slate-400';
-
       try {
-        const res = await fetch('/api/auth/verify-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: targetEmail, code })
-        });
+        const res = await fetch('/api/auth/verify-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: targetEmail, code }) });
         const data = await res.json();
-        if (!res.ok) {
-          msgEl.textContent = data.error || 'Verification failed.';
-          msgEl.className = 'text-xs text-center text-red-400';
-          return;
-        }
-
+        if (!res.ok) { msgEl.classList.remove('hidden'); msgEl.textContent = data.error || 'Verification failed.'; msgEl.className = 'text-xs text-center text-red-400'; return; }
         const updatedUser = data.user || { ...(saved || {}), email_verified: true };
         localStorage.setItem('speedial_customer', JSON.stringify(updatedUser));
         applyCustomerProfile(updatedUser);
         enterCustomerApp();
         loadMyOrders();
-      } catch (e) {
-        msgEl.textContent = 'Network error. Please retry.';
-        msgEl.className = 'text-xs text-center text-red-400';
-      }
+      } catch (e) {}
     }
 
     async function resendEmailOtp() {
@@ -1044,33 +1229,20 @@
       const targetEmail = pendingVerifyEmail || (saved && saved.email) || '';
       const msgEl = document.getElementById('c-verify-msg');
       if (!targetEmail) return;
-
       try {
-        const res = await fetch('/api/auth/resend-otp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: targetEmail })
-        });
+        const res = await fetch('/api/auth/resend-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: targetEmail }) });
         const data = await res.json();
         msgEl.classList.remove('hidden');
-        msgEl.textContent = data.email_sent
-          ? `New code sent to ${targetEmail}.`
-          : `New verification code: ${data.dev_otp}`;
+        msgEl.textContent = data.email_sent ? `New code sent to ${targetEmail}.` : `New verification code: ${data.dev_otp}`;
         msgEl.className = 'text-xs text-center text-emerald-400';
       } catch (e) {}
     }
 
-    function skipEmailVerification() {
-      enterCustomerApp();
-      loadMyOrders();
-    }
+    function skipEmailVerification() { enterCustomerApp(); loadMyOrders(); }
 
     function openVerifyFromProfile() {
       const saved = JSON.parse(localStorage.getItem('speedial_customer') || 'null');
-      if (!saved || !saved.email) {
-        openCustAuth();
-        return;
-      }
+      if (!saved || !saved.email) { openCustAuth(); return; }
       pendingVerifyEmail = saved.email;
       document.getElementById('cust-shell').classList.add('hidden');
       document.getElementById('cust-auth-screen').classList.remove('hidden');
@@ -1093,40 +1265,32 @@
       document.getElementById('b-sender-phone').value = user.phone || '';
 
       const verifyRow = document.getElementById('c-prof-verify-row');
-      if (user.email) {
-        verifyRow.innerHTML = user.email_verified
-          ? `<span class="inline-block px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[11px] font-bold text-emerald-400">✓ Email Verified</span>`
-          : `<button type="button" onclick="openVerifyFromProfile()" class="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-[11px] font-bold text-amber-400">Verify Email Now →</button>`;
-      } else {
-        verifyRow.innerHTML = '';
-      }
+      verifyRow.innerHTML = user.email
+        ? (user.email_verified
+            ? `<span class="inline-block px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[11px] font-bold text-emerald-400">✓ Email Verified</span>`
+            : `<button type="button" onclick="openVerifyFromProfile()" class="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-[11px] font-bold text-amber-400">Verify Email Now →</button>`)
+        : '';
     }
 
-    function logoutCustomer() {
-      localStorage.removeItem('speedial_customer');
-      openCustAuth();
-    }
+    function logoutCustomer() { localStorage.removeItem('speedial_customer'); openCustAuth(); }
 
     function switchCustNav(tab) {
       ['home', 'orders', 'wallet', 'alerts', 'profile'].forEach(id => {
         document.getElementById(`cview-${id}`).classList.toggle('hidden', id !== tab);
-        document.getElementById(`cnav-${id}`).className = id === tab
-          ? 'flex flex-col items-center gap-1 text-orange-400'
-          : 'flex flex-col items-center gap-1 text-slate-400';
+        document.getElementById(`cnav-${id}`).className = id === tab ? 'flex flex-col items-center gap-1 text-orange-400' : 'flex flex-col items-center gap-1 text-slate-400';
       });
+      if (tab === 'wallet') loadCustomerWallet();
     }
 
     function setCustFilter(f) {
       custFilter = f;
       ['ALL', 'ACTIVE', 'PENDING', 'COMPLETED'].forEach(id => {
-        document.getElementById(`cpill-${id}`).className = id === f
-          ? 'px-4 py-1.5 rounded-full text-xs font-bold bg-orange-600 text-white shrink-0'
-          : 'px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 shrink-0';
+        document.getElementById(`cpill-${id}`).className = id === f ? 'px-4 py-1.5 rounded-full text-xs font-bold bg-orange-600 text-white shrink-0' : 'px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 shrink-0';
       });
       renderCustomerOrders();
     }
 
-    // ==================== BOOKING SUBMISSION & TRACKING ====================
+    // ==================== BOOKING & ORDERS ====================
     async function submitCustomerBooking() {
       const msgEl = document.getElementById('b-msg');
       const svcTag = deliveryService === 'MOTO' ? '[Motorcycle]' : '[Logistics Fleet]';
@@ -1134,10 +1298,7 @@
       const instructions = document.getElementById('b-instructions').value.trim();
       const pickupTime = document.getElementById('b-pickup-time').value;
       const payLabel = selectedPaymentMethod === 'ONLINE' ? 'Pay Online (OPay)' : selectedPaymentMethod === 'WALLET' ? 'Wallet' : 'Cash on Delivery';
-
-      const compiledNote = [svcTag, itemsSummary, instructions ? `Note: ${instructions}` : '', `Pickup: ${pickupTime}`, `Pay: ${payLabel}`]
-        .filter(Boolean)
-        .join(' • ');
+      const compiledNote = [svcTag, itemsSummary, instructions ? `Note: ${instructions}` : '', `Pickup: ${pickupTime}`, `Pay: ${payLabel}`].filter(Boolean).join(' • ');
 
       const payload = {
         city: bookingCity,
@@ -1156,32 +1317,18 @@
       msgEl.className = 'text-xs text-center text-slate-400';
 
       try {
-        const res = await fetch('/api/orders', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        const res = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         const data = await res.json();
-        if (!res.ok) {
-          msgEl.textContent = data.error || 'Booking failed.';
-          msgEl.className = 'text-xs text-center text-red-400';
-          return;
-        }
+        if (!res.ok) { msgEl.textContent = data.error || 'Booking failed.'; msgEl.className = 'text-xs text-center text-red-400'; return; }
 
         const code = data.order.tracking_code;
-        if (!myWaybills.includes(code)) {
-          myWaybills.unshift(code);
-          localStorage.setItem('speedial_my_waybills', JSON.stringify(myWaybills));
-        }
+        if (!myWaybills.includes(code)) { myWaybills.unshift(code); localStorage.setItem('speedial_my_waybills', JSON.stringify(myWaybills)); }
 
         msgEl.innerHTML = `Booked! Waybill: <span class="font-mono font-extrabold text-orange-400">${code}</span>`;
         msgEl.className = 'text-xs text-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-2.5';
 
         await loadMyOrders();
-        setTimeout(() => {
-          closeSendPackage();
-          switchCustNav('orders');
-        }, 1300);
+        setTimeout(() => { closeSendPackage(); switchCustNav('orders'); }, 1300);
       } catch (e) {
         msgEl.textContent = 'Network error. Please retry.';
         msgEl.className = 'text-xs text-center text-red-400';
@@ -1192,23 +1339,14 @@
       const code = document.getElementById('quick-track-input').value.trim().toUpperCase();
       const box = document.getElementById('quick-track-result');
       if (!code) return;
-
       box.classList.remove('hidden');
       box.innerHTML = '<p class="text-slate-400">Checking waybill...</p>';
-
       try {
         const res = await fetch(`/api/orders/${encodeURIComponent(code)}`);
         const data = await res.json();
-        if (!res.ok) {
-          box.innerHTML = `<p class="text-red-400">${data.error || 'Waybill not found.'}</p>`;
-          return;
-        }
+        if (!res.ok) { box.innerHTML = `<p class="text-red-400">${data.error || 'Waybill not found.'}</p>`; return; }
         const o = data.order;
-        if (!myWaybills.includes(o.tracking_code)) {
-          myWaybills.unshift(o.tracking_code);
-          localStorage.setItem('speedial_my_waybills', JSON.stringify(myWaybills));
-          loadMyOrders();
-        }
+        if (!myWaybills.includes(o.tracking_code)) { myWaybills.unshift(o.tracking_code); localStorage.setItem('speedial_my_waybills', JSON.stringify(myWaybills)); loadMyOrders(); }
         box.innerHTML = `
           <div class="flex items-center justify-between">
             <span class="font-mono font-extrabold text-orange-400">${o.tracking_code}</span>
@@ -1217,9 +1355,7 @@
           <p class="text-slate-200">${o.pickup_address} → ${o.dropoff_address}</p>
           <p class="text-slate-400">Fare: ₦${Number(o.amount || 0).toLocaleString()} • Payment: ${o.payment_status}</p>
         `;
-      } catch (e) {
-        box.innerHTML = '<p class="text-red-400">Unable to fetch waybill.</p>';
-      }
+      } catch (e) { box.innerHTML = '<p class="text-red-400">Unable to fetch waybill.</p>'; }
     }
 
     async function loadMyOrders() {
@@ -1228,12 +1364,7 @@
         const res = await fetch('/api/orders?city=ALL');
         const data = await res.json();
         const all = Array.isArray(data.orders) ? data.orders : [];
-
-        loadedOrders = all.filter(o =>
-          myWaybills.includes(o.tracking_code) ||
-          (savedCust && savedCust.phone && o.sender_phone === savedCust.phone)
-        );
-
+        loadedOrders = all.filter(o => myWaybills.includes(o.tracking_code) || (savedCust && savedCust.phone && o.sender_phone === savedCust.phone));
         renderCustomerDashboard();
       } catch (e) {}
     }
@@ -1248,7 +1379,6 @@
       document.getElementById('cstat-completed').textContent = completed.length;
       document.getElementById('cstat-active').textContent = active.length;
       document.getElementById('cstat-spent').textContent = `₦${spent.toLocaleString()}`;
-      document.getElementById('c-wallet-spent').textContent = `Total Dispatch Spend: ₦${spent.toLocaleString()}.00`;
 
       document.getElementById('c-recent-orders').innerHTML = loadedOrders.length
         ? loadedOrders.slice(0, 3).map(o => custOrderCard(o)).join('')
@@ -1258,21 +1388,6 @@
           </div>`;
 
       renderCustomerOrders();
-
-      document.getElementById('c-wallet-history').innerHTML = loadedOrders.length
-        ? loadedOrders.map(o => `
-            <div class="flex items-center justify-between py-2 border-b border-slate-800 last:border-0 text-xs">
-              <div>
-                <p class="font-bold text-white font-mono">${o.tracking_code}</p>
-                <p class="text-[11px] text-slate-400">${o.pickup_address} → ${o.dropoff_address}</p>
-              </div>
-              <div class="text-right">
-                <p class="font-extrabold text-orange-400">₦${Number(o.amount || 0).toLocaleString()}</p>
-                <span class="text-[10px] text-slate-400">${o.payment_status}</span>
-              </div>
-            </div>
-          `).join('')
-        : '<p class="text-xs text-slate-500 text-center py-3">No payment transactions yet.</p>';
 
       const alertItems = [];
       if (savedCust && savedCust.email_verified) {
@@ -1286,7 +1401,6 @@
           </div>
         `);
       }
-
       loadedOrders.forEach(o => {
         alertItems.push(`
           <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-start gap-3">
@@ -1305,7 +1419,7 @@
           <div class="w-8 h-8 rounded-full bg-orange-500/15 text-orange-400 flex items-center justify-center text-xs font-bold shrink-0">ℹ</div>
           <div>
             <p class="text-xs font-bold text-white">Welcome to SpeeDial Express</p>
-            <p class="text-[11px] text-slate-400 mt-0.5">Book a delivery anytime across Kaduna & Kano.</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">You received a ₦2,000 welcome bonus! Use it to pay for delivery orders.</p>
           </div>
         </div>`;
     }
@@ -1325,12 +1439,7 @@
     }
 
     function custOrderCard(o) {
-      const badge = o.status === 'DELIVERED'
-        ? 'bg-emerald-500 text-white'
-        : o.status === 'PICKED_UP' || o.status === 'IN_TRANSIT'
-          ? 'bg-blue-500 text-white'
-          : 'bg-amber-500 text-slate-950';
-
+      const badge = o.status === 'DELIVERED' ? 'bg-emerald-500 text-white' : (o.status === 'PICKED_UP' || o.status === 'IN_TRANSIT') ? 'bg-blue-500 text-white' : 'bg-amber-500 text-slate-950';
       return `
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2 shadow">
           <div class="flex items-center justify-between">
@@ -1349,8 +1458,7 @@
     function copyCustOpay() {
       navigator.clipboard?.writeText('6152624923');
       const btn = document.getElementById('c-copy-opay');
-      btn.textContent = 'Copied!';
-      setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+      if (btn) { btn.textContent = 'Copied!'; setTimeout(() => { btn.textContent = 'Copy'; }, 1500); }
     }
 
     initCustomerApp();
