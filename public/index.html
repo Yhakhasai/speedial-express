@@ -55,15 +55,21 @@
       <p id="c-auth-sub" class="text-xs text-slate-400 mt-1">Login to continue or book as a guest</p>
     </div>
 
-    <div class="space-y-3">
+    <!-- Login / Register Form -->
+    <div id="c-auth-form" class="space-y-3">
       <div id="c-reg-name-wrap" class="hidden space-y-1">
         <label class="text-[11px] font-semibold text-slate-400">Full Name</label>
         <input id="c-name" type="text" placeholder="Enter your full name" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white" />
       </div>
 
+      <div id="c-reg-email-wrap" class="hidden space-y-1">
+        <label class="text-[11px] font-semibold text-slate-400">Email Address</label>
+        <input id="c-email" type="email" placeholder="Enter your email address" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white" />
+      </div>
+
       <div class="space-y-1">
-        <label class="text-[11px] font-semibold text-slate-400">Phone Number</label>
-        <input id="c-phone" type="tel" placeholder="e.g 08166317937" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white" />
+        <label id="c-phone-label" class="text-[11px] font-semibold text-slate-400">Email or Phone Number</label>
+        <input id="c-phone" type="text" placeholder="e.g 08166317937 or name@email.com" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white" />
       </div>
 
       <div id="c-reg-city-wrap" class="hidden space-y-1">
@@ -94,6 +100,32 @@
         </button>
       </div>
     </div>
+
+    <!-- Email OTP Verification Step -->
+    <div id="c-verify-box" class="hidden bg-slate-900 border border-orange-500/40 rounded-3xl p-5 space-y-4">
+      <div class="space-y-1">
+        <span class="inline-block px-2.5 py-0.5 rounded-full bg-orange-500/15 text-orange-400 text-[10px] font-bold">STEP 2 OF 2</span>
+        <h2 class="text-lg font-extrabold text-white">Verify Your Email</h2>
+        <p id="c-verify-desc" class="text-xs text-slate-400">Enter the 6-digit verification code sent to your email.</p>
+      </div>
+
+      <input id="c-otp-input" type="text" maxlength="6" inputmode="numeric" placeholder="000000" class="w-full bg-slate-950 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3.5 text-center text-xl font-extrabold font-mono tracking-[0.4em] text-orange-400" />
+
+      <button type="button" onclick="submitEmailVerification()" class="w-full bg-emerald-600 hover:bg-emerald-500 py-3.5 rounded-2xl text-sm font-bold text-white">
+        Verify Email & Continue
+      </button>
+
+      <p id="c-verify-msg" class="text-xs text-center hidden"></p>
+
+      <div class="flex items-center justify-between text-xs pt-1">
+        <button type="button" onclick="resendEmailOtp()" class="text-orange-400 font-semibold hover:underline">
+          Resend Code
+        </button>
+        <button type="button" onclick="skipEmailVerification()" class="text-slate-400 hover:text-white">
+          Verify Later →
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- ==================== 3. CUSTOMER APP SHELL ==================== -->
@@ -113,7 +145,6 @@
           </button>
         </div>
 
-        <!-- Quick Waybill Live Tracker -->
         <div class="flex gap-2">
           <input id="quick-track-input" type="text" placeholder="Track waybill (e.g. SDX-482910)..." class="flex-1 bg-slate-950 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-3.5 py-2.5 text-xs text-white font-mono uppercase" />
           <button type="button" onclick="quickTrackWaybill()" class="px-4 py-2.5 rounded-2xl bg-orange-600 hover:bg-orange-500 text-xs font-bold text-white">
@@ -124,7 +155,6 @@
       </div>
 
       <div class="px-4 space-y-4">
-        <!-- Payment & OPay Hero Card -->
         <div class="bg-gradient-to-br from-orange-600 via-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-xl shadow-orange-600/20">
           <div class="flex items-center justify-between text-xs text-orange-100 font-semibold">
             <span>SpeeDial Express Pay</span>
@@ -144,7 +174,6 @@
           </div>
         </div>
 
-        <!-- Send a Package Action Banner -->
         <button type="button" onclick="openBookingModal()" class="w-full bg-slate-900 border border-orange-500/40 hover:border-orange-500 rounded-2xl p-4 flex items-center justify-between text-left transition shadow">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-orange-600/20 text-orange-400 flex items-center justify-center text-lg">🚚</div>
@@ -156,7 +185,6 @@
           <span class="text-orange-400 font-bold text-lg">›</span>
         </button>
 
-        <!-- 2x2 KPI Cards -->
         <div class="grid grid-cols-2 gap-3">
           <div onclick="switchCustNav('orders')" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-end justify-between cursor-pointer">
             <div>
@@ -191,7 +219,6 @@
           </div>
         </div>
 
-        <!-- Recent Orders -->
         <div class="space-y-2.5">
           <div class="flex items-center justify-between">
             <h2 class="text-sm font-bold text-slate-200">Recent Orders</h2>
@@ -216,7 +243,6 @@
 
       <div id="c-orders-list" class="px-4 space-y-3"></div>
 
-      <!-- Floating + Send Package Button -->
       <button type="button" onclick="openBookingModal()" class="fixed bottom-20 right-5 z-30 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs px-5 py-3.5 rounded-2xl shadow-xl shadow-orange-600/30 flex items-center gap-2">
         <span class="text-base leading-none">+</span>
         <span>Send Package</span>
@@ -279,7 +305,9 @@
         </div>
         <div>
           <h2 id="c-prof-name" class="text-base font-extrabold text-white">Guest Customer</h2>
+          <p id="c-prof-email" class="text-xs text-slate-400 mt-0.5"></p>
           <p id="c-prof-phone" class="text-xs text-slate-400 mt-0.5">Kaduna & Kano Dispatch Portal</p>
+          <div id="c-prof-verify-row" class="mt-2"></div>
         </div>
       </div>
 
@@ -394,6 +422,7 @@
 
     let slideIdx = 0;
     let cAuthMode = 'LOGIN';
+    let pendingVerifyEmail = '';
     let bookingCity = 'KD';
     let custFilter = 'ALL';
     let myWaybills = JSON.parse(localStorage.getItem('speedial_my_waybills') || '[]');
@@ -448,6 +477,8 @@
     function openCustAuth() {
       document.getElementById('cust-shell').classList.add('hidden');
       document.getElementById('cust-auth-screen').classList.remove('hidden');
+      document.getElementById('c-auth-form').classList.remove('hidden');
+      document.getElementById('c-verify-box').classList.add('hidden');
     }
 
     function enterCustomerApp() {
@@ -461,14 +492,19 @@
       document.getElementById('c-auth-title').textContent = isReg ? 'Create Account' : 'Welcome Back';
       document.getElementById('c-auth-sub').textContent = isReg ? 'Fill in your details to get started' : 'Login to continue or book as a guest';
       document.getElementById('c-reg-name-wrap').classList.toggle('hidden', !isReg);
+      document.getElementById('c-reg-email-wrap').classList.toggle('hidden', !isReg);
       document.getElementById('c-reg-city-wrap').classList.toggle('hidden', !isReg);
+      document.getElementById('c-phone-label').textContent = isReg ? 'Phone Number' : 'Email or Phone Number';
+      document.getElementById('c-phone').placeholder = isReg ? 'e.g 08166317937' : 'e.g 08166317937 or name@email.com';
       document.getElementById('c-auth-btn').textContent = isReg ? 'Create Account' : 'Login';
       document.getElementById('c-switch-btn').textContent = isReg ? 'Already have an account? Login' : "Don't have an account? Sign Up";
+      document.getElementById('c-auth-msg').classList.add('hidden');
     }
 
     async function submitCustomerAuth() {
       const msgEl = document.getElementById('c-auth-msg');
       const full_name = document.getElementById('c-name').value.trim();
+      const email = document.getElementById('c-email').value.trim().toLowerCase();
       const phone = document.getElementById('c-phone').value.trim();
       const city = document.getElementById('c-city').value;
       const pin = document.getElementById('c-pin').value.trim();
@@ -479,8 +515,8 @@
 
       const endpoint = cAuthMode === 'REGISTER' ? '/api/auth/register' : '/api/auth/login';
       const payload = cAuthMode === 'REGISTER'
-        ? { role: 'CUSTOMER', full_name, phone, pin, city }
-        : { role: 'CUSTOMER', phone, pin };
+        ? { role: 'CUSTOMER', full_name, email, phone, pin, city }
+        : { role: 'CUSTOMER', identifier: phone, pin };
 
       try {
         const res = await fetch(endpoint, {
@@ -494,9 +530,21 @@
           msgEl.className = 'text-xs text-center text-red-400';
           return;
         }
-        const userObj = data.user || { full_name, phone, city };
+
+        const userObj = data.user || { full_name, email, phone, city, email_verified: false };
         localStorage.setItem('speedial_customer', JSON.stringify(userObj));
         applyCustomerProfile(userObj);
+
+        if (cAuthMode === 'REGISTER' && data.requires_verification && email) {
+          pendingVerifyEmail = email;
+          document.getElementById('c-auth-form').classList.add('hidden');
+          document.getElementById('c-verify-box').classList.remove('hidden');
+          document.getElementById('c-verify-desc').textContent = data.email_sent
+            ? `We sent a 6-digit verification code to ${email}.`
+            : `Enter your 6-digit verification code for ${email} (Code: ${data.dev_otp}).`;
+          return;
+        }
+
         enterCustomerApp();
         loadMyOrders();
       } catch (e) {
@@ -505,16 +553,108 @@
       }
     }
 
+    async function submitEmailVerification() {
+      const code = document.getElementById('c-otp-input').value.trim();
+      const msgEl = document.getElementById('c-verify-msg');
+      const saved = JSON.parse(localStorage.getItem('speedial_customer') || 'null');
+      const targetEmail = pendingVerifyEmail || (saved && saved.email) || '';
+
+      if (!code || code.length < 6) {
+        msgEl.classList.remove('hidden');
+        msgEl.textContent = 'Enter the 6-digit verification code.';
+        msgEl.className = 'text-xs text-center text-amber-400';
+        return;
+      }
+
+      msgEl.classList.remove('hidden');
+      msgEl.textContent = 'Verifying email...';
+      msgEl.className = 'text-xs text-center text-slate-400';
+
+      try {
+        const res = await fetch('/api/auth/verify-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: targetEmail, code })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          msgEl.textContent = data.error || 'Verification failed.';
+          msgEl.className = 'text-xs text-center text-red-400';
+          return;
+        }
+
+        const updatedUser = data.user || { ...(saved || {}), email_verified: true };
+        localStorage.setItem('speedial_customer', JSON.stringify(updatedUser));
+        applyCustomerProfile(updatedUser);
+        enterCustomerApp();
+        loadMyOrders();
+      } catch (e) {
+        msgEl.textContent = 'Network error. Please retry.';
+        msgEl.className = 'text-xs text-center text-red-400';
+      }
+    }
+
+    async function resendEmailOtp() {
+      const saved = JSON.parse(localStorage.getItem('speedial_customer') || 'null');
+      const targetEmail = pendingVerifyEmail || (saved && saved.email) || '';
+      const msgEl = document.getElementById('c-verify-msg');
+      if (!targetEmail) return;
+
+      try {
+        const res = await fetch('/api/auth/resend-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: targetEmail })
+        });
+        const data = await res.json();
+        msgEl.classList.remove('hidden');
+        msgEl.textContent = data.email_sent
+          ? `New code sent to ${targetEmail}.`
+          : `New verification code: ${data.dev_otp}`;
+        msgEl.className = 'text-xs text-center text-emerald-400';
+      } catch (e) {}
+    }
+
+    function skipEmailVerification() {
+      enterCustomerApp();
+      loadMyOrders();
+    }
+
+    function openVerifyFromProfile() {
+      const saved = JSON.parse(localStorage.getItem('speedial_customer') || 'null');
+      if (!saved || !saved.email) {
+        openCustAuth();
+        return;
+      }
+      pendingVerifyEmail = saved.email;
+      document.getElementById('cust-shell').classList.add('hidden');
+      document.getElementById('cust-auth-screen').classList.remove('hidden');
+      document.getElementById('c-auth-form').classList.add('hidden');
+      document.getElementById('c-verify-box').classList.remove('hidden');
+      document.getElementById('c-verify-desc').textContent = `Enter the 6-digit code for ${saved.email}.`;
+      resendEmailOtp();
+    }
+
     function applyCustomerProfile(user) {
       if (!user) return;
       const first = (user.full_name || 'Guest').split(' ')[0];
       const initials = (user.full_name || 'GU').split(' ').slice(0, 2).map(x => x[0]).join('').toUpperCase();
       document.getElementById('c-greeting').textContent = `Hello, ${first} 👋`;
       document.getElementById('c-prof-name').textContent = user.full_name || 'Guest Customer';
+      document.getElementById('c-prof-email').textContent = user.email || '';
       document.getElementById('c-prof-phone').textContent = `${user.phone || ''} • Hub: ${user.city || 'KD'}`;
       document.getElementById('c-prof-initials').textContent = initials || 'GU';
       document.getElementById('b-sender-name').value = user.full_name || '';
       document.getElementById('b-sender-phone').value = user.phone || '';
+
+      const verifyRow = document.getElementById('c-prof-verify-row');
+      if (user.email) {
+        verifyRow.innerHTML = user.email_verified
+          ? `<span class="inline-block px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[11px] font-bold text-emerald-400">✓ Email Verified</span>`
+          : `<button type="button" onclick="openVerifyFromProfile()" class="px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-[11px] font-bold text-amber-400">Verify Email Now →</button>`;
+      } else {
+        verifyRow.innerHTML = '';
+      }
     }
 
     function logoutCustomer() {
@@ -659,6 +799,7 @@
     }
 
     function renderCustomerDashboard() {
+      const savedCust = JSON.parse(localStorage.getItem('speedial_customer') || 'null');
       const completed = loadedOrders.filter(o => o.status === 'DELIVERED');
       const active = loadedOrders.filter(o => ['PENDING', 'ASSIGNED', 'PICKED_UP', 'IN_TRANSIT'].includes(o.status));
       const spent = loadedOrders.reduce((sum, o) => sum + Number(o.amount || 0), 0);
@@ -679,7 +820,6 @@
 
       renderCustomerOrders();
 
-      // Wallet history
       document.getElementById('c-wallet-history').innerHTML = loadedOrders.length
         ? loadedOrders.map(o => `
             <div class="flex items-center justify-between py-2 border-b border-slate-800 last:border-0 text-xs">
@@ -695,16 +835,31 @@
           `).join('')
         : '<p class="text-xs text-slate-500 text-center py-3">No payment transactions yet.</p>';
 
-      // Alerts feed
-      const alertItems = loadedOrders.map(o => `
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-start gap-3">
-          <div class="w-8 h-8 rounded-full bg-orange-500/15 text-orange-400 flex items-center justify-center text-xs font-bold shrink-0">📦</div>
-          <div>
-            <p class="text-xs font-bold text-white">Waybill ${o.tracking_code} • ${o.status}</p>
-            <p class="text-[11px] text-slate-400 mt-0.5">Route: ${o.pickup_address} → ${o.dropoff_address}</p>
+      const alertItems = [];
+      if (savedCust && savedCust.email_verified) {
+        alertItems.push(`
+          <div class="bg-slate-900 border border-emerald-500/30 rounded-2xl p-4 flex items-start gap-3">
+            <div class="w-8 h-8 rounded-full bg-emerald-500/15 text-emerald-400 flex items-center justify-center text-xs font-bold shrink-0">✓</div>
+            <div>
+              <p class="text-xs font-bold text-white">Email Verified</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">Your email address (${savedCust.email}) has been verified.</p>
+            </div>
           </div>
-        </div>
-      `);
+        `);
+      }
+
+      loadedOrders.forEach(o => {
+        alertItems.push(`
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-start gap-3">
+            <div class="w-8 h-8 rounded-full bg-orange-500/15 text-orange-400 flex items-center justify-center text-xs font-bold shrink-0">📦</div>
+            <div>
+              <p class="text-xs font-bold text-white">Waybill ${o.tracking_code} • ${o.status}</p>
+              <p class="text-[11px] text-slate-400 mt-0.5">Route: ${o.pickup_address} → ${o.dropoff_address}</p>
+            </div>
+          </div>
+        `);
+      });
+
       document.getElementById('alert-dot').classList.toggle('hidden', alertItems.length === 0);
       document.getElementById('c-alerts-list').innerHTML = alertItems.join('') || `
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-start gap-3">
