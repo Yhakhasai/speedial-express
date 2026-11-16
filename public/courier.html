@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>SpeeDial Express • Rider & Dispatch App</title>
+  <title>SpeeDial Express • Rider Terminal</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { -webkit-tap-highlight-color: transparent; }
@@ -13,12 +13,12 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans pb-24 select-none">
 
-  <!-- ==================== 1. AUTH GATE (LOGIN / REGISTER) ==================== -->
+  <!-- ==================== 1. RIDER AUTH GATE ==================== -->
   <div id="auth-screen" class="hidden min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 flex flex-col justify-center px-6 py-10 max-w-md mx-auto">
     <div class="mb-8">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 mb-4">
         <span class="w-2 h-2 rounded-full bg-orange-500"></span>
-        <span class="text-[11px] font-bold text-orange-400 tracking-wide">SPEEDIAL EXPRESS • RC: 8937370</span>
+        <span class="text-[11px] font-bold text-orange-400 tracking-wide">SPEEDIAL EXPRESS RIDER • RC: 8937370</span>
       </div>
       <h1 id="auth-title" class="text-3xl font-extrabold text-white tracking-tight">Welcome Back</h1>
       <p id="auth-subtitle" class="text-sm text-slate-400 mt-1">Login to your dispatch rider terminal</p>
@@ -48,11 +48,10 @@
         <input id="auth-plate" type="text" placeholder="Bike/Scooter Plate" class="bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-3.5 py-3.5 text-sm text-white uppercase placeholder-slate-400" />
       </div>
 
-      <div class="flex items-center justify-between text-xs pt-1">
+      <div class="flex items-center justify-end text-xs pt-1">
         <button type="button" onclick="continueAsSolo()" class="text-slate-400 hover:text-orange-400">
           Continue in Solo Mode →
         </button>
-        <a href="/index.html" class="text-orange-400 font-semibold hover:underline">Customer App</a>
       </div>
 
       <button type="button" id="auth-submit-btn" onclick="submitRiderAuth()" class="w-full bg-orange-600 hover:bg-orange-500 active:scale-[0.99] transition py-3.5 rounded-2xl text-sm font-bold text-white shadow-lg shadow-orange-600/25 mt-2">
@@ -70,12 +69,11 @@
     </div>
   </div>
 
-  <!-- ==================== 2. MAIN APP SHELL ==================== -->
+  <!-- ==================== 2. MAIN RIDER SHELL ==================== -->
   <div id="app-shell" class="max-w-md mx-auto">
 
-    <!-- ---------- TAB 1: HOME DASHBOARD ---------- -->
+    <!-- ---------- TAB 1: HOME ---------- -->
     <section id="view-home" class="space-y-4">
-      <!-- Top Curved Brand Header -->
       <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-orange-950/40 border-b border-orange-500/20 rounded-b-3xl px-4 pt-5 pb-6 space-y-4 shadow-lg">
         <div class="flex items-center justify-between">
           <div>
@@ -93,7 +91,6 @@
           </div>
         </div>
 
-        <!-- Global Search Bar -->
         <div class="relative">
           <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
           <input id="home-search" type="text" oninput="handleSearch(this.value)" placeholder="Search orders by waybill, area, or name..." class="w-full bg-slate-950/90 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl pl-10 pr-4 py-3 text-xs text-slate-100 placeholder-slate-500" />
@@ -101,7 +98,6 @@
       </div>
 
       <div class="px-4 space-y-4">
-        <!-- Earnings & Wallet Hero Card -->
         <div class="bg-gradient-to-br from-orange-600 via-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-xl shadow-orange-600/20 relative overflow-hidden">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2 text-xs font-semibold text-orange-100">
@@ -128,7 +124,6 @@
           </div>
         </div>
 
-        <!-- 2x2 KPI Grid -->
         <div class="grid grid-cols-2 gap-3">
           <div onclick="switchNav('orders')" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-end justify-between cursor-pointer hover:border-orange-500/40 transition">
             <div>
@@ -171,7 +166,6 @@
           </div>
         </div>
 
-        <!-- Recent Orders -->
         <div class="space-y-2.5 pt-1">
           <div class="flex items-center justify-between">
             <h2 class="text-sm font-bold text-slate-200">Recent Orders</h2>
@@ -194,13 +188,11 @@
           </div>
         </div>
 
-        <!-- Search Input -->
         <div class="relative">
           <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
           <input id="orders-search" type="text" oninput="handleSearch(this.value)" placeholder="Search orders..." class="w-full bg-slate-950 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl pl-10 pr-4 py-3 text-xs text-slate-100 placeholder-slate-500" />
         </div>
 
-        <!-- Status Filter Pills -->
         <div class="flex gap-2 overflow-x-auto no-scrollbar">
           <button type="button" onclick="setOrderFilter('ALL')" id="pill-ALL" class="px-4 py-1.5 rounded-full text-xs font-bold bg-orange-600 text-white shrink-0">ALL</button>
           <button type="button" onclick="setOrderFilter('ACTIVE')" id="pill-ACTIVE" class="px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 shrink-0">ACTIVE</button>
@@ -231,9 +223,9 @@
     <section id="view-wallet" class="hidden space-y-4">
       <div class="bg-slate-900 border-b border-orange-500/20 rounded-b-3xl px-4 pt-5 pb-5 flex items-center justify-between shadow-lg">
         <h1 class="text-xl font-extrabold text-white">Wallet</h1>
-        <a href="/index.html" class="px-3 py-1.5 rounded-full bg-orange-600/20 border border-orange-500/40 text-xs font-bold text-orange-400">
-          + New Booking
-        </a>
+        <button type="button" onclick="fetchAllOrders()" class="px-3 py-1.5 rounded-full bg-orange-600/20 border border-orange-500/40 text-xs font-bold text-orange-400">
+          ↻ Sync Ledger
+        </button>
       </div>
 
       <div class="px-4 space-y-4">
@@ -247,7 +239,6 @@
           </span>
         </div>
 
-        <!-- OPay Business Account Card -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center justify-between gap-3">
           <div>
             <span class="inline-block px-2 py-0.5 rounded bg-orange-500/15 text-orange-400 text-[10px] font-bold">Collection Account</span>
@@ -259,7 +250,6 @@
           </button>
         </div>
 
-        <!-- Transaction History -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
           <h2 class="text-sm font-bold text-white">Transaction History</h2>
           <div id="wallet-tx-list" class="space-y-2.5"></div>
@@ -322,13 +312,9 @@
           <div id="admin-riders-list" class="space-y-2"></div>
         </div>
 
-        <!-- Quick Links -->
+        <!-- Rider Safety & Session Actions -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl divide-y divide-slate-800">
-          <a href="/index.html" class="p-3.5 flex items-center justify-between text-xs hover:bg-slate-800/50 rounded-t-2xl">
-            <span class="font-semibold text-slate-200">Switch to Customer Booking & Tracker</span>
-            <span class="text-orange-400 font-bold">Open →</span>
-          </a>
-          <button type="button" onclick="openSosModal()" class="w-full p-3.5 flex items-center justify-between text-xs hover:bg-slate-800/50 text-left">
+          <button type="button" onclick="openSosModal()" class="w-full p-3.5 flex items-center justify-between text-xs hover:bg-slate-800/50 rounded-t-2xl text-left">
             <span class="font-semibold text-red-400">Report Safety Incident / Emergency SOS</span>
             <span class="text-red-400 font-bold">SOS →</span>
           </button>
@@ -354,10 +340,8 @@
           <span id="modal-status-badge" class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-orange-500/20 text-orange-300">PENDING</span>
         </div>
 
-        <!-- 4-Step Lifecycle Progress Bar -->
         <div id="modal-stepper" class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 grid grid-cols-4 gap-1 text-center"></div>
 
-        <!-- Route & Contact Info -->
         <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 space-y-2 text-xs">
           <div>
             <span class="text-[10px] uppercase text-slate-500 font-bold">Pickup</span>
@@ -375,7 +359,6 @@
           </div>
         </div>
 
-        <!-- OPay Verification Box -->
         <div id="modal-pay-box" class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 space-y-2">
           <div class="flex items-center justify-between text-xs">
             <span class="text-slate-400">Payment Status</span>
@@ -389,7 +372,6 @@
           </div>
         </div>
 
-        <!-- Lifecycle Action Buttons -->
         <div class="grid grid-cols-3 gap-2">
           <button type="button" onclick="changeModalStatus('PICKED_UP')" class="py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white">
             Picked Up
@@ -482,7 +464,6 @@
   </div>
 
   <script>
-    // ==================== STATE ====================
     let allOrders = [];
     let currentHub = 'KD';
     let currentFilter = 'ALL';
@@ -493,7 +474,6 @@
     let authMode = 'LOGIN';
     let savedAdminPin = sessionStorage.getItem('speedial_admin_pin') || '';
 
-    // ==================== INIT ====================
     function initApp() {
       const today = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
       document.getElementById('home-date').textContent = `${today} • RC: 8937370`;
@@ -519,7 +499,6 @@
       if (rider.city) setHub(rider.city, false);
     }
 
-    // ==================== AUTH FLOW ====================
     function openAuthModal() {
       document.getElementById('app-shell').classList.add('hidden');
       document.getElementById('auth-screen').classList.remove('hidden');
@@ -597,7 +576,6 @@
       openAuthModal();
     }
 
-    // ==================== NAVIGATION & HUBS ====================
     function switchNav(tab) {
       ['home', 'orders', 'jobs', 'wallet', 'profile'].forEach(id => {
         document.getElementById(`view-${id}`).classList.toggle('hidden', id !== tab);
@@ -677,7 +655,6 @@
       setOrderFilter(filter);
     }
 
-    // ==================== DATA FETCH & RENDER ====================
     async function fetchAllOrders() {
       try {
         const res = await fetch(`/api/orders?city=${encodeURIComponent(currentHub)}`);
@@ -704,16 +681,13 @@
       document.getElementById('home-wallet-amount').textContent = balanceMasked ? '₦••••••' : `₦${earnings.toLocaleString()}.00`;
       document.getElementById('wallet-tab-balance').textContent = `₦${earnings.toLocaleString()}`;
 
-      // Home Recent Orders
       const recentFiltered = filterBySearch(allOrders).slice(0, 4);
       document.getElementById('home-recent-list').innerHTML = recentFiltered.length
         ? recentFiltered.map(o => orderCardHTML(o)).join('')
         : '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center text-xs text-slate-400">No recent orders in this hub.</div>';
 
-      // Orders List
       renderOrdersList();
 
-      // Jobs List (PENDING orders)
       document.getElementById('jobs-count-label').textContent = `${pending.length} order${pending.length === 1 ? '' : 's'} nearby`;
       document.getElementById('jobs-list').innerHTML = pending.length
         ? pending.map(o => orderCardHTML(o, true)).join('')
@@ -723,7 +697,6 @@
             <button type="button" onclick="fetchAllOrders()" class="mt-2 px-4 py-2 rounded-xl bg-slate-800 text-xs font-bold text-orange-400">↻ Refresh</button>
           </div>`;
 
-      // Wallet Transactions
       const paidOrDelivered = allOrders.filter(o => o.payment_status === 'PAID' || o.status === 'DELIVERED');
       document.getElementById('wallet-tx-list').innerHTML = paidOrDelivered.length
         ? paidOrDelivered.map(o => `
@@ -802,7 +775,6 @@
       `;
     }
 
-    // ==================== ORDER MODAL & ACTIONS ====================
     function openOrderModal(code) {
       const o = allOrders.find(x => x.tracking_code === code);
       if (!o) return;
@@ -825,7 +797,6 @@
       document.getElementById('modal-pay-status').className = isPaid ? 'font-bold text-emerald-400' : 'font-bold text-amber-400';
       document.getElementById('modal-pay-form').classList.toggle('hidden', isPaid);
 
-      // 4-step progress tracker
       const steps = ['PENDING', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED'];
       const labels = ['Accepted', 'Picked Up', 'In Transit', 'Delivered'];
       const activeIdx = Math.max(0, steps.indexOf(o.status));
@@ -886,7 +857,6 @@
       } catch (e) {}
     }
 
-    // ==================== SOS & WALLET HELPERS ====================
     function openSosModal() {
       document.getElementById('sos-order-ref').textContent = activeModalOrder
         ? `Order #${activeModalOrder.tracking_code} • SpeeDial Trust & Safety`
@@ -914,7 +884,6 @@
       setTimeout(() => { el.textContent = '6152624923 📋'; }, 1500);
     }
 
-    // ==================== ADMIN RIDER APPROVALS ====================
     async function unlockAdminPanel() {
       const pin = document.getElementById('admin-pin-input').value.trim();
       const msgEl = document.getElementById('admin-msg');
