@@ -7,252 +7,881 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { -webkit-tap-highlight-color: transparent; font-family: system-ui, -apple-system, sans-serif; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      background-color: #0f172a;
+    }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .leaflet-control-attribution { font-size: 9px !important; }
   </style>
 </head>
-<body class="bg-[#1e1035] text-slate-100 min-h-screen pb-28 select-none">
+<body class="text-slate-900 min-h-screen select-none">
 
-  <!-- ==================== 1. SEND A PACKAGE VIEW ==================== -->
-  <div id="send-package-screen" class="hidden min-h-screen bg-[#1e1035] max-w-md mx-auto pb-28">
-    <div class="sticky top-0 z-30 bg-[#1e1035]/95 backdrop-blur border-b border-purple-900/50 px-4 py-3.5 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <button type="button" onclick="closeSendPackage()" class="w-9 h-9 rounded-full bg-purple-950 border border-purple-800 flex items-center justify-center text-slate-200">←</button>
-        <h1 class="text-lg font-bold text-white">Send a Package</h1>
-      </div>
-      <div class="flex gap-1 bg-purple-950 p-1 rounded-xl border border-purple-800">
-        <button type="button" id="bcity-KD" onclick="setBookingCity('KD')" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-600 text-white">KD</button>
-        <button type="button" id="bcity-KN" onclick="setBookingCity('KN')" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400">KN</button>
-      </div>
-    </div>
-
-    <div class="px-4 pt-4 space-y-5">
-      <div class="space-y-2">
-        <label class="text-xs font-semibold text-slate-300">Delivery service</label>
-        <div class="grid grid-cols-2 gap-3">
-          <button type="button" id="svc-MOTO" onclick="selectDeliveryService('MOTO')" class="text-left p-3.5 rounded-2xl bg-orange-500/10 border-2 border-orange-500 transition space-y-1">
-            <div class="text-orange-400 text-lg">🛵</div>
-            <div class="text-xs font-bold text-white">On-demand motorcycle</div>
-            <p class="text-[11px] text-slate-400">Instant city booking.</p>
-          </button>
-          <button type="button" id="svc-FLEET" onclick="selectDeliveryService('FLEET')" class="text-left p-3.5 rounded-2xl bg-[#2a1b4e] border border-purple-500/20 transition space-y-1">
-            <div class="text-purple-300 text-lg">🚚</div>
-            <div class="text-xs font-bold text-slate-200">Logistics partner</div>
-            <p class="text-[11px] text-slate-400">Intra & interstate fleets.</p>
-          </button>
+  <!-- ==================== 1. LOGIN SCREEN ==================== -->
+  <div id="screen-login" class="hidden min-h-screen bg-gradient-to-b from-[#2e1065] via-[#1e1035] to-[#0f0720] flex flex-col justify-center px-6 py-10 max-w-md mx-auto text-white">
+    <div class="space-y-6 w-full my-auto">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 mb-3">
+          <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+          <span class="text-[11px] font-bold text-orange-400 tracking-wide">SPEEDIAL EXPRESS • RC: 8937370</span>
         </div>
+        <h1 class="text-3xl font-extrabold tracking-tight text-white">Welcome Back</h1>
+        <p class="text-sm text-slate-300 mt-1">Login to continue</p>
       </div>
 
-      <div class="space-y-2.5">
-        <div class="relative rounded-3xl overflow-hidden border border-purple-500/30 shadow-lg">
-          <div id="booking-map" class="w-full h-56 bg-slate-900 z-10"></div>
+      <div class="space-y-4 pt-2">
+        <input id="login-id" type="text" placeholder="Email or username" class="w-full bg-white text-slate-900 placeholder-slate-400 rounded-2xl px-4 py-4 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-500 shadow-sm" />
+
+        <div class="space-y-2">
+          <div class="relative">
+            <input id="login-pwd" type="password" placeholder="Password" class="w-full bg-white text-slate-900 placeholder-slate-400 rounded-2xl px-4 py-4 pr-12 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-500 shadow-sm" />
+            <button type="button" onclick="togglePwd('login-pwd')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+          <div class="text-right">
+            <button type="button" onclick="alert('Password reset instructions sent to your email.')" class="text-xs font-semibold text-slate-300 hover:text-orange-400">Forgot Password?</button>
+          </div>
         </div>
+
+        <p id="login-err" class="text-xs text-center text-red-400 hidden"></p>
+
+        <button type="button" onclick="submitLogin()" class="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-base py-4 rounded-2xl shadow-lg shadow-orange-600/25 transition active:scale-[0.99]">
+          Login
+        </button>
       </div>
 
-      <div class="space-y-3">
-        <h2 class="text-sm font-bold text-white">Pickup & Dropoff</h2>
-        <input id="b-pickup" type="text" placeholder="Pickup address (e.g. Saiha Mall, Kaduna)" class="w-full bg-[#2a1b4e] border border-purple-500/20 rounded-2xl px-4 py-3 text-xs text-white placeholder-slate-400 outline-none" />
-        <input id="b-dropoff" type="text" placeholder="Dropoff address (e.g. Barnawa)" class="w-full bg-[#2a1b4e] border border-purple-500/20 rounded-2xl px-4 py-3 text-xs text-white placeholder-slate-400 outline-none" />
-      </div>
-
-      <div class="bg-[#2a1b4e] border border-purple-500/20 rounded-2xl p-4 flex items-center justify-between">
-        <div><p class="text-xs text-slate-400">Est. Fare</p><p class="text-sm font-bold text-white">Total Delivery Fare</p></div>
-        <div class="flex items-center gap-1"><span class="text-sm font-bold text-orange-400">₦</span><input id="b-amount" type="number" value="1500" class="w-20 bg-slate-950 border border-purple-500/30 rounded-xl px-2 py-1 text-right text-sm font-bold text-orange-400 outline-none" /></div>
-      </div>
-      <p id="b-msg" class="text-xs text-center hidden"></p>
-    </div>
-
-    <div class="fixed bottom-0 inset-x-0 z-40 bg-[#1e1035]/95 backdrop-blur border-t border-purple-900/50 p-4">
-      <div class="max-w-md mx-auto">
-        <button type="button" onclick="submitCustomerBooking()" class="w-full bg-orange-600 hover:bg-orange-500 py-3.5 rounded-2xl text-sm font-bold text-white shadow-lg">Send Package</button>
+      <div class="text-center pt-4">
+        <p class="text-sm text-slate-300">
+          Don't have an account?
+          <button type="button" onclick="showScreen('screen-register')" class="text-orange-400 font-bold hover:underline ml-1">Sign Up</button>
+        </p>
       </div>
     </div>
   </div>
 
-  <!-- ==================== 2. CUSTOMER DASHBOARD SHELL ==================== -->
-  <div id="cust-shell" class="max-w-md mx-auto min-h-screen flex flex-col justify-between">
-    <div class="space-y-4">
-      <!-- Header -->
-      <div class="px-5 pt-6 pb-2 flex items-center justify-between">
-        <div>
-          <h1 class="text-2xl font-bold text-white tracking-tight">Hello, usman 👋</h1>
-          <p class="text-xs text-purple-300 mt-0.5">Mon • Nov 16, 2026 • RC: 8937370</p>
-        </div>
-        <button type="button" onclick="switchCustTab('alerts')" class="w-10 h-10 rounded-full bg-purple-900/60 border border-purple-700/50 flex items-center justify-center text-purple-200 relative shadow">🔔</button>
+  <!-- ==================== 2. CREATE ACCOUNT SCREEN ==================== -->
+  <div id="screen-register" class="hidden min-h-screen bg-[#2e1065] flex flex-col max-w-md mx-auto">
+    <div class="px-6 pt-8 pb-5 text-white">
+      <h1 class="text-2xl font-extrabold tracking-tight">Create Account</h1>
+      <p class="text-xs text-purple-200 mt-1">Fill in your details to get started</p>
+    </div>
+
+    <div class="flex-1 bg-[#dcd7e8] rounded-t-[32px] px-5 pt-6 pb-10 space-y-4">
+      <div class="space-y-1.5">
+        <label class="text-xs font-semibold text-slate-800">Full Name</label>
+        <input id="reg-name" type="text" placeholder="Enter your full name" class="w-full bg-white text-slate-900 placeholder-slate-400 rounded-2xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-orange-500" />
       </div>
 
-      <!-- Content Tabs -->
-      <div class="px-4 space-y-4">
+      <div class="space-y-1.5">
+        <label class="text-xs font-semibold text-slate-800">Email Address</label>
+        <input id="reg-email" type="email" placeholder="Enter your email address" class="w-full bg-white text-slate-900 placeholder-slate-400 rounded-2xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-orange-500" />
+      </div>
 
-        <!-- TAB 1: HOME -->
-        <div id="cview-home" class="space-y-4">
-          <!-- Wallet Card -->
-          <div class="bg-gradient-to-br from-orange-600 via-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-2xl relative overflow-hidden border border-orange-500/30">
-            <div class="flex items-center justify-between text-xs text-orange-100 font-medium">
-              <span>💳 Available for orders</span>
-              <button type="button" onclick="toggleBalanceMask()" class="p-1 rounded-full bg-black/20">👁️</button>
-            </div>
-            <div id="hero-balance" class="text-3xl font-bold tracking-tight mt-2">₦2,000.00</div>
-            <div class="inline-block mt-2 px-3 py-1 rounded-full bg-black/25 text-[11px] font-medium text-orange-50">
-              Bonus: ₦2,000 • OPay: 6152624923
-            </div>
-            <div class="grid grid-cols-2 gap-3 mt-4">
-              <button type="button" onclick="openAddMoneyModal()" class="bg-white text-slate-950 font-bold text-xs py-3 rounded-2xl shadow flex items-center justify-center gap-1">+ Fund wallet</button>
-              <button type="button" onclick="openWithdrawModal()" class="bg-black/25 text-white font-bold text-xs py-3 rounded-2xl flex items-center justify-center gap-1 border border-white/10">↗ Withdraw</button>
-            </div>
-          </div>
+      <div class="space-y-1.5">
+        <label class="text-xs font-semibold text-slate-800">Phone Number</label>
+        <input id="reg-phone" type="tel" placeholder="e.g 09011223344 or +234901122..." class="w-full bg-white text-slate-900 placeholder-slate-400 rounded-2xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-orange-500" />
+      </div>
 
-          <!-- Send Package Banner -->
-          <button type="button" onclick="openSendPackage()" class="w-full bg-[#2a1b4e] hover:bg-[#32205d] border border-purple-500/30 rounded-3xl p-4 flex items-center justify-between text-left shadow-lg transition">
-            <div class="flex items-center gap-3.5">
-              <div class="w-11 h-11 rounded-2xl bg-orange-600/20 border border-orange-500/40 text-orange-400 flex items-center justify-center text-lg">🚚</div>
-              <div>
-                <h2 class="text-sm font-bold text-white">Send a Package</h2>
-                <p class="text-[11px] text-purple-300/80">Get a price estimate and book a rider now</p>
-              </div>
-            </div>
-            <span class="text-orange-400 font-bold text-xl pr-1">›</span>
+      <div class="space-y-1.5">
+        <label class="text-xs font-semibold text-slate-800">Your state</label>
+        <div class="relative">
+          <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-900">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </span>
+          <select id="reg-state" class="w-full bg-white text-slate-700 rounded-2xl pl-10 pr-10 py-3.5 text-sm outline-none appearance-none focus:ring-2 focus:ring-orange-500">
+            <option value="Kaduna">Kaduna</option>
+            <option value="Kano">Kano</option>
+            <option value="Abuja">FCT Abuja</option>
+            <option value="Lagos">Lagos</option>
+          </select>
+          <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">⌄</span>
+        </div>
+        <p class="text-[11px] text-slate-500 leading-snug pt-0.5">
+          We show logistics partners in your state first. You can choose another when ordering.
+        </p>
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="text-xs font-semibold text-slate-800">Password</label>
+        <div class="relative">
+          <input id="reg-pwd" type="password" placeholder="••••••••••" class="w-full bg-white text-slate-900 placeholder-slate-400 rounded-2xl px-4 py-3.5 pr-12 text-sm outline-none focus:ring-2 focus:ring-orange-500" />
+          <button type="button" onclick="togglePwd('reg-pwd')" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
           </button>
+        </div>
+      </div>
 
-          <!-- Stats Grid -->
-          <div class="grid grid-cols-2 gap-3.5">
-            <div class="bg-[#2a1b4e] border border-purple-500/20 rounded-3xl p-4 flex flex-col justify-between h-24 shadow">
-              <div class="text-2xl font-bold text-white">0</div>
-              <div class="text-xs font-medium text-purple-200">Total Orders</div>
+      <div class="space-y-1.5">
+        <label class="text-xs font-semibold text-slate-800">Referral Code (optional)</label>
+        <input id="reg-ref" type="text" placeholder="Enter a referral code" class="w-full bg-white text-slate-900 placeholder-slate-400 rounded-2xl px-4 py-3.5 text-sm outline-none focus:ring-2 focus:ring-orange-500" />
+      </div>
+
+      <div class="flex items-center gap-2.5 pt-1">
+        <input id="reg-terms" type="checkbox" checked class="w-4 h-4 rounded accent-orange-600" />
+        <label for="reg-terms" class="text-xs text-slate-700">
+          I agree to the <span class="text-orange-600 font-bold underline">Terms of Service</span> and <span class="text-orange-600 font-bold underline">Privacy Policy</span>
+        </label>
+      </div>
+
+      <p id="reg-err" class="text-xs text-center text-red-600 hidden"></p>
+
+      <button type="button" onclick="submitRegister()" class="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-bold text-sm py-4 rounded-2xl shadow-lg shadow-orange-600/20 transition">
+        Create Account
+      </button>
+
+      <div class="text-center pt-2">
+        <button type="button" onclick="showScreen('screen-login')" class="text-xs text-slate-600 font-semibold">
+          Already have an account? <span class="text-orange-600 font-bold underline">Login</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 3. MAIN CUSTOMER APP SHELL (EXACT DELIVRAX LAYOUT) ==================== -->
+  <div id="screen-app" class="min-h-screen bg-[#1e1035] max-w-md mx-auto flex flex-col justify-between pb-20">
+
+    <!-- Top Dark Header -->
+    <div id="app-top-header" class="px-5 pt-6 pb-5 flex items-center justify-between text-white">
+      <div>
+        <h1 id="dash-greeting" class="text-xl font-extrabold tracking-tight">Hello, usman 👋</h1>
+        <p id="dash-date" class="text-xs text-purple-200/80 font-medium mt-0.5">Mon • Nov 16, 2026</p>
+      </div>
+      <button type="button" onclick="switchTab('alerts')" class="w-10 h-10 rounded-full flex items-center justify-center text-white hover:bg-white/10 transition relative">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span id="bell-dot" class="w-2 h-2 rounded-full bg-orange-500 absolute top-2 right-2"></span>
+      </button>
+    </div>
+
+    <!-- Curved Light Sheet Container (Exact DelivraX Sheet) -->
+    <div class="flex-1 bg-[#e8e5f0] rounded-t-[30px] px-4 pt-4 pb-8 space-y-4 min-h-[calc(100vh-92px)]">
+
+      <!-- ---------- TAB 1: HOME ---------- -->
+      <div id="tab-home" class="space-y-4">
+
+        <!-- Wallet Hero Card -->
+        <div class="bg-gradient-to-br from-[#2e1065] via-[#4c1d95] to-[#ea580c] rounded-[26px] p-5 text-white shadow-xl relative overflow-hidden">
+          <div class="w-36 h-36 rounded-full bg-white/10 absolute -top-8 -right-8 pointer-events-none"></div>
+
+          <div class="flex items-center justify-between text-xs text-orange-100/90 font-medium">
+            <span class="flex items-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 12h.01"/></svg>
+              <span>Available for orders</span>
+            </span>
+            <button type="button" onclick="toggleBalanceMask()" class="p-1 text-white/90 hover:text-white">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+
+          <div id="wallet-balance-text" class="text-[32px] font-extrabold tracking-tight mt-1.5 leading-tight">₦2,000.00</div>
+
+          <div id="wallet-bonus-pill" class="inline-block mt-2 px-3 py-1 rounded-full bg-white/15 text-[11px] font-semibold text-white">
+            Bonus: ₦2,000
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            <button type="button" onclick="openModal('modal-add-money')" class="bg-white hover:bg-slate-50 active:scale-[0.99] transition text-[#2e1065] font-bold text-xs py-3.5 rounded-2xl shadow flex items-center justify-center gap-1.5">
+              <span class="text-base leading-none font-bold">+</span>
+              <span>Fund wallet</span>
+            </button>
+            <button type="button" onclick="openModal('modal-withdraw')" class="bg-white/20 hover:bg-white/30 active:scale-[0.99] transition text-white font-bold text-xs py-3.5 rounded-2xl flex items-center justify-center gap-1.5 backdrop-blur-sm">
+              <span>↗</span>
+              <span>Withdraw</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Send a Package Action Banner -->
+        <button type="button" onclick="showScreen('screen-send-package')" class="w-full bg-gradient-to-r from-[#2e1065] to-[#4c1d95] hover:opacity-95 active:scale-[0.99] transition rounded-[22px] p-4 flex items-center justify-between text-left text-white shadow-md">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 rounded-xl bg-orange-500/20 border border-orange-400/30 flex items-center justify-center text-orange-400 shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
             </div>
-            <div class="bg-[#2a1b4e] border border-purple-500/20 rounded-3xl p-4 flex flex-col justify-between h-24 shadow">
-              <div class="text-2xl font-bold text-emerald-400">0</div>
-              <div class="text-xs font-medium text-purple-200">Completed</div>
+            <div>
+              <h2 class="text-sm font-bold text-white">Send a Package</h2>
+              <p class="text-[11px] text-purple-200 mt-0.5">Get a price estimate and book a rider now</p>
             </div>
-            <div class="bg-[#2a1b4e] border border-purple-500/20 rounded-3xl p-4 flex flex-col justify-between h-24 shadow">
-              <div class="text-2xl font-bold text-amber-400">0</div>
-              <div class="text-xs font-medium text-purple-200">Active Deliveries</div>
+          </div>
+          <svg class="w-5 h-5 text-orange-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+
+        <!-- 2x2 White Stats Cards (Exact DelivraX Card Structure) -->
+        <div class="grid grid-cols-2 gap-3">
+          <div onclick="switchTab('orders')" class="bg-white rounded-[22px] p-4 h-28 flex flex-col justify-between shadow-sm cursor-pointer">
+            <div>
+              <div id="stat-total" class="text-xl font-extrabold text-slate-900">0</div>
+              <div class="text-xs text-slate-500 font-medium mt-1">Total Orders</div>
             </div>
-            <div class="bg-[#2a1b4e] border border-purple-500/20 rounded-3xl p-4 flex flex-col justify-between h-24 shadow">
-              <div class="text-xl font-bold text-orange-400">₦0</div>
-              <div class="text-xs font-medium text-purple-200">Total Spent</div>
+            <div class="flex justify-end text-slate-800">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
             </div>
           </div>
 
-          <!-- Recent Orders -->
-          <div class="space-y-3 pt-2">
-            <h2 class="text-sm font-bold text-white">Recent Orders</h2>
-            <div class="bg-[#2a1b4e] border border-purple-500/20 rounded-3xl p-6 text-center space-y-1 shadow">
-              <p class="text-xs font-bold text-slate-200">No orders yet</p>
-              <p class="text-[11px] text-purple-300/70">Tap "Send a Package" above to book your first delivery</p>
+          <div class="bg-white rounded-[22px] p-4 h-28 flex flex-col justify-between shadow-sm">
+            <div>
+              <div id="stat-completed" class="text-xl font-extrabold text-slate-900">0</div>
+              <div class="text-xs text-slate-500 font-medium mt-1">Completed</div>
+            </div>
+            <div class="flex justify-end text-slate-800">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-[22px] p-4 h-28 flex flex-col justify-between shadow-sm">
+            <div>
+              <div id="stat-active" class="text-xl font-extrabold text-slate-900">0</div>
+              <div class="text-xs text-slate-500 font-medium mt-1">Active Deliveries</div>
+            </div>
+            <div class="flex justify-end text-slate-800">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-[22px] p-4 h-28 flex flex-col justify-between shadow-sm">
+            <div>
+              <div id="stat-spent" class="text-xl font-extrabold text-slate-900">₦0</div>
+              <div class="text-xs text-slate-500 font-medium mt-1">Total Spent</div>
+            </div>
+            <div class="flex justify-end text-slate-800">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
             </div>
           </div>
         </div>
 
-        <!-- TAB 2: ORDERS -->
-        <div id="cview-orders" class="hidden space-y-4">
-          <h1 class="text-xl font-bold text-white">My Orders</h1>
-          <div class="bg-[#2a1b4e] border border-purple-500/20 rounded-3xl p-6 text-center text-xs text-purple-300">No delivery orders found.</div>
-        </div>
-
-        <!-- TAB 3: WALLET -->
-        <div id="cview-wallet" class="hidden space-y-4">
-          <h1 class="text-xl font-bold text-white">Wallet & Payments</h1>
-          <div class="bg-gradient-to-br from-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-xl space-y-3">
-            <p class="text-xs text-orange-100">Available Balance</p>
-            <p class="text-3xl font-bold">₦2,000.00</p>
-            <div class="flex gap-2.5 pt-2">
-              <button type="button" onclick="openAddMoneyModal()" class="flex-1 bg-white text-slate-950 font-bold text-xs py-3 rounded-2xl shadow">+ Add money</button>
-              <button type="button" onclick="openWithdrawModal()" class="flex-1 bg-black/30 text-white font-bold text-xs py-3 rounded-2xl">Withdraw</button>
+        <!-- Recent Orders Section -->
+        <div class="space-y-2.5 pt-1">
+          <h2 class="text-base font-extrabold text-slate-900">Recent Orders</h2>
+          <div id="home-recent-orders">
+            <div class="bg-white rounded-[22px] p-8 text-center space-y-2 shadow-sm">
+              <div class="flex justify-center text-slate-500">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+              </div>
+              <p class="text-xs font-bold text-slate-800">No orders yet</p>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- TAB 4: ALERTS -->
-        <div id="cview-alerts" class="hidden space-y-4">
-          <h1 class="text-xl font-bold text-white">Notifications</h1>
-          <div class="bg-[#2a1b4e] border border-purple-500/20 rounded-3xl p-4 text-xs text-purple-200">Welcome to SpeeDial Express! You have a ₦2,000 welcome bonus.</div>
+      <!-- ---------- TAB 2: ORDERS ---------- -->
+      <div id="tab-orders" class="hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-extrabold text-slate-900">My Orders</h2>
+          <button type="button" onclick="showScreen('screen-send-package')" class="bg-orange-600 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow">+ New Order</button>
+        </div>
+        <div id="orders-full-list" class="space-y-3">
+          <div class="bg-white rounded-[22px] p-8 text-center space-y-2 shadow-sm">
+            <p class="text-xs font-bold text-slate-800">No orders yet</p>
+            <p class="text-[11px] text-slate-500">Book a rider to see your active waybills here.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- TAB 3: WALLET ---------- -->
+      <div id="tab-wallet" class="hidden space-y-4">
+        <h2 class="text-lg font-extrabold text-slate-900">Wallet</h2>
+        <div class="bg-gradient-to-br from-[#2e1065] via-[#4c1d95] to-[#ea580c] rounded-[26px] p-5 text-white shadow-xl space-y-3">
+          <p class="text-xs text-orange-100">Available for orders</p>
+          <p id="wallet-tab-balance" class="text-3xl font-extrabold">₦2,000.00</p>
+          <p id="wallet-tab-sub" class="text-[11px] text-orange-100">Withdrawable: ₦0.00 • Bonus: ₦2,000</p>
+          <div class="grid grid-cols-2 gap-3 pt-2">
+            <button type="button" onclick="openModal('modal-add-money')" class="bg-white text-[#2e1065] font-bold text-xs py-3 rounded-2xl shadow">+ Fund wallet</button>
+            <button type="button" onclick="openModal('modal-withdraw')" class="bg-white/20 text-white font-bold text-xs py-3 rounded-2xl">↗ Withdraw</button>
+          </div>
         </div>
 
-        <!-- TAB 5: PROFILE -->
-        <div id="cview-profile" class="hidden space-y-4 text-center pt-4">
-          <div class="w-20 h-20 rounded-full bg-orange-600 mx-auto flex items-center justify-center text-2xl font-bold text-white shadow-xl">US</div>
-          <h2 class="text-lg font-bold text-white">Usman</h2>
-          <p class="text-xs text-orange-400">SpeeDial Express Customer • Kaduna & Kano</p>
-          <button type="button" onclick="alert('Signed out')" class="w-full bg-[#2a1b4e] border border-purple-500/20 py-3 rounded-2xl text-xs font-semibold text-purple-300">Sign Out</button>
+        <div class="bg-white rounded-[22px] p-4 space-y-3 shadow-sm">
+          <h3 class="text-sm font-extrabold text-slate-900">Recent Transactions</h3>
+          <div id="wallet-tx-list" class="space-y-2.5 text-xs">
+            <div class="flex items-center justify-between py-2 border-b border-slate-100">
+              <div>
+                <p class="font-bold text-slate-800">Welcome Bonus</p>
+                <p class="text-[11px] text-slate-500">Available for package orders</p>
+              </div>
+              <span class="font-extrabold text-emerald-600">+₦2,000.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- TAB 4: ALERTS ---------- -->
+      <div id="tab-alerts" class="hidden space-y-3">
+        <h2 class="text-lg font-extrabold text-slate-900">Notifications</h2>
+        <div class="bg-white rounded-[22px] p-4 flex items-start gap-3 shadow-sm">
+          <div class="w-9 h-9 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center font-bold shrink-0">🎁</div>
+          <div>
+            <p class="text-xs font-bold text-slate-900">Welcome to SpeeDial Express!</p>
+            <p class="text-[11px] text-slate-500 mt-0.5">Your ₦2,000 welcome bonus is active and ready for your first delivery order.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- TAB 5: PROFILE ---------- -->
+      <div id="tab-profile" class="hidden space-y-4">
+        <div class="bg-white rounded-[24px] p-6 text-center space-y-3 shadow-sm">
+          <div id="prof-avatar" class="w-16 h-16 rounded-full bg-gradient-to-br from-[#2e1065] to-orange-600 text-white text-xl font-extrabold flex items-center justify-center mx-auto shadow">
+            US
+          </div>
+          <div>
+            <h2 id="prof-name" class="text-base font-extrabold text-slate-900">usman</h2>
+            <p id="prof-phone" class="text-xs text-slate-500 mt-0.5">Kaduna & Kano • RC: 8937370</p>
+          </div>
         </div>
 
+        <div class="bg-white rounded-[22px] p-4 space-y-2 text-xs shadow-sm">
+          <p class="font-bold text-slate-900">SpeeDial Express</p>
+          <p class="text-slate-500">No. A4 Saiha Mall, Opposite KASU, Tafawa Balewa Way, Kaduna</p>
+          <p class="text-slate-500">Support WhatsApp: +234 724 066 6600</p>
+        </div>
+
+        <button type="button" onclick="logoutCustomer()" class="w-full bg-white hover:bg-red-50 text-red-600 font-bold text-xs py-4 rounded-[20px] shadow-sm">
+          Sign Out / Switch Account
+        </button>
       </div>
+
     </div>
 
-    <!-- ADD MONEY MODAL -->
-    <div id="add-money-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
-      <div class="bg-[#23143c] border-t border-orange-500/40 rounded-t-3xl w-full max-w-md p-6 space-y-4">
-        <div class="flex items-center justify-between"><h3 class="text-base font-bold text-white">Add Money</h3><button type="button" onclick="closeAddMoneyModal()" class="w-8 h-8 rounded-full bg-purple-950 text-purple-300">✕</button></div>
-        <button type="button" onclick="alert('Paystack Checkout')" class="w-full text-left p-4 rounded-2xl bg-[#2a1b4e] border border-purple-500/20 flex items-center justify-between"><div><p class="text-xs font-bold text-white">Pay Online</p><p class="text-[11px] text-slate-400">Card, bank transfer via Paystack</p></div><span>›</span></button>
-        <button type="button" onclick="alert('OPay: 6152624923')" class="w-full text-left p-4 rounded-2xl bg-[#2a1b4e] border border-purple-500/20 flex items-center justify-between"><div><p class="text-xs font-bold text-white">Bank Transfer (OPay)</p><p class="text-[11px] text-slate-400">6152624923 • SpeeDial Digital Services</p></div><span>›</span></button>
-      </div>
-    </div>
+    <!-- Bottom 5-Tab Navigation Bar (White DelivraX Style) -->
+    <nav class="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-slate-200">
+      <div class="max-w-md mx-auto grid grid-cols-5 py-2.5">
+        <button type="button" onclick="switchTab('home')" id="nav-home" class="flex flex-col items-center gap-1 text-[#2e1065]">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 14c1.5 1.5 4.5 1.5 6 0"/></svg>
+          <span class="text-[10px] font-bold">Home</span>
+        </button>
 
-    <!-- WITHDRAW MODAL -->
-    <div id="withdraw-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
-      <div class="bg-[#23143c] border-t border-orange-500/40 rounded-t-3xl w-full max-w-md p-6 space-y-4">
-        <div class="flex items-center justify-between"><h3 class="text-base font-bold text-white">Withdraw Cash</h3><button type="button" onclick="closeWithdrawModal()" class="w-8 h-8 rounded-full bg-purple-950 text-purple-300">✕</button></div>
-        <input type="number" placeholder="Amount (₦)" class="w-full bg-[#2a1b4e] border border-purple-500/30 rounded-2xl px-4 py-3 text-sm font-bold text-white outline-none" />
-        <button type="button" onclick="closeWithdrawModal()" class="w-full bg-orange-600 py-3.5 rounded-2xl text-xs font-bold text-white">Submit Withdrawal</button>
-      </div>
-    </div>
+        <button type="button" onclick="switchTab('orders')" id="nav-orders" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          <span class="text-[10px] font-medium">Orders</span>
+        </button>
 
-    <!-- BOTTOM NAVIGATION -->
-    <nav class="fixed bottom-0 inset-x-0 z-40 bg-[#160b28]/95 backdrop-blur border-t border-purple-900/50">
-      <div class="max-w-md mx-auto grid grid-cols-5 py-2">
-        <button type="button" onclick="switchCustTab('home')" id="ctab-home" class="flex flex-col items-center gap-1 text-orange-400"><span class="text-[10px] font-bold">Home</span></button>
-        <button type="button" onclick="switchCustTab('orders')" id="ctab-orders" class="flex flex-col items-center gap-1 text-purple-400/50 hover:text-orange-400"><span class="text-[10px]">Orders</span></button>
-        <button type="button" onclick="switchCustTab('wallet')" id="ctab-wallet" class="flex flex-col items-center gap-1 text-purple-400/50 hover:text-orange-400"><span class="text-[10px]">Wallet</span></button>
-        <button type="button" onclick="switchCustTab('alerts')" id="ctab-alerts" class="flex flex-col items-center gap-1 text-purple-400/50 hover:text-orange-400"><span class="text-[10px]">Alerts</span></button>
-        <button type="button" onclick="switchCustTab('profile')" id="ctab-profile" class="flex flex-col items-center gap-1 text-purple-400/50 hover:text-orange-400"><span class="text-[10px]">Profile</span></button>
+        <button type="button" onclick="switchTab('wallet')" id="nav-wallet" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 12h.01"/></svg>
+          <span class="text-[10px] font-medium">Wallet</span>
+        </button>
+
+        <button type="button" onclick="switchTab('alerts')" id="nav-alerts" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="text-[10px] font-medium">Alerts</span>
+        </button>
+
+        <button type="button" onclick="switchTab('profile')" id="nav-profile" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/></svg>
+          <span class="text-[10px] font-medium">Profile</span>
+        </button>
       </div>
     </nav>
   </div>
 
+  <!-- ==================== 4. CENTERED "ADD MONEY" MODAL (EXACT SCREENSHOT) ==================== -->
+  <div id="modal-add-money" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-5">
+    <div class="bg-white rounded-[28px] w-full max-w-sm p-6 relative shadow-2xl space-y-5">
+      <button type="button" onclick="closeModal('modal-add-money')" class="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center text-slate-700 absolute top-4 right-4 hover:bg-slate-100">
+        ✕
+      </button>
+
+      <div class="text-center pt-2">
+        <h3 class="text-lg font-extrabold text-[#2e1065]">Add Money</h3>
+        <p class="text-xs text-slate-400 mt-1">Choose how you'd like to fund your wallet</p>
+      </div>
+
+      <div class="space-y-3">
+        <!-- Pay Online -->
+        <button type="button" onclick="closeModal('modal-add-money'); showScreen('screen-fund-online');" class="w-full bg-[#e8e4f0] hover:bg-[#ded8ea] transition rounded-2xl p-4 flex items-center justify-between text-left">
+          <div class="flex items-center gap-3.5">
+            <div class="w-11 h-11 rounded-full bg-[#d8d0e8] text-[#4c1d95] flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            </div>
+            <div>
+              <p class="text-sm font-bold text-slate-900">Pay Online</p>
+              <p class="text-xs text-slate-500 mt-0.5">Card, bank transfer via Paystack</p>
+            </div>
+          </div>
+          <span class="text-slate-400 text-lg font-bold">›</span>
+        </button>
+
+        <!-- Bank Transfer -->
+        <button type="button" onclick="closeModal('modal-add-money'); showScreen('screen-bank-transfer');" class="w-full bg-[#e8e4f0] hover:bg-[#ded8ea] transition rounded-2xl p-4 flex items-center justify-between text-left">
+          <div class="flex items-center gap-3.5">
+            <div class="w-11 h-11 rounded-full bg-[#d8d0e8] text-[#4c1d95] flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 22 7 12 2"/><polyline points="4 7 4 17"/><polyline points="9 7 9 17"/><polyline points="15 7 15 17"/><polyline points="20 7 20 17"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+            </div>
+            <div>
+              <p class="text-sm font-bold text-slate-900">Bank Transfer</p>
+              <p class="text-xs text-slate-500 mt-0.5">Transfer to your dedicated account number</p>
+            </div>
+          </div>
+          <span class="text-slate-400 text-lg font-bold">›</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 5. FUND WALLET (PAY ONLINE) SCREEN ==================== -->
+  <div id="screen-fund-online" class="hidden min-h-screen bg-white max-w-md mx-auto p-5 flex flex-col justify-between">
+    <div class="space-y-8">
+      <div class="flex items-center gap-3.5">
+        <button type="button" onclick="showScreen('screen-app')" class="w-10 h-10 rounded-full border border-slate-300 flex items-center justify-center text-slate-800">
+          ←
+        </button>
+        <h1 class="text-lg font-extrabold text-slate-900">Fund Wallet</h1>
+      </div>
+
+      <div class="text-center space-y-2 pt-2">
+        <div class="w-16 h-16 rounded-full bg-[#f0ecf8] text-[#4c1d95] flex items-center justify-center mx-auto">
+          <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 12h.01"/></svg>
+        </div>
+        <h2 class="text-base font-extrabold text-slate-900 pt-2">How much do you want to add?</h2>
+        <p class="text-xs text-slate-400 leading-relaxed max-w-xs mx-auto">
+          You'll be redirected to Paystack to complete your payment securely.
+        </p>
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-xs font-medium text-slate-400">Amount (₦)</label>
+        <input id="online-fund-amount" type="number" placeholder="0.00" value="1000" class="w-full bg-white border border-slate-200 focus:border-[#4c1d95] rounded-2xl px-4 py-4 text-base font-semibold text-slate-800 outline-none" />
+      </div>
+
+      <button type="button" onclick="openPaystackScreen()" class="w-full bg-gradient-to-r from-[#2e1065] to-[#ea580c] hover:opacity-95 text-white font-bold text-sm py-4 rounded-2xl shadow-lg">
+        Continue
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== 6. PAYSTACK CHECKOUT SCREEN ==================== -->
+  <div id="screen-paystack" class="hidden min-h-screen bg-[#f8f9fa] max-w-md mx-auto flex flex-col justify-between">
+    <div>
+      <div class="bg-white px-5 py-4 flex items-center justify-between border-b border-slate-100">
+        <button type="button" onclick="showScreen('screen-fund-online')" class="w-9 h-9 rounded-full border border-slate-300 flex items-center justify-center text-slate-800">←</button>
+        <h1 class="text-base font-bold text-slate-900">Fund Wallet</h1>
+        <button type="button" onclick="completeOnlineFunding()" class="text-xs font-bold text-[#4c1d95]">Done</button>
+      </div>
+
+      <div class="p-5 space-y-5">
+        <div>
+          <p class="text-xs font-bold text-emerald-600 uppercase tracking-wide">PAYSTACK CHECKOUT</p>
+          <p id="paystack-desc" class="text-sm text-slate-600 mt-1">Use one of the payment methods below to pay NGN 1,000 to SpeeDial Express</p>
+        </div>
+
+        <div class="divide-y divide-slate-200 border-t border-b border-slate-200 text-sm font-semibold text-slate-700">
+          <button type="button" onclick="completeOnlineFunding('Zap')" class="w-full py-4 flex items-center gap-3 text-left hover:bg-slate-100 px-2">
+            <span class="px-2 py-0.5 rounded bg-red-500 text-white text-[10px] font-extrabold">NEW</span>
+            <span>Pay with Zap</span>
+          </button>
+          <button type="button" onclick="completeOnlineFunding('Card')" class="w-full py-4 flex items-center gap-3 text-left hover:bg-slate-100 px-2">
+            <span>💳</span> <span>Pay with Card</span>
+          </button>
+          <button type="button" onclick="completeOnlineFunding('Transfer')" class="w-full py-4 flex items-center gap-3 text-left hover:bg-slate-100 px-2">
+            <span>🏦</span> <span>Pay with Transfer</span>
+          </button>
+          <button type="button" onclick="completeOnlineFunding('Bank')" class="w-full py-4 flex items-center gap-3 text-left hover:bg-slate-100 px-2">
+            <span>🏛️</span> <span>Pay with Bank</span>
+          </button>
+          <button type="button" onclick="completeOnlineFunding('USSD')" class="w-full py-4 flex items-center gap-3 text-left hover:bg-slate-100 px-2">
+            <span>*#</span> <span>Pay with USSD</span>
+          </button>
+          <button type="button" onclick="completeOnlineFunding('OPay')" class="w-full py-4 flex items-center gap-3 text-left hover:bg-slate-100 px-2">
+            <span>⚡</span> <span>Pay with OPay</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-t-3xl p-8 text-center space-y-5 border-t border-slate-100">
+      <button type="button" onclick="showScreen('screen-app')" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700">
+        ✕ Cancel Payment
+      </button>
+      <p class="text-xs text-slate-500 font-semibold">🔒 Secured by <span class="font-extrabold text-slate-900">paystack</span></p>
+    </div>
+  </div>
+
+  <!-- ==================== 7. DEDICATED BANK TRANSFER SCREEN ==================== -->
+  <div id="screen-bank-transfer" class="hidden min-h-screen bg-white max-w-md mx-auto p-5 space-y-5">
+    <div class="flex items-center justify-between">
+      <button type="button" onclick="showScreen('screen-app')" class="w-10 h-10 rounded-full border border-slate-300 flex items-center justify-center text-slate-800">←</button>
+      <h1 class="text-base font-extrabold text-slate-900">Bank Transfer</h1>
+      <div class="w-10"></div>
+    </div>
+
+    <div class="bg-[#f4f0fa] rounded-2xl p-4 flex items-start gap-3">
+      <span class="w-5 h-5 rounded-full border border-[#4c1d95] text-[#4c1d95] flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">i</span>
+      <p class="text-xs text-[#4c1d95] leading-relaxed">
+        Transfer any amount to the account below and your wallet will be funded automatically within minutes.
+      </p>
+    </div>
+
+    <!-- Black Dedicated Account Card -->
+    <div class="bg-[#09090b] text-white rounded-[24px] p-5 space-y-3.5 shadow-xl">
+      <p class="text-xs text-slate-400">Your Dedicated Account</p>
+      <div>
+        <p class="text-[11px] text-slate-400">Bank Name</p>
+        <p class="text-sm font-extrabold text-white mt-0.5">OPay / Wema Bank</p>
+      </div>
+      <div>
+        <p class="text-[11px] text-slate-400">Account Name</p>
+        <p id="ded-acct-name" class="text-sm font-extrabold text-white uppercase mt-0.5">SPEEDIAL/USER USMAN</p>
+      </div>
+      <div class="flex items-end justify-between pt-1">
+        <div>
+          <p class="text-[11px] text-slate-400">Account Number</p>
+          <p id="ded-acct-num" class="text-lg font-extrabold tracking-wider font-mono text-orange-400 mt-0.5">6152624923</p>
+        </div>
+        <button type="button" onclick="copyAcctNum()" id="copy-acct-btn" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-xs font-bold text-white flex items-center gap-1.5">
+          <span>📋</span> <span>Copy</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- How it works Card -->
+    <div class="border border-slate-200 rounded-[24px] p-5 space-y-3.5">
+      <h3 class="text-sm font-extrabold text-slate-900">How it works</h3>
+      <div class="space-y-3 text-xs text-slate-500">
+        <div class="flex items-center gap-3">
+          <span class="w-6 h-6 rounded-full bg-[#4c1d95] text-white font-bold text-[11px] flex items-center justify-center shrink-0">1</span>
+          <span>Open your bank app or USSD</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-6 h-6 rounded-full bg-[#4c1d95] text-white font-bold text-[11px] flex items-center justify-center shrink-0">2</span>
+          <span>Transfer any amount to the account number above</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-6 h-6 rounded-full bg-[#4c1d95] text-white font-bold text-[11px] flex items-center justify-center shrink-0">3</span>
+          <span>Your wallet will be funded automatically</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="w-6 h-6 rounded-full bg-[#4c1d95] text-white font-bold text-[11px] flex items-center justify-center shrink-0">4</span>
+          <span>You'll receive a push notification once funding is confirmed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 8. WITHDRAW MODAL ==================== -->
+  <div id="modal-withdraw" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-5">
+    <div class="bg-white rounded-[28px] w-full max-w-sm p-6 relative shadow-2xl space-y-4">
+      <button type="button" onclick="closeModal('modal-withdraw')" class="w-8 h-8 rounded-full border border-slate-300 flex items-center justify-center text-slate-700 absolute top-4 right-4">✕</button>
+      <div>
+        <h3 class="text-lg font-extrabold text-[#2e1065]">Withdraw Funds</h3>
+        <p id="wd-avail-note" class="text-xs text-slate-500 mt-0.5">Withdrawable cash: ₦0.00 (Bonus is for orders)</p>
+      </div>
+      <input id="wd-amount" type="number" placeholder="Amount (Minimum ₦500)" class="w-full border border-slate-200 rounded-2xl px-4 py-3.5 text-sm outline-none focus:border-orange-500" />
+      <select id="wd-bank" class="w-full border border-slate-200 rounded-2xl px-4 py-3.5 text-sm outline-none">
+        <option value="OPay">OPay</option>
+        <option value="PalmPay">PalmPay</option>
+        <option value="Moniepoint">Moniepoint MFB</option>
+        <option value="Kuda Bank">Kuda Bank</option>
+        <option value="GTBank">GTBank</option>
+        <option value="Access Bank">Access Bank</option>
+      </select>
+      <input id="wd-acct-num" type="tel" maxlength="10" placeholder="10-Digit Account Number" class="w-full border border-slate-200 rounded-2xl px-4 py-3.5 text-sm outline-none font-mono" />
+      <input id="wd-acct-name" type="text" placeholder="Account Holder Name" class="w-full border border-slate-200 rounded-2xl px-4 py-3.5 text-sm outline-none" />
+      <p id="wd-msg" class="text-xs text-center hidden"></p>
+      <button type="button" onclick="submitWithdrawal()" class="w-full bg-gradient-to-r from-[#2e1065] to-[#ea580c] text-white font-bold text-xs py-4 rounded-2xl shadow-lg">
+        Submit Withdrawal
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== 9. SEND A PACKAGE SCREEN ==================== -->
+  <div id="screen-send-package" class="hidden min-h-screen bg-white max-w-md mx-auto pb-28">
+    <div class="sticky top-0 z-30 bg-white border-b border-slate-100 px-5 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button type="button" onclick="showScreen('screen-app')" class="w-9 h-9 rounded-full border border-slate-300 flex items-center justify-center text-slate-800">←</button>
+        <h1 class="text-base font-extrabold text-slate-900">Send a Package</h1>
+      </div>
+      <span class="text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-full">Kaduna & Kano</span>
+    </div>
+
+    <div class="p-5 space-y-4">
+      <div class="rounded-2xl overflow-hidden border border-slate-200">
+        <div id="booking-map" class="w-full h-48 bg-slate-100"></div>
+      </div>
+
+      <div class="space-y-3">
+        <label class="text-xs font-bold text-slate-700">Pickup Details</label>
+        <input id="pkg-pickup" type="text" placeholder="Pickup address (e.g. Saiha Mall, Tafawa Balewa Way)" class="w-full border border-slate-200 rounded-2xl px-4 py-3.5 text-xs outline-none focus:border-orange-500" />
+        <div class="grid grid-cols-2 gap-2.5">
+          <input id="pkg-sender-name" type="text" placeholder="Sender Name" class="border border-slate-200 rounded-2xl px-3.5 py-3 text-xs outline-none" />
+          <input id="pkg-sender-phone" type="tel" placeholder="Sender Phone" class="border border-slate-200 rounded-2xl px-3.5 py-3 text-xs outline-none" />
+        </div>
+      </div>
+
+      <div class="space-y-3 pt-2">
+        <label class="text-xs font-bold text-slate-700">Dropoff Details</label>
+        <input id="pkg-dropoff" type="text" placeholder="Dropoff address (e.g. Barnawa, Kaduna)" class="w-full border border-slate-200 rounded-2xl px-4 py-3.5 text-xs outline-none focus:border-orange-500" />
+        <div class="grid grid-cols-2 gap-2.5">
+          <input id="pkg-rec-name" type="text" placeholder="Recipient Name" class="border border-slate-200 rounded-2xl px-3.5 py-3 text-xs outline-none" />
+          <input id="pkg-rec-phone" type="tel" placeholder="Recipient Phone" class="border border-slate-200 rounded-2xl px-3.5 py-3 text-xs outline-none" />
+        </div>
+      </div>
+
+      <div class="bg-[#f4f0fa] rounded-2xl p-4 flex items-center justify-between">
+        <div>
+          <p class="text-xs text-slate-500">Estimated Delivery Fare</p>
+          <p class="text-sm font-extrabold text-[#2e1065]">On-Demand Dispatch</p>
+        </div>
+        <div class="flex items-center gap-1">
+          <span class="text-sm font-extrabold text-orange-600">₦</span>
+          <input id="pkg-amount" type="number" value="1500" class="w-20 bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-right text-sm font-extrabold text-orange-600 outline-none" />
+        </div>
+      </div>
+
+      <p id="pkg-msg" class="text-xs text-center hidden"></p>
+
+      <button type="button" onclick="submitPackageOrder()" class="w-full bg-gradient-to-r from-[#2e1065] to-[#ea580c] text-white font-bold text-sm py-4 rounded-2xl shadow-lg">
+        Confirm & Book Rider
+      </button>
+    </div>
+  </div>
+
   <script>
-    function switchCustTab(tab) {
-      ['home', 'orders', 'wallet', 'alerts', 'profile'].forEach(id => {
-        document.getElementById(`cview-${id}`).classList.toggle('hidden', id !== tab);
-        const btn = document.getElementById(`ctab-${id}`);
-        btn.className = id === tab ? 'flex flex-col items-center gap-1 text-orange-400' : 'flex flex-col items-center gap-1 text-purple-400/50 hover:text-orange-400';
+    let currentUser = JSON.parse(localStorage.getItem('speedial_customer') || '{"full_name":"usman","phone":"08166317937"}');
+    let walletData = { wallet_balance: 0, bonus_balance: 2000, available_total: 2000, transactions: [] };
+    let isMasked = false;
+    let mapInstance = null;
+
+    function initApp() {
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }).replace(',', ' •');
+      document.getElementById('dash-date').textContent = dateStr;
+      applyUserUI();
+      loadWallet();
+      loadOrders();
+    }
+
+    function applyUserUI() {
+      const name = (currentUser?.full_name || 'usman').split(' ')[0].toLowerCase();
+      document.getElementById('dash-greeting').textContent = `Hello, ${name} 👋`;
+      document.getElementById('prof-name').textContent = currentUser?.full_name || 'usman';
+      document.getElementById('prof-phone').textContent = `${currentUser?.phone || '08166317937'} • Kaduna`;
+      document.getElementById('prof-avatar').textContent = name.slice(0, 2).toUpperCase();
+      document.getElementById('ded-acct-name').textContent = `SPEEDIAL/USER ${name.toUpperCase()}`;
+      document.getElementById('pkg-sender-name').value = currentUser?.full_name || '';
+      document.getElementById('pkg-sender-phone').value = currentUser?.phone || '';
+    }
+
+    function showScreen(screenId) {
+      ['screen-login', 'screen-register', 'screen-app', 'screen-fund-online', 'screen-paystack', 'screen-bank-transfer', 'screen-send-package'].forEach(id => {
+        document.getElementById(id).classList.toggle('hidden', id !== screenId);
+      });
+      if (screenId === 'screen-send-package') {
+        setTimeout(() => {
+          if (!mapInstance) {
+            mapInstance = L.map('booking-map', { zoomControl: false }).setView([10.5105, 7.4165], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstance);
+            L.marker([10.5105, 7.4165]).addTo(mapInstance);
+          } else {
+            mapInstance.invalidateSize();
+          }
+        }, 120);
+      }
+      window.scrollTo(0, 0);
+    }
+
+    function switchTab(tab) {
+      ['home', 'orders', 'wallet', 'alerts', 'profile'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
+        document.getElementById(`nav-${t}`).className = t === tab
+          ? 'flex flex-col items-center gap-1 text-[#2e1065]'
+          : 'flex flex-col items-center gap-1 text-slate-400';
       });
       window.scrollTo(0, 0);
     }
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    function togglePwd(id) {
+      const el = document.getElementById(id);
+      el.type = el.type === 'password' ? 'text' : 'password';
+    }
+
     function toggleBalanceMask() {
-      const el = document.getElementById('hero-balance');
-      el.textContent = el.textContent.includes('•') ? '₦2,000.00' : '₦••••••';
+      isMasked = !isMasked;
+      renderWalletUI();
     }
-    function openAddMoneyModal() { document.getElementById('add-money-modal').classList.remove('hidden'); }
-    function closeAddMoneyModal() { document.getElementById('add-money-modal').classList.add('hidden'); }
-    function openWithdrawModal() { document.getElementById('withdraw-modal').classList.remove('hidden'); }
-    function closeWithdrawModal() { document.getElementById('withdraw-modal').classList.add('hidden'); }
-    function openSendPackage() {
-      document.getElementById('cust-shell').classList.add('hidden');
-      document.getElementById('send-package-screen').classList.remove('hidden');
-      window.scrollTo(0, 0);
+
+    async function loadWallet() {
+      if (!currentUser?.phone) return;
+      try {
+        const res = await fetch(`/api/wallet/${encodeURIComponent(currentUser.phone)}?role=CUSTOMER`);
+        const data = await res.json();
+        if (res.ok && data.success) {
+          walletData = data;
+          renderWalletUI();
+        }
+      } catch (e) {}
     }
-    function closeSendPackage() {
-      document.getElementById('send-package-screen').classList.add('hidden');
-      document.getElementById('cust-shell').classList.remove('hidden');
+
+    function renderWalletUI() {
+      const total = Number(walletData.available_total ?? 2000);
+      const cash = Number(walletData.wallet_balance ?? 0);
+      const bonus = Number(walletData.bonus_balance ?? 2000);
+      const formatted = `₦${total.toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+      document.getElementById('wallet-balance-text').textContent = isMasked ? '₦••••••' : formatted;
+      document.getElementById('wallet-bonus-pill').textContent = `Bonus: ₦${bonus.toLocaleString()}`;
+      document.getElementById('wallet-tab-balance').textContent = formatted;
+      document.getElementById('wallet-tab-sub').textContent = `Withdrawable: ₦${cash.toLocaleString()} • Bonus: ₦${bonus.toLocaleString()}`;
+      document.getElementById('wd-avail-note').textContent = `Withdrawable cash: ₦${cash.toLocaleString()} (Bonus is for orders)`;
     }
-    function setBookingCity(c) {
-      document.getElementById('bcity-KD').className = c === 'KD' ? 'px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-600 text-white' : 'px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400';
-      document.getElementById('bcity-KN').className = c === 'KN' ? 'px-2.5 py-1 rounded-lg text-xs font-bold bg-orange-600 text-white' : 'px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400';
+
+    function openPaystackScreen() {
+      const amt = Number(document.getElementById('online-fund-amount').value || 1000);
+      document.getElementById('paystack-desc').textContent = `Use one of the payment methods below to pay NGN ${amt.toLocaleString()} to SpeeDial Express`;
+      showScreen('screen-paystack');
     }
-    function selectDeliveryService(s) {
-      document.getElementById('svc-MOTO').className = s === 'MOTO' ? 'text-left p-3.5 rounded-2xl bg-orange-500/10 border-2 border-orange-500 transition space-y-1' : 'text-left p-3.5 rounded-2xl bg-[#2a1b4e] border border-purple-500/20 transition space-y-1';
-      document.getElementById('svc-FLEET').className = s === 'FLEET' ? 'text-left p-3.5 rounded-2xl bg-orange-500/10 border-2 border-orange-500 transition space-y-1' : 'text-left p-3.5 rounded-2xl bg-[#2a1b4e] border border-purple-500/20 transition space-y-1';
+
+    async function completeOnlineFunding(channel = 'Paystack') {
+      const amount = Number(document.getElementById('online-fund-amount').value || 1000);
+      try {
+        await fetch('/api/wallet/fund', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: currentUser.phone,
+            amount,
+            method: 'PAYSTACK',
+            reference: `PS-${channel.toUpperCase()}-${Date.now().toString().slice(-5)}`
+          })
+        });
+      } catch (e) {}
+      alert(`Payment of ₦${amount.toLocaleString()} via ${channel} submitted!`);
+      await loadWallet();
+      showScreen('screen-app');
     }
-    function submitCustomerBooking() {
-      const msg = document.getElementById('b-msg');
+
+    function copyAcctNum() {
+      navigator.clipboard?.writeText('6152624923');
+      const btn = document.getElementById('copy-acct-btn');
+      btn.innerHTML = '<span>✓</span> <span>Copied</span>';
+      setTimeout(() => { btn.innerHTML = '<span>📋</span> <span>Copy</span>'; }, 1500);
+    }
+
+    async function submitWithdrawal() {
+      const amount = Number(document.getElementById('wd-amount').value || 0);
+      const bank_name = document.getElementById('wd-bank').value;
+      const account_number = document.getElementById('wd-acct-num').value.trim();
+      const account_name = document.getElementById('wd-acct-name').value.trim();
+      const msg = document.getElementById('wd-msg');
       msg.classList.remove('hidden');
-      msg.textContent = 'Booking successful! Waybill: SDX-49128';
-      msg.className = 'text-xs text-center text-emerald-400';
-      setTimeout(() => { closeSendPackage(); switchCustTab('orders'); }, 1500);
+
+      try {
+        const res = await fetch('/api/wallet/withdraw', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: currentUser.phone, role: 'CUSTOMER', amount, bank_name, account_number, account_name })
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          msg.textContent = data.error || 'Withdrawal failed.';
+          msg.className = 'text-xs text-center text-red-600';
+          return;
+        }
+        msg.textContent = data.message;
+        msg.className = 'text-xs text-center text-emerald-600';
+        await loadWallet();
+        setTimeout(() => closeModal('modal-withdraw'), 1400);
+      } catch (e) {
+        msg.textContent = 'Network error.';
+        msg.className = 'text-xs text-center text-red-600';
+      }
     }
+
+    async function submitPackageOrder() {
+      const pickup_address = document.getElementById('pkg-pickup').value.trim();
+      const dropoff_address = document.getElementById('pkg-dropoff').value.trim();
+      const sender_name = document.getElementById('pkg-sender-name').value.trim() || currentUser.full_name;
+      const sender_phone = document.getElementById('pkg-sender-phone').value.trim() || currentUser.phone;
+      const recipient_name = document.getElementById('pkg-rec-name').value.trim();
+      const recipient_phone = document.getElementById('pkg-rec-phone').value.trim();
+      const amount = Number(document.getElementById('pkg-amount').value || 1500);
+      const msg = document.getElementById('pkg-msg');
+
+      if (!pickup_address || !dropoff_address || !recipient_phone) {
+        msg.classList.remove('hidden');
+        msg.textContent = 'Please fill in pickup, dropoff, and recipient phone.';
+        msg.className = 'text-xs text-center text-red-600';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ city: 'KD', sender_name, sender_phone, pickup_address, recipient_name, recipient_phone, dropoff_address, amount })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          await loadOrders();
+          showScreen('screen-app');
+          switchTab('orders');
+        } else {
+          msg.classList.remove('hidden');
+          msg.textContent = data.error || 'Could not create order.';
+          msg.className = 'text-xs text-center text-red-600';
+        }
+      } catch (e) {}
+    }
+
+    async function loadOrders() {
+      try {
+        const res = await fetch('/api/orders?city=ALL');
+        const data = await res.json();
+        const all = Array.isArray(data.orders) ? data.orders : [];
+        const mine = all.filter(o => o.sender_phone === currentUser?.phone);
+
+        const completed = mine.filter(o => o.status === 'DELIVERED').length;
+        const active = mine.filter(o => o.status !== 'DELIVERED').length;
+        const spent = mine.reduce((s, o) => s + Number(o.amount || 0), 0);
+
+        document.getElementById('stat-total').textContent = mine.length;
+        document.getElementById('stat-completed').textContent = completed;
+        document.getElementById('stat-active').textContent = active;
+        document.getElementById('stat-spent').textContent = `₦${spent.toLocaleString()}`;
+
+        if (mine.length > 0) {
+          const html = mine.slice(0, 3).map(o => `
+            <div class="bg-white rounded-[20px] p-4 shadow-sm flex items-center justify-between mb-2.5">
+              <div>
+                <p class="text-xs font-extrabold text-slate-900">${o.tracking_code}</p>
+                <p class="text-[11px] text-slate-500 truncate max-w-[200px]">${o.pickup_address} → ${o.dropoff_address}</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-orange-100 text-orange-700">${o.status}</span>
+            </div>
+          `).join('');
+          document.getElementById('home-recent-orders').innerHTML = html;
+          document.getElementById('orders-full-list').innerHTML = html;
+        }
+      } catch (e) {}
+    }
+
+    function submitLogin() {
+      const id = document.getElementById('login-id').value.trim();
+      if (id) {
+        currentUser = { full_name: id.split('@')[0], phone: id };
+        localStorage.setItem('speedial_customer', JSON.stringify(currentUser));
+        applyUserUI();
+      }
+      showScreen('screen-app');
+    }
+
+    function submitRegister() {
+      const name = document.getElementById('reg-name').value.trim() || 'usman';
+      const phone = document.getElementById('reg-phone').value.trim() || '08166317937';
+      currentUser = { full_name: name, phone };
+      localStorage.setItem('speedial_customer', JSON.stringify(currentUser));
+      applyUserUI();
+      showScreen('screen-app');
+    }
+
+    function logoutCustomer() {
+      showScreen('screen-login');
+    }
+
+    initApp();
   </script>
 </body>
 </html>
