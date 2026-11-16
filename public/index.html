@@ -2,198 +2,764 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SpeeDial Express — Kaduna & Kano Same-Day Dispatch</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SpeeDial Express • Send It. Track It. Relax.</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { -webkit-tap-highlight-color: transparent; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-4 flex flex-col items-center">
-  <div class="w-full max-w-md space-y-5">
-    <!-- Header with Hub Toggle -->
-    <div class="bg-slate-900 border border-orange-500/40 rounded-2xl p-4 space-y-3">
-      <div class="flex items-center justify-between">
-        <div>
-          <h1 class="text-orange-500 font-extrabold text-xl">SpeeDial Express</h1>
-          <p id="hub-subtitle" class="text-xs text-slate-400">Kaduna Metro Dispatch • RC: 8937370</p>
-        </div>
-        <a href="/courier.html" class="text-xs bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-orange-400 font-medium">
-          Rider Terminal →
-        </a>
-      </div>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans pb-24 select-none">
 
-      <!-- Kaduna / Kano City Toggle -->
-      <div class="grid grid-cols-2 gap-1.5 bg-slate-950 p-1 rounded-xl border border-slate-800">
-        <button type="button" id="btn-KD" onclick="setCity('KD')" class="py-1.5 text-xs font-bold rounded-lg bg-orange-600 text-white transition">
-          Kaduna (KD)
-        </button>
-        <button type="button" id="btn-KN" onclick="setCity('KN')" class="py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition">
-          Kano (KN)
-        </button>
+  <!-- ==================== 1. ONBOARDING CAROUSEL ==================== -->
+  <div id="onboarding-screen" class="hidden min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 flex flex-col justify-between px-6 py-8 max-w-md mx-auto">
+    <div class="flex items-center justify-between">
+      <span class="text-xs font-extrabold text-orange-400 tracking-wide">SpeeDial Express</span>
+      <button type="button" onclick="finishOnboarding()" class="text-xs font-semibold text-slate-400 hover:text-white">Skip</button>
+    </div>
+
+    <div class="text-center space-y-6 my-auto">
+      <div id="onb-icon-circle" class="w-24 h-24 rounded-full bg-orange-500/15 border border-orange-500/30 mx-auto flex items-center justify-center text-4xl text-orange-400">
+        📦
+      </div>
+      <div class="space-y-2.5">
+        <h1 id="onb-title" class="text-2xl font-extrabold text-white tracking-tight">Send Packages Instantly</h1>
+        <p id="onb-desc" class="text-xs text-slate-400 leading-relaxed max-w-xs mx-auto">
+          Book a delivery in seconds. Just set your pickup and drop-off and we'll match you with a rider nearby.
+        </p>
       </div>
     </div>
 
-    <!-- Track Existing Parcel -->
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-      <h2 class="text-sm font-bold text-slate-200">Track a Delivery</h2>
-      <div class="flex gap-2">
-        <input id="track-input" type="text" placeholder="e.g. KD-K58TUB" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm uppercase font-mono focus:outline-none focus:border-orange-500" />
-        <button onclick="trackOrder()" class="bg-orange-600 hover:bg-orange-500 px-4 py-2 rounded-xl text-sm font-semibold">Track</button>
+    <div class="space-y-6">
+      <div class="flex items-center justify-center gap-2">
+        <span id="dot-0" class="w-6 h-1.5 rounded-full bg-orange-500 transition-all"></span>
+        <span id="dot-1" class="w-2 h-1.5 rounded-full bg-slate-700 transition-all"></span>
+        <span id="dot-2" class="w-2 h-1.5 rounded-full bg-slate-700 transition-all"></span>
       </div>
-      <div id="track-result" class="hidden text-xs bg-slate-950 border border-slate-800 rounded-xl p-3 space-y-1.5"></div>
+      <button type="button" id="onb-next-btn" onclick="nextOnboardingSlide()" class="w-full bg-orange-600 hover:bg-orange-500 py-3.5 rounded-2xl text-sm font-bold text-white shadow-lg shadow-orange-600/25">
+        Next
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== 2. CUSTOMER LOGIN / SIGN UP ==================== -->
+  <div id="cust-auth-screen" class="hidden min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-slate-950 flex flex-col justify-center px-6 py-8 max-w-md mx-auto">
+    <div class="mb-6">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/15 border border-orange-500/30 mb-3">
+        <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+        <span class="text-[11px] font-bold text-orange-400">SPEEDIAL EXPRESS • RC: 8937370</span>
+      </div>
+      <h1 id="c-auth-title" class="text-3xl font-extrabold text-white">Welcome Back</h1>
+      <p id="c-auth-sub" class="text-xs text-slate-400 mt-1">Login to continue or book as a guest</p>
     </div>
 
-    <!-- Book New Dispatch -->
-    <form id="book-form" onsubmit="bookOrder(event)" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-      <div class="flex items-center justify-between">
-        <h2 class="text-sm font-bold text-slate-200">Book Instant Dispatch</h2>
-        <span id="form-city-badge" class="text-[10px] font-bold px-2 py-0.5 rounded bg-orange-500/20 text-orange-300 border border-orange-500/30">
-          KADUNA HUB
-        </span>
+    <div class="space-y-3">
+      <div id="c-reg-name-wrap" class="hidden space-y-1">
+        <label class="text-[11px] font-semibold text-slate-400">Full Name</label>
+        <input id="c-name" type="text" placeholder="Enter your full name" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white" />
       </div>
-      <div class="grid grid-cols-2 gap-2">
-        <input name="sender_name" required placeholder="Sender Name" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs" />
-        <input name="sender_phone" required placeholder="Sender Phone" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs" />
+
+      <div class="space-y-1">
+        <label class="text-[11px] font-semibold text-slate-400">Phone Number</label>
+        <input id="c-phone" type="tel" placeholder="e.g 08166317937" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white" />
       </div>
-      <input id="pickup-input" name="pickup_address" required placeholder="Pickup Address (e.g. Saiha Mall, Tafawa Balewa Way)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs" />
-      <div class="grid grid-cols-2 gap-2">
-        <input name="recipient_name" required placeholder="Recipient Name" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs" />
-        <input name="recipient_phone" required placeholder="Recipient Phone" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs" />
-      </div>
-      <input id="dropoff-input" name="dropoff_address" required placeholder="Dropoff Address (e.g. Barnawa / Ungwan Rimi)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs" />
-      <div class="grid grid-cols-2 gap-2">
-        <input name="package_description" placeholder="Package Item" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs" />
-        <input name="delivery_fee" type="number" value="1500" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs" />
-      </div>
-      <div class="space-y-2">
-        <select id="payment_method" name="payment_method" onchange="toggleOpayBox()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-orange-500">
-          <option value="PAY_ON_PICKUP">Payment: Pay on Pickup (Cash / Transfer)</option>
-          <option value="PAY_ON_DELIVERY">Payment: Pay on Delivery (Cash / Transfer)</option>
-          <option value="BANK_TRANSFER">Payment: OPay Instant Transfer (SpeeDial Digital Services)</option>
+
+      <div id="c-reg-city-wrap" class="hidden space-y-1">
+        <label class="text-[11px] font-semibold text-slate-400">Your Hub</label>
+        <select id="c-city" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white">
+          <option value="KD">Kaduna (KD)</option>
+          <option value="KN">Kano (KN)</option>
         </select>
+      </div>
 
-        <div id="opay-details-box" class="hidden bg-emerald-950/50 border border-emerald-500/40 rounded-xl p-3 space-y-1.5 text-xs">
-          <div class="flex items-center justify-between">
-            <span class="text-emerald-400 font-bold uppercase tracking-wider">OPay Transfer Details</span>
-            <button type="button" onclick="copyOpayAccount()" id="copy-opay-btn" class="px-2 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded text-[11px]">
-              Copy Account
+      <div class="space-y-1">
+        <label class="text-[11px] font-semibold text-slate-400">4-Digit PIN</label>
+        <input id="c-pin" type="password" maxlength="4" inputmode="numeric" placeholder="••••" class="w-full bg-slate-900 border border-slate-700 focus:border-orange-500 outline-none rounded-2xl px-4 py-3 text-sm text-white font-mono tracking-widest" />
+      </div>
+
+      <button type="button" id="c-auth-btn" onclick="submitCustomerAuth()" class="w-full bg-orange-600 hover:bg-orange-500 py-3.5 rounded-2xl text-sm font-bold text-white shadow-lg shadow-orange-600/25 mt-2">
+        Login
+      </button>
+
+      <p id="c-auth-msg" class="text-xs text-center hidden"></p>
+
+      <div class="flex items-center justify-between text-xs pt-3">
+        <button type="button" onclick="switchCustomerAuthMode()" id="c-switch-btn" class="text-orange-400 font-bold hover:underline">
+          Don't have an account? Sign Up
+        </button>
+        <button type="button" onclick="enterCustomerApp()" class="text-slate-400 hover:text-white">
+          Guest Booking →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 3. CUSTOMER APP SHELL ==================== -->
+  <div id="cust-shell" class="max-w-md mx-auto">
+
+    <!-- ---------- TAB 1: HOME ---------- -->
+    <section id="cview-home" class="space-y-4">
+      <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-orange-950/40 border-b border-orange-500/20 rounded-b-3xl px-4 pt-5 pb-6 space-y-4 shadow-lg">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 id="c-greeting" class="text-xl font-extrabold text-white">Hello, Guest 👋</h1>
+            <p id="c-date" class="text-xs text-slate-400 mt-0.5">Kaduna & Kano Express • RC: 8937370</p>
+          </div>
+          <button type="button" onclick="switchCustNav('alerts')" class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-orange-400 relative">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span id="alert-dot" class="hidden w-2 h-2 rounded-full bg-orange-500 absolute top-1.5 right-1.5"></span>
+          </button>
+        </div>
+
+        <!-- Quick Waybill Live Tracker -->
+        <div class="flex gap-2">
+          <input id="quick-track-input" type="text" placeholder="Track waybill (e.g. SDX-482910)..." class="flex-1 bg-slate-950 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-3.5 py-2.5 text-xs text-white font-mono uppercase" />
+          <button type="button" onclick="quickTrackWaybill()" class="px-4 py-2.5 rounded-2xl bg-orange-600 hover:bg-orange-500 text-xs font-bold text-white">
+            Track
+          </button>
+        </div>
+        <div id="quick-track-result" class="hidden bg-slate-950 border border-orange-500/40 rounded-2xl p-3.5 text-xs space-y-1.5"></div>
+      </div>
+
+      <div class="px-4 space-y-4">
+        <!-- Payment & OPay Hero Card -->
+        <div class="bg-gradient-to-br from-orange-600 via-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-xl shadow-orange-600/20">
+          <div class="flex items-center justify-between text-xs text-orange-100 font-semibold">
+            <span>SpeeDial Express Pay</span>
+            <span class="px-2 py-0.5 rounded-full bg-black/20 text-[10px]">Kaduna • Kano</span>
+          </div>
+          <div id="c-home-spent" class="text-3xl font-extrabold tracking-tight mt-2">₦0.00</div>
+          <div class="inline-block mt-2 px-3 py-1 rounded-full bg-black/20 text-[11px] font-semibold text-orange-50">
+            OPay Transfer: 6152624923
+          </div>
+          <div class="grid grid-cols-2 gap-2.5 mt-4">
+            <button type="button" onclick="openBookingModal()" class="bg-white text-slate-950 hover:bg-orange-50 font-bold text-xs py-2.5 rounded-xl shadow">
+              + Send Package
+            </button>
+            <button type="button" onclick="switchCustNav('wallet')" class="bg-black/25 hover:bg-black/35 text-white font-bold text-xs py-2.5 rounded-xl">
+              Payment Details
             </button>
           </div>
-          <p class="text-slate-200"><span class="text-slate-400">Bank:</span> <strong>OPay</strong></p>
-         <p class="text-slate-200"><span class="text-slate-400">Account Number:</span> <strong class="font-mono text-sm text-emerald-300">6152624923</strong></p>
-          <p class="text-slate-200"><span class="text-slate-400">Account Name:</span> <strong>SpeeDial Digital Services</strong></p>
-          <p class="text-[11px] text-slate-400 pt-0.5">Transfer the dispatch fee and tap the green WhatsApp button below to share your receipt with your tracking code.</p>
+        </div>
+
+        <!-- Send a Package Action Banner -->
+        <button type="button" onclick="openBookingModal()" class="w-full bg-slate-900 border border-orange-500/40 hover:border-orange-500 rounded-2xl p-4 flex items-center justify-between text-left transition shadow">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-orange-600/20 text-orange-400 flex items-center justify-center text-lg">🚚</div>
+            <div>
+              <h2 class="text-sm font-extrabold text-white">Send a Package</h2>
+              <p class="text-[11px] text-slate-400">Book an instant Kaduna or Kano dispatch rider now</p>
+            </div>
+          </div>
+          <span class="text-orange-400 font-bold text-lg">›</span>
+        </button>
+
+        <!-- 2x2 KPI Cards -->
+        <div class="grid grid-cols-2 gap-3">
+          <div onclick="switchCustNav('orders')" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-end justify-between cursor-pointer">
+            <div>
+              <div id="cstat-total" class="text-2xl font-extrabold text-white">0</div>
+              <div class="text-xs text-slate-400 mt-1">Total Orders</div>
+            </div>
+            <span class="text-orange-400 text-lg">📦</span>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-end justify-between">
+            <div>
+              <div id="cstat-completed" class="text-2xl font-extrabold text-emerald-400">0</div>
+              <div class="text-xs text-slate-400 mt-1">Completed</div>
+            </div>
+            <span class="text-emerald-400 text-lg">✓</span>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-end justify-between">
+            <div>
+              <div id="cstat-active" class="text-2xl font-extrabold text-amber-400">0</div>
+              <div class="text-xs text-slate-400 mt-1">Active Deliveries</div>
+            </div>
+            <span class="text-amber-400 text-lg">⏳</span>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-end justify-between">
+            <div>
+              <div id="cstat-spent" class="text-xl font-extrabold text-orange-400">₦0</div>
+              <div class="text-xs text-slate-400 mt-1">Total Spent</div>
+            </div>
+            <span class="text-slate-400 text-lg">💳</span>
+          </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold text-slate-200">Recent Orders</h2>
+            <button type="button" onclick="loadMyOrders()" class="text-xs font-semibold text-orange-400 hover:underline">Refresh</button>
+          </div>
+          <div id="c-recent-orders" class="space-y-2.5"></div>
         </div>
       </div>
-      <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 py-2.5 rounded-xl text-sm font-bold">
-        Book Dispatch Now
+    </section>
+
+    <!-- ---------- TAB 2: MY ORDERS ---------- -->
+    <section id="cview-orders" class="hidden space-y-4">
+      <div class="bg-slate-900 border-b border-orange-500/20 rounded-b-3xl px-4 pt-5 pb-5 space-y-3.5 shadow-lg">
+        <h1 class="text-xl font-extrabold text-white">My Orders</h1>
+        <div class="flex gap-2 overflow-x-auto no-scrollbar">
+          <button type="button" onclick="setCustFilter('ALL')" id="cpill-ALL" class="px-4 py-1.5 rounded-full text-xs font-bold bg-orange-600 text-white shrink-0">All</button>
+          <button type="button" onclick="setCustFilter('ACTIVE')" id="cpill-ACTIVE" class="px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 shrink-0">Active</button>
+          <button type="button" onclick="setCustFilter('PENDING')" id="cpill-PENDING" class="px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 shrink-0">Pending</button>
+          <button type="button" onclick="setCustFilter('COMPLETED')" id="cpill-COMPLETED" class="px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 shrink-0">Completed</button>
+        </div>
+      </div>
+
+      <div id="c-orders-list" class="px-4 space-y-3"></div>
+
+      <!-- Floating + Send Package Button -->
+      <button type="button" onclick="openBookingModal()" class="fixed bottom-20 right-5 z-30 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs px-5 py-3.5 rounded-2xl shadow-xl shadow-orange-600/30 flex items-center gap-2">
+        <span class="text-base leading-none">+</span>
+        <span>Send Package</span>
       </button>
-      <div id="book-result" class="hidden text-xs bg-emerald-950/50 border border-emerald-500/40 rounded-xl p-3 space-y-1"></div>
-    </form>
+    </section>
+
+    <!-- ---------- TAB 3: WALLET & PAYMENT ---------- -->
+    <section id="cview-wallet" class="hidden space-y-4">
+      <div class="bg-slate-900 border-b border-orange-500/20 rounded-b-3xl px-4 pt-5 pb-5 shadow-lg">
+        <h1 class="text-xl font-extrabold text-white">Wallet & Payments</h1>
+      </div>
+
+      <div class="px-4 space-y-4">
+        <div class="bg-gradient-to-br from-orange-600 to-amber-600 rounded-3xl p-5 text-white shadow-lg">
+          <p class="text-xs text-orange-100">Total Dispatch Spend</p>
+          <p id="c-wallet-spent" class="text-3xl font-extrabold mt-1">₦0.00</p>
+          <p class="text-[11px] text-orange-100 mt-2">Pay via OPay Transfer or Cash on Pickup</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2.5">
+          <h2 class="text-sm font-bold text-white">Pay by Bank Transfer (OPay)</h2>
+          <p class="text-xs text-slate-400">Transfer your delivery fare to our official business account and share your waybill code:</p>
+          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3.5 flex items-center justify-between">
+            <div>
+              <p class="text-[11px] text-slate-400">OPay • SpeeDial Digital Services</p>
+              <p class="text-lg font-extrabold font-mono text-orange-400 mt-0.5">6152624923</p>
+            </div>
+            <button type="button" onclick="copyCustOpay()" id="c-copy-opay" class="px-3.5 py-2 rounded-xl bg-orange-600 text-xs font-bold text-white">
+              Copy
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2.5">
+          <h2 class="text-sm font-bold text-white">Order Payment History</h2>
+          <div id="c-wallet-history" class="space-y-2"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- TAB 4: ALERTS ---------- -->
+    <section id="cview-alerts" class="hidden space-y-4">
+      <div class="bg-slate-900 border-b border-orange-500/20 rounded-b-3xl px-4 pt-5 pb-5 shadow-lg">
+        <h1 class="text-xl font-extrabold text-white">Notifications</h1>
+      </div>
+      <div id="c-alerts-list" class="px-4 space-y-2.5"></div>
+    </section>
+
+    <!-- ---------- TAB 5: PROFILE ---------- -->
+    <section id="cview-profile" class="hidden space-y-4">
+      <div class="bg-gradient-to-b from-slate-900 to-slate-950 border-b border-orange-500/20 rounded-b-3xl px-4 pt-5 pb-6 text-center space-y-3 shadow-lg">
+        <div class="flex items-center justify-between">
+          <h1 class="text-xl font-extrabold text-white">Profile</h1>
+          <button type="button" onclick="openCustAuth()" class="px-3 py-1.5 rounded-full bg-slate-800 text-xs font-bold text-orange-400">
+            Login / Sign Up
+          </button>
+        </div>
+        <div id="c-prof-initials" class="w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 mx-auto flex items-center justify-center text-xl font-extrabold text-white">
+          GU
+        </div>
+        <div>
+          <h2 id="c-prof-name" class="text-base font-extrabold text-white">Guest Customer</h2>
+          <p id="c-prof-phone" class="text-xs text-slate-400 mt-0.5">Kaduna & Kano Dispatch Portal</p>
+        </div>
+      </div>
+
+      <div class="px-4 space-y-3">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-xs space-y-1.5">
+          <p class="font-bold text-orange-400">SpeeDial Express • RC: 8937370</p>
+          <p class="text-slate-400">No. A4 Saiha Mall, Opposite KASU, Tafawa Balewa Way, Kaduna</p>
+          <p class="text-slate-400">Customer Care: +234 724 066 6600</p>
+        </div>
+
+        <a href="https://wa.me/2347240666600?text=Hello%20SpeeDial%20Express%2C%20I%20need%20help%20with%20my%20delivery." target="_blank" rel="noopener noreferrer" class="w-full bg-emerald-600 hover:bg-emerald-500 py-3.5 rounded-2xl text-xs font-bold text-white flex items-center justify-center gap-2">
+          <span>Chat with Dispatch Support on WhatsApp</span>
+        </a>
+
+        <button type="button" onclick="logoutCustomer()" class="w-full bg-slate-900 border border-slate-800 py-3 rounded-2xl text-xs font-semibold text-slate-400">
+          Sign Out / Reset Session
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== 4. SEND A PACKAGE BOOKING MODAL ==================== -->
+    <div id="booking-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
+      <div class="bg-slate-900 border-t border-orange-500/30 rounded-t-3xl w-full max-w-md p-5 space-y-3.5 max-h-[92vh] overflow-y-auto">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-base font-extrabold text-white">Book Instant Dispatch</h3>
+            <p class="text-[11px] text-slate-400">Same-day pickup & delivery across Kaduna & Kano</p>
+          </div>
+          <button type="button" onclick="closeBookingModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300">✕</button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" id="bcity-KD" onclick="setBookingCity('KD')" class="py-2 rounded-xl text-xs font-bold bg-orange-600 text-white">Kaduna (KD)</button>
+          <button type="button" id="bcity-KN" onclick="setBookingCity('KN')" class="py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300">Kano (KN)</button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <input id="b-sender-name" type="text" placeholder="Sender Name" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+          <input id="b-sender-phone" type="tel" placeholder="Sender Phone" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+        </div>
+
+        <input id="b-pickup" type="text" placeholder="Pickup Address (e.g. Kawo, Kaduna)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+
+        <div class="grid grid-cols-2 gap-2">
+          <input id="b-rec-name" type="text" placeholder="Recipient Name" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+          <input id="b-rec-phone" type="tel" placeholder="Recipient Phone" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+        </div>
+
+        <input id="b-dropoff" type="text" placeholder="Dropoff Address (e.g. Barnawa / Unguwan Rimi)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+
+        <div class="grid grid-cols-2 gap-2">
+          <input id="b-note" type="text" placeholder="Package Item (e.g. Box, Documents)" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
+          <input id="b-amount" type="number" value="1500" placeholder="Agreed Fare (₦)" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-orange-400 font-bold" />
+        </div>
+
+        <button type="button" onclick="submitCustomerBooking()" class="w-full bg-orange-600 hover:bg-orange-500 py-3.5 rounded-2xl text-xs font-extrabold text-white shadow-lg shadow-orange-600/25">
+          Book Dispatch Now
+        </button>
+        <p id="b-msg" class="text-xs text-center hidden"></p>
+      </div>
+    </div>
+
+    <!-- ==================== 5. BOTTOM 5-TAB NAVIGATION BAR ==================== -->
+    <nav class="fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 backdrop-blur border-t border-slate-800">
+      <div class="max-w-md mx-auto grid grid-cols-5 py-2">
+        <button type="button" onclick="switchCustNav('home')" id="cnav-home" class="flex flex-col items-center gap-1 text-orange-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span class="text-[10px] font-bold">Home</span>
+        </button>
+
+        <button type="button" onclick="switchCustNav('orders')" id="cnav-orders" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          <span class="text-[10px] font-semibold">Orders</span>
+        </button>
+
+        <button type="button" onclick="switchCustNav('wallet')" id="cnav-wallet" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M16 12h.01"/></svg>
+          <span class="text-[10px] font-semibold">Wallet</span>
+        </button>
+
+        <button type="button" onclick="switchCustNav('alerts')" id="cnav-alerts" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="text-[10px] font-semibold">Alerts</span>
+        </button>
+
+        <button type="button" onclick="switchCustNav('profile')" id="cnav-profile" class="flex flex-col items-center gap-1 text-slate-400">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+          <span class="text-[10px] font-semibold">Profile</span>
+        </button>
+      </div>
+    </nav>
   </div>
 
   <script>
-    let selectedCity = localStorage.getItem('speedial_city') || 'KD';
-
-    function setCity(city) {
-      selectedCity = city;
-      localStorage.setItem('speedial_city', city);
-
-      const isKano = city === 'KN';
-      document.getElementById('btn-KD').className = !isKano
-        ? 'py-1.5 text-xs font-bold rounded-lg bg-orange-600 text-white transition'
-        : 'py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition';
-      document.getElementById('btn-KN').className = isKano
-        ? 'py-1.5 text-xs font-bold rounded-lg bg-orange-600 text-white transition'
-        : 'py-1.5 text-xs font-bold rounded-lg text-slate-400 hover:text-white transition';
-
-      document.getElementById('hub-subtitle').textContent = isKano
-        ? 'Kano Metro Dispatch • RC: 8937370'
-        : 'Kaduna Metro Dispatch • RC: 8937370';
-      document.getElementById('form-city-badge').textContent = isKano ? 'KANO HUB' : 'KADUNA HUB';
-      document.getElementById('track-input').placeholder = isKano ? 'e.g. KN-84X2MP' : 'e.g. KD-K58TUB';
-      document.getElementById('pickup-input').placeholder = isKano
-        ? 'Pickup Address (e.g. Sabon Gari / Farm Centre)'
-        : 'Pickup Address (e.g. Saiha Mall, Tafawa Balewa Way)';
-      document.getElementById('dropoff-input').placeholder = isKano
-        ? 'Dropoff Address (e.g. Nassarawa GRA / Tarauni)'
-        : 'Dropoff Address (e.g. Barnawa / Ungwan Rimi)';
-    }
-
-    async function trackOrder() {
-      const code = document.getElementById('track-input').value.trim();
-      const box = document.getElementById('track-result');
-      if (!code) return;
-      const res = await fetch(`/api/orders/track/${code}`);
-      const data = await res.json();
-      box.classList.remove('hidden');
-      if (!res.ok) {
-        box.innerHTML = `<p class="text-red-400">${data.error}</p>`;
-        return;
+    const slides = [
+      {
+        icon: '📦',
+        title: 'Send Packages Instantly',
+        desc: "Book a delivery in seconds. Just set your pickup and drop-off and we'll match you with a rider nearby."
+      },
+      {
+        icon: '🛵',
+        title: 'Track Every Delivery Live',
+        desc: 'Follow your waybill status in real time from pickup to doorstep across Kaduna and Kano.'
+      },
+      {
+        icon: '💳',
+        title: 'Pay Your Way',
+        desc: 'Pay smoothly via OPay instant transfer (6152624923) or pay on pickup — whatever works best for you.'
       }
-      const o = data.order;
-      const hubLabel = o.tracking_code.startsWith('KN-') ? 'Kano Metro' : 'Kaduna Metro';
-      box.innerHTML = `
-        <div class="flex justify-between font-bold">
-          <span class="text-orange-400 font-mono">${o.tracking_code} (${hubLabel})</span>
-          <span class="text-emerald-400">${o.status}</span>
-        </div>
-        <p class="text-slate-300">From: ${o.pickup_address}</p>
-        <p class="text-slate-300">To: ${o.dropoff_address}</p>
-        <p class="text-slate-400 pt-1 border-t border-slate-800">Assigned: ${data.rider.vehicle}</p>
-      `;
+    ];
+
+    let slideIdx = 0;
+    let cAuthMode = 'LOGIN';
+    let bookingCity = 'KD';
+    let custFilter = 'ALL';
+    let myWaybills = JSON.parse(localStorage.getItem('speedial_my_waybills') || '[]');
+    let loadedOrders = [];
+
+    function initCustomerApp() {
+      const today = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+      document.getElementById('c-date').textContent = `${today} • RC: 8937370`;
+
+      const seenOnb = localStorage.getItem('speedial_seen_onb');
+      if (!seenOnb) {
+        document.getElementById('cust-shell').classList.add('hidden');
+        document.getElementById('onboarding-screen').classList.remove('hidden');
+      }
+
+      const savedCust = localStorage.getItem('speedial_customer');
+      if (savedCust) {
+        try {
+          applyCustomerProfile(JSON.parse(savedCust));
+        } catch (e) {}
+      }
+
+      loadMyOrders();
     }
 
-    async function bookOrder(e) {
-      e.preventDefault();
-      const payload = Object.fromEntries(new FormData(e.target).entries());
-      payload.city = selectedCity;
+    function nextOnboardingSlide() {
+      if (slideIdx < slides.length - 1) {
+        slideIdx++;
+        const s = slides[slideIdx];
+        document.getElementById('onb-icon-circle').textContent = s.icon;
+        document.getElementById('onb-title').textContent = s.title;
+        document.getElementById('onb-desc').textContent = s.desc;
+        [0, 1, 2].forEach(i => {
+          document.getElementById(`dot-${i}`).className = i === slideIdx
+            ? 'w-6 h-1.5 rounded-full bg-orange-500 transition-all'
+            : 'w-2 h-1.5 rounded-full bg-slate-700 transition-all';
+        });
+        if (slideIdx === slides.length - 1) {
+          document.getElementById('onb-next-btn').textContent = 'Get Started';
+        }
+      } else {
+        finishOnboarding();
+      }
+    }
 
-      const res = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+    function finishOnboarding() {
+      localStorage.setItem('speedial_seen_onb', '1');
+      document.getElementById('onboarding-screen').classList.add('hidden');
+      document.getElementById('cust-shell').classList.remove('hidden');
+    }
+
+    function openCustAuth() {
+      document.getElementById('cust-shell').classList.add('hidden');
+      document.getElementById('cust-auth-screen').classList.remove('hidden');
+    }
+
+    function enterCustomerApp() {
+      document.getElementById('cust-auth-screen').classList.add('hidden');
+      document.getElementById('cust-shell').classList.remove('hidden');
+    }
+
+    function switchCustomerAuthMode() {
+      cAuthMode = cAuthMode === 'LOGIN' ? 'REGISTER' : 'LOGIN';
+      const isReg = cAuthMode === 'REGISTER';
+      document.getElementById('c-auth-title').textContent = isReg ? 'Create Account' : 'Welcome Back';
+      document.getElementById('c-auth-sub').textContent = isReg ? 'Fill in your details to get started' : 'Login to continue or book as a guest';
+      document.getElementById('c-reg-name-wrap').classList.toggle('hidden', !isReg);
+      document.getElementById('c-reg-city-wrap').classList.toggle('hidden', !isReg);
+      document.getElementById('c-auth-btn').textContent = isReg ? 'Create Account' : 'Login';
+      document.getElementById('c-switch-btn').textContent = isReg ? 'Already have an account? Login' : "Don't have an account? Sign Up";
+    }
+
+    async function submitCustomerAuth() {
+      const msgEl = document.getElementById('c-auth-msg');
+      const full_name = document.getElementById('c-name').value.trim();
+      const phone = document.getElementById('c-phone').value.trim();
+      const city = document.getElementById('c-city').value;
+      const pin = document.getElementById('c-pin').value.trim();
+
+      msgEl.classList.remove('hidden');
+      msgEl.textContent = 'Please wait...';
+      msgEl.className = 'text-xs text-center text-slate-400';
+
+      const endpoint = cAuthMode === 'REGISTER' ? '/api/auth/register' : '/api/auth/login';
+      const payload = cAuthMode === 'REGISTER'
+        ? { role: 'CUSTOMER', full_name, phone, pin, city }
+        : { role: 'CUSTOMER', phone, pin };
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          msgEl.textContent = data.error || 'Authentication failed.';
+          msgEl.className = 'text-xs text-center text-red-400';
+          return;
+        }
+        const userObj = data.user || { full_name, phone, city };
+        localStorage.setItem('speedial_customer', JSON.stringify(userObj));
+        applyCustomerProfile(userObj);
+        enterCustomerApp();
+        loadMyOrders();
+      } catch (e) {
+        msgEl.textContent = 'Network error. Please retry.';
+        msgEl.className = 'text-xs text-center text-red-400';
+      }
+    }
+
+    function applyCustomerProfile(user) {
+      if (!user) return;
+      const first = (user.full_name || 'Guest').split(' ')[0];
+      const initials = (user.full_name || 'GU').split(' ').slice(0, 2).map(x => x[0]).join('').toUpperCase();
+      document.getElementById('c-greeting').textContent = `Hello, ${first} 👋`;
+      document.getElementById('c-prof-name').textContent = user.full_name || 'Guest Customer';
+      document.getElementById('c-prof-phone').textContent = `${user.phone || ''} • Hub: ${user.city || 'KD'}`;
+      document.getElementById('c-prof-initials').textContent = initials || 'GU';
+      document.getElementById('b-sender-name').value = user.full_name || '';
+      document.getElementById('b-sender-phone').value = user.phone || '';
+    }
+
+    function logoutCustomer() {
+      localStorage.removeItem('speedial_customer');
+      openCustAuth();
+    }
+
+    function switchCustNav(tab) {
+      ['home', 'orders', 'wallet', 'alerts', 'profile'].forEach(id => {
+        document.getElementById(`cview-${id}`).classList.toggle('hidden', id !== tab);
+        document.getElementById(`cnav-${id}`).className = id === tab
+          ? 'flex flex-col items-center gap-1 text-orange-400'
+          : 'flex flex-col items-center gap-1 text-slate-400';
       });
-      const data = await res.json();
-      const box = document.getElementById('book-result');
+    }
+
+    function setCustFilter(f) {
+      custFilter = f;
+      ['ALL', 'ACTIVE', 'PENDING', 'COMPLETED'].forEach(id => {
+        document.getElementById(`cpill-${id}`).className = id === f
+          ? 'px-4 py-1.5 rounded-full text-xs font-bold bg-orange-600 text-white shrink-0'
+          : 'px-4 py-1.5 rounded-full text-xs font-bold bg-slate-800 text-slate-300 shrink-0';
+      });
+      renderCustomerOrders();
+    }
+
+    function openBookingModal() {
+      document.getElementById('b-msg').classList.add('hidden');
+      document.getElementById('booking-modal').classList.remove('hidden');
+    }
+
+    function closeBookingModal() {
+      document.getElementById('booking-modal').classList.add('hidden');
+    }
+
+    function setBookingCity(c) {
+      bookingCity = c;
+      document.getElementById('bcity-KD').className = c === 'KD'
+        ? 'py-2 rounded-xl text-xs font-bold bg-orange-600 text-white'
+        : 'py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300';
+      document.getElementById('bcity-KN').className = c === 'KN'
+        ? 'py-2 rounded-xl text-xs font-bold bg-orange-600 text-white'
+        : 'py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300';
+    }
+
+    async function submitCustomerBooking() {
+      const msgEl = document.getElementById('b-msg');
+      const payload = {
+        city: bookingCity,
+        sender_name: document.getElementById('b-sender-name').value.trim(),
+        sender_phone: document.getElementById('b-sender-phone').value.trim(),
+        pickup_address: document.getElementById('b-pickup').value.trim(),
+        recipient_name: document.getElementById('b-rec-name').value.trim(),
+        recipient_phone: document.getElementById('b-rec-phone').value.trim(),
+        dropoff_address: document.getElementById('b-dropoff').value.trim(),
+        package_note: document.getElementById('b-note').value.trim(),
+        amount: Number(document.getElementById('b-amount').value) || 1500
+      };
+
+      msgEl.classList.remove('hidden');
+      msgEl.textContent = 'Dispatching booking...';
+      msgEl.className = 'text-xs text-center text-slate-400';
+
+      try {
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          msgEl.textContent = data.error || 'Booking failed.';
+          msgEl.className = 'text-xs text-center text-red-400';
+          return;
+        }
+
+        const code = data.order.tracking_code;
+        if (!myWaybills.includes(code)) {
+          myWaybills.unshift(code);
+          localStorage.setItem('speedial_my_waybills', JSON.stringify(myWaybills));
+        }
+
+        msgEl.innerHTML = `Booked! Waybill: <span class="font-mono font-extrabold text-orange-400">${code}</span>`;
+        msgEl.className = 'text-xs text-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-2.5';
+
+        await loadMyOrders();
+        setTimeout(() => closeBookingModal(), 1400);
+      } catch (e) {
+        msgEl.textContent = 'Network error. Please retry.';
+        msgEl.className = 'text-xs text-center text-red-400';
+      }
+    }
+
+    async function quickTrackWaybill() {
+      const code = document.getElementById('quick-track-input').value.trim().toUpperCase();
+      const box = document.getElementById('quick-track-result');
+      if (!code) return;
+
       box.classList.remove('hidden');
-      if (!res.ok) {
-        box.innerHTML = `<p class="text-red-400">${data.error}</p>`;
-        return;
+      box.innerHTML = '<p class="text-slate-400">Checking waybill...</p>';
+
+      try {
+        const res = await fetch(`/api/orders/${encodeURIComponent(code)}`);
+        const data = await res.json();
+        if (!res.ok) {
+          box.innerHTML = `<p class="text-red-400">${data.error || 'Waybill not found.'}</p>`;
+          return;
+        }
+        const o = data.order;
+        if (!myWaybills.includes(o.tracking_code)) {
+          myWaybills.unshift(o.tracking_code);
+          localStorage.setItem('speedial_my_waybills', JSON.stringify(myWaybills));
+          loadMyOrders();
+        }
+        box.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="font-mono font-extrabold text-orange-400">${o.tracking_code}</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-600 text-white">${o.status}</span>
+          </div>
+          <p class="text-slate-200">${o.pickup_address} → ${o.dropoff_address}</p>
+          <p class="text-slate-400">Fare: ₦${Number(o.amount || 0).toLocaleString()} • Payment: ${o.payment_status}</p>
+        `;
+      } catch (e) {
+        box.innerHTML = '<p class="text-red-400">Unable to fetch waybill.</p>';
       }
-      box.innerHTML = `
-        <p class="font-bold text-emerald-300">Booked! Code: <span class="font-mono text-white">${data.order.tracking_code}</span></p>
-        <p class="text-slate-300">Pickup OTP (Give to Rider): <strong class="text-amber-300 font-mono">${data.order.pickup_otp}</strong></p>
-        <p class="text-slate-300">Dropoff OTP (For Recipient): <strong class="text-cyan-300 font-mono">${data.order.dropoff_otp}</strong></p>
+    }
+
+    async function loadMyOrders() {
+      const savedCust = JSON.parse(localStorage.getItem('speedial_customer') || 'null');
+      try {
+        const res = await fetch('/api/orders?city=ALL');
+        const data = await res.json();
+        const all = Array.isArray(data.orders) ? data.orders : [];
+
+        loadedOrders = all.filter(o =>
+          myWaybills.includes(o.tracking_code) ||
+          (savedCust && savedCust.phone && o.sender_phone === savedCust.phone)
+        );
+
+        renderCustomerDashboard();
+      } catch (e) {}
+    }
+
+    function renderCustomerDashboard() {
+      const completed = loadedOrders.filter(o => o.status === 'DELIVERED');
+      const active = loadedOrders.filter(o => ['PENDING', 'ASSIGNED', 'PICKED_UP', 'IN_TRANSIT'].includes(o.status));
+      const spent = loadedOrders.reduce((sum, o) => sum + Number(o.amount || 0), 0);
+
+      document.getElementById('cstat-total').textContent = loadedOrders.length;
+      document.getElementById('cstat-completed').textContent = completed.length;
+      document.getElementById('cstat-active').textContent = active.length;
+      document.getElementById('cstat-spent').textContent = `₦${spent.toLocaleString()}`;
+      document.getElementById('c-home-spent').textContent = `₦${spent.toLocaleString()}.00`;
+      document.getElementById('c-wallet-spent').textContent = `₦${spent.toLocaleString()}.00`;
+
+      document.getElementById('c-recent-orders').innerHTML = loadedOrders.length
+        ? loadedOrders.slice(0, 3).map(o => custOrderCard(o)).join('')
+        : `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center space-y-1">
+            <p class="text-xs font-bold text-slate-300">No orders yet</p>
+            <p class="text-[11px] text-slate-500">Tap "Send a Package" above to book your first rider</p>
+          </div>`;
+
+      renderCustomerOrders();
+
+      // Wallet history
+      document.getElementById('c-wallet-history').innerHTML = loadedOrders.length
+        ? loadedOrders.map(o => `
+            <div class="flex items-center justify-between py-2 border-b border-slate-800 last:border-0 text-xs">
+              <div>
+                <p class="font-bold text-white font-mono">${o.tracking_code}</p>
+                <p class="text-[11px] text-slate-400">${o.pickup_address} → ${o.dropoff_address}</p>
+              </div>
+              <div class="text-right">
+                <p class="font-extrabold text-orange-400">₦${Number(o.amount || 0).toLocaleString()}</p>
+                <span class="text-[10px] text-slate-400">${o.payment_status}</span>
+              </div>
+            </div>
+          `).join('')
+        : '<p class="text-xs text-slate-500 text-center py-3">No payment transactions yet.</p>';
+
+      // Alerts feed
+      const alertItems = loadedOrders.map(o => `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-orange-500/15 text-orange-400 flex items-center justify-center text-xs font-bold shrink-0">📦</div>
+          <div>
+            <p class="text-xs font-bold text-white">Waybill ${o.tracking_code} • ${o.status}</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Route: ${o.pickup_address} → ${o.dropoff_address}</p>
+          </div>
+        </div>
+      `);
+      document.getElementById('alert-dot').classList.toggle('hidden', alertItems.length === 0);
+      document.getElementById('c-alerts-list').innerHTML = alertItems.join('') || `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-orange-500/15 text-orange-400 flex items-center justify-center text-xs font-bold shrink-0">ℹ</div>
+          <div>
+            <p class="text-xs font-bold text-white">Welcome to SpeeDial Express</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Book a delivery anytime across Kaduna & Kano.</p>
+          </div>
+        </div>`;
+    }
+
+    function renderCustomerOrders() {
+      let list = loadedOrders;
+      if (custFilter === 'ACTIVE') list = list.filter(o => ['ASSIGNED', 'PICKED_UP', 'IN_TRANSIT'].includes(o.status));
+      else if (custFilter === 'PENDING') list = list.filter(o => o.status === 'PENDING');
+      else if (custFilter === 'COMPLETED') list = list.filter(o => o.status === 'DELIVERED');
+
+      document.getElementById('c-orders-list').innerHTML = list.length
+        ? list.map(o => custOrderCard(o)).join('')
+        : `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center space-y-1.5 mt-4">
+            <p class="text-sm font-bold text-slate-200">No orders yet</p>
+            <p class="text-xs text-slate-400">Tap "+ Send Package" below to book a dispatch rider</p>
+          </div>`;
+    }
+
+    function custOrderCard(o) {
+      const badge = o.status === 'DELIVERED'
+        ? 'bg-emerald-500 text-white'
+        : o.status === 'PICKED_UP' || o.status === 'IN_TRANSIT'
+          ? 'bg-blue-500 text-white'
+          : 'bg-amber-500 text-slate-950';
+
+      return `
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2 shadow">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-white font-mono">Order ID: ${o.tracking_code}</span>
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${badge}">${o.status}</span>
+          </div>
+          <p class="text-xs text-slate-300 truncate">Route: ${o.pickup_address} → ${o.dropoff_address}</p>
+          <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-800">
+            <span class="font-extrabold text-orange-400">₦${Number(o.amount || 0).toLocaleString()}</span>
+            <span class="text-[11px] text-slate-400">${o.payment_status === 'PAID' ? '✓ Payment Confirmed' : 'Pay on Pickup / OPay'}</span>
+          </div>
+        </div>
       `;
-      e.target.reset();
     }
 
-    setCity(selectedCity);
-    function toggleOpayBox() {
-      const method = document.getElementById('payment_method').value;
-      const box = document.getElementById('opay-details-box');
-      if (box) {
-        box.classList.toggle('hidden', method !== 'BANK_TRANSFER');
-      }
+    function copyCustOpay() {
+      navigator.clipboard?.writeText('6152624923');
+      const btn = document.getElementById('c-copy-opay');
+      btn.textContent = 'Copied!';
+      setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
     }
 
-    function copyOpayAccount() {
-      navigator.clipboard.writeText('6152624923');
-      const btn = document.getElementById('copy-opay-btn');
-      if (btn) {
-        btn.textContent = 'Copied!';
-        setTimeout(() => { btn.textContent = 'Copy Account'; }, 2000);
-      }
-    }
+    initCustomerApp();
   </script>
- <footer class="w-full max-w-md mt-8 mb-20 pt-4 border-t border-slate-800 text-center text-xs text-slate-400 space-y-1">
-  <div class="text-slate-200 font-bold">SpeeDial Express • RC: 8937370</div>
-  <div>No. A4 Saiha Mall, Opposite KASU, Tafawa Balewa Way, Kaduna</div>
-  <div>Support: <a href="tel:+2347240666600" class="text-orange-400 font-semibold">+234 724 066 6600</a> • <a href="mailto:speedialdigiservices@gmail.com" class="hover:text-slate-200">speedialdigiservices@gmail.com</a></div>
-</footer>
-
-<a href="https://wa.me/2347240666600?text=Hello%20SpeeDial%20Express%2C%20I%20need%20help%20with%20a%20dispatch%20booking." target="_blank" rel="noopener" aria-label="Chat on WhatsApp" style="position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;align-items:center;gap:8px;background:#25D366;color:#052e16;font-weight:700;font-size:14px;padding:12px 16px;border-radius:999px;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,0.45);">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.5 0 .16 5.34.16 11.9c0 2.1.55 4.15 1.6 5.96L0 24l6.33-1.66a11.87 11.87 0 0 0 5.73 1.46h.01c6.56 0 11.9-5.34 11.9-11.9 0-3.18-1.24-6.17-3.45-8.42zM12.07 21.8h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.76.99 1-3.66-.24-.38a9.85 9.85 0 0 1-1.51-5.26c0-5.45 4.44-9.89 9.9-9.89 2.64 0 5.13 1.03 7 2.9a9.83 9.83 0 0 1 2.9 7c0 5.46-4.44 9.89-9.89 9.89zm5.43-7.41c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.22 3.08.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35z"/></svg>
-  <span>Chat</span>
-</a>
 </body>
 </html>
