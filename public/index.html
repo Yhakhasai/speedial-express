@@ -5,10 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>SpeeDial Express • Send It. Track It. Relax.</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
     body { -webkit-tap-highlight-color: transparent; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .leaflet-control-attribution { font-size: 9px !important; background: rgba(15, 23, 42, 0.75) !important; color: #94a3b8 !important; }
+    .leaflet-control-attribution a { color: #f97316 !important; }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans pb-24 select-none">
@@ -128,7 +132,147 @@
     </div>
   </div>
 
-  <!-- ==================== 3. CUSTOMER APP SHELL ==================== -->
+  <!-- ==================== 3. FULL-SCREEN SEND A PACKAGE VIEW ==================== -->
+  <div id="send-package-screen" class="hidden min-h-screen bg-slate-950 max-w-md mx-auto pb-10">
+    <!-- Top Back Header -->
+    <div class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur border-b border-slate-800/80 px-4 py-3.5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <button type="button" onclick="closeSendPackage()" class="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-200 hover:border-orange-500">
+          ←
+        </button>
+        <h1 class="text-lg font-extrabold text-white tracking-tight">Send a Package</h1>
+      </div>
+      <div class="flex gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+        <button type="button" id="bcity-KD" onclick="setBookingCity('KD')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-orange-600 text-white">KD</button>
+        <button type="button" id="bcity-KN" onclick="setBookingCity('KN')" class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-400">KN</button>
+      </div>
+    </div>
+
+    <div class="px-4 pt-4 space-y-5">
+      <!-- Delivery Service Cards -->
+      <div class="space-y-2">
+        <label class="text-xs font-bold text-slate-300">Delivery service</label>
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button" id="svc-MOTO" onclick="selectDeliveryService('MOTO')" class="text-left p-3.5 rounded-2xl bg-orange-500/10 border-2 border-orange-500 transition space-y-1.5">
+            <div class="text-orange-400 text-lg">🛵</div>
+            <div class="text-xs font-extrabold text-white leading-snug">On-demand motorcycle</div>
+            <p class="text-[11px] text-slate-400 leading-tight">Instant booking in the city. Fixed price now.</p>
+          </button>
+
+          <button type="button" id="svc-FLEET" onclick="selectDeliveryService('FLEET')" class="text-left p-3.5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition space-y-1.5">
+            <div class="text-slate-400 text-lg">🚚</div>
+            <div class="text-xs font-extrabold text-slate-200 leading-snug">Logistics partner</div>
+            <p class="text-[11px] text-slate-400 leading-tight">Intra & interstate fleets. They send a quote.</p>
+          </button>
+        </div>
+      </div>
+
+      <!-- Interactive Map & Pin Mode Pills -->
+      <div class="space-y-2.5">
+        <div class="relative rounded-3xl overflow-hidden border border-slate-800 shadow-lg">
+          <!-- Overlaid Pin Mode Toggle Pills -->
+          <div class="absolute top-3 inset-x-3 z-[400] grid grid-cols-2 gap-2">
+            <button type="button" id="pin-mode-pickup" onclick="setActivePinMode('PICKUP')" class="py-2 px-3 rounded-full bg-orange-600 text-white text-xs font-bold shadow-lg flex items-center justify-center gap-1.5">
+              <span>📍</span>
+              <span>Set pickup pin</span>
+            </button>
+            <button type="button" id="pin-mode-dropoff" onclick="setActivePinMode('DROPOFF')" class="py-2 px-3 rounded-full bg-slate-950/95 border border-emerald-500/60 text-emerald-400 text-xs font-bold shadow-lg flex items-center justify-center gap-1.5">
+              <span>📍</span>
+              <span>Set dropoff pin</span>
+            </button>
+          </div>
+
+          <div id="booking-map" class="w-full h-56 bg-slate-900 z-10"></div>
+        </div>
+
+        <p class="text-[11px] text-slate-400 leading-relaxed">
+          Search an address below, or tap the map to drop the selected pin. Drag a pin to fine-tune it.
+        </p>
+
+        <button type="button" onclick="useCurrentLocationForPickup()" class="inline-flex items-center gap-2 text-xs font-bold text-orange-400 hover:text-orange-300">
+          <span>🎯</span>
+          <span id="gps-btn-label">Use my current location for pickup</span>
+        </button>
+      </div>
+
+      <!-- Pickup Details Section -->
+      <div class="space-y-3 pt-1">
+        <h2 class="text-sm font-extrabold text-white">Pickup details</h2>
+
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-slate-300">Pickup address label</label>
+          <div class="relative">
+            <input id="b-pickup" type="text" placeholder="e.g. No. A4 Saiha Mall, Tafawa Balewa Way, Kaduna" class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl pl-4 pr-10 py-3.5 text-xs text-white placeholder-slate-500" />
+            <button type="button" onclick="geocodeAddressInput('PICKUP')" title="Locate on map" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-orange-400">
+              🔍
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div class="space-y-1">
+            <label class="text-xs font-semibold text-slate-300">Pickup contact name</label>
+            <input id="b-sender-name" type="text" placeholder="Full name" class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-3.5 py-3 text-xs text-white placeholder-slate-500" />
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-semibold text-slate-300">Pickup phone</label>
+            <input id="b-sender-phone" type="tel" placeholder="080..." class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-3.5 py-3 text-xs text-white placeholder-slate-500" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Dropoff Details Section -->
+      <div class="space-y-3 pt-1 border-t border-slate-800/80">
+        <h2 class="text-sm font-extrabold text-white pt-2">Dropoff details</h2>
+
+        <div class="space-y-1">
+          <label class="text-xs font-semibold text-slate-300">Dropoff address label</label>
+          <div class="relative">
+            <input id="b-dropoff" type="text" placeholder="e.g. Barnawa / Unguwan Rimi, Kaduna" class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl pl-4 pr-10 py-3.5 text-xs text-white placeholder-slate-500" />
+            <button type="button" onclick="geocodeAddressInput('DROPOFF')" title="Locate on map" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-400">
+              🔍
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div class="space-y-1">
+            <label class="text-xs font-semibold text-slate-300">Recipient name</label>
+            <input id="b-rec-name" type="text" placeholder="Full name" class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-3.5 py-3 text-xs text-white placeholder-slate-500" />
+          </div>
+          <div class="space-y-1">
+            <label class="text-xs font-semibold text-slate-300">Recipient phone</label>
+            <input id="b-rec-phone" type="tel" placeholder="080..." class="w-full bg-slate-900 border border-slate-800 focus:border-orange-500 outline-none rounded-2xl px-3.5 py-3 text-xs text-white placeholder-slate-500" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Package & Fare Summary -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+        <div class="grid grid-cols-2 gap-2.5">
+          <div class="space-y-1">
+            <label class="text-[11px] font-semibold text-slate-400">Package description</label>
+            <input id="b-note" type="text" placeholder="e.g. Box, Documents" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-white" />
+          </div>
+          <div class="space-y-1">
+            <label id="b-fare-label" class="text-[11px] font-semibold text-slate-400">Fixed Fare (₦)</label>
+            <input id="b-amount" type="number" value="1500" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-orange-400 font-extrabold" />
+          </div>
+        </div>
+        <div class="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-800">
+          <span id="b-distance-info">Est. distance: 2.5 km • Motorcycle Dispatch</span>
+          <span class="text-emerald-400 font-semibold">Same-Day Delivery</span>
+        </div>
+      </div>
+
+      <button type="button" onclick="submitCustomerBooking()" class="w-full bg-orange-600 hover:bg-orange-500 active:scale-[0.99] transition py-4 rounded-2xl text-sm font-extrabold text-white shadow-xl shadow-orange-600/25">
+        Send Package
+      </button>
+      <p id="b-msg" class="text-xs text-center hidden"></p>
+    </div>
+  </div>
+
+  <!-- ==================== 4. CUSTOMER APP SHELL ==================== -->
   <div id="cust-shell" class="max-w-md mx-auto">
 
     <!-- ---------- TAB 1: HOME ---------- -->
@@ -165,7 +309,7 @@
             OPay Transfer: 6152624923
           </div>
           <div class="grid grid-cols-2 gap-2.5 mt-4">
-            <button type="button" onclick="openBookingModal()" class="bg-white text-slate-950 hover:bg-orange-50 font-bold text-xs py-2.5 rounded-xl shadow">
+            <button type="button" onclick="openSendPackage()" class="bg-white text-slate-950 hover:bg-orange-50 font-bold text-xs py-2.5 rounded-xl shadow">
               + Send Package
             </button>
             <button type="button" onclick="switchCustNav('wallet')" class="bg-black/25 hover:bg-black/35 text-white font-bold text-xs py-2.5 rounded-xl">
@@ -174,12 +318,12 @@
           </div>
         </div>
 
-        <button type="button" onclick="openBookingModal()" class="w-full bg-slate-900 border border-orange-500/40 hover:border-orange-500 rounded-2xl p-4 flex items-center justify-between text-left transition shadow">
+        <button type="button" onclick="openSendPackage()" class="w-full bg-slate-900 border border-orange-500/40 hover:border-orange-500 rounded-2xl p-4 flex items-center justify-between text-left transition shadow">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-orange-600/20 text-orange-400 flex items-center justify-center text-lg">🚚</div>
             <div>
               <h2 class="text-sm font-extrabold text-white">Send a Package</h2>
-              <p class="text-[11px] text-slate-400">Book an instant Kaduna or Kano dispatch rider now</p>
+              <p class="text-[11px] text-slate-400">Pin pickup & dropoff on map and book a rider now</p>
             </div>
           </div>
           <span class="text-orange-400 font-bold text-lg">›</span>
@@ -243,7 +387,7 @@
 
       <div id="c-orders-list" class="px-4 space-y-3"></div>
 
-      <button type="button" onclick="openBookingModal()" class="fixed bottom-20 right-5 z-30 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs px-5 py-3.5 rounded-2xl shadow-xl shadow-orange-600/30 flex items-center gap-2">
+      <button type="button" onclick="openSendPackage()" class="fixed bottom-20 right-5 z-30 bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs px-5 py-3.5 rounded-2xl shadow-xl shadow-orange-600/30 flex items-center gap-2">
         <span class="text-base leading-none">+</span>
         <span>Send Package</span>
       </button>
@@ -328,48 +472,6 @@
       </div>
     </section>
 
-    <!-- ==================== 4. SEND A PACKAGE BOOKING MODAL ==================== -->
-    <div id="booking-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center">
-      <div class="bg-slate-900 border-t border-orange-500/30 rounded-t-3xl w-full max-w-md p-5 space-y-3.5 max-h-[92vh] overflow-y-auto">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="text-base font-extrabold text-white">Book Instant Dispatch</h3>
-            <p class="text-[11px] text-slate-400">Same-day pickup & delivery across Kaduna & Kano</p>
-          </div>
-          <button type="button" onclick="closeBookingModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300">✕</button>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <button type="button" id="bcity-KD" onclick="setBookingCity('KD')" class="py-2 rounded-xl text-xs font-bold bg-orange-600 text-white">Kaduna (KD)</button>
-          <button type="button" id="bcity-KN" onclick="setBookingCity('KN')" class="py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300">Kano (KN)</button>
-        </div>
-
-        <div class="grid grid-cols-2 gap-2">
-          <input id="b-sender-name" type="text" placeholder="Sender Name" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
-          <input id="b-sender-phone" type="tel" placeholder="Sender Phone" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
-        </div>
-
-        <input id="b-pickup" type="text" placeholder="Pickup Address (e.g. Kawo, Kaduna)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
-
-        <div class="grid grid-cols-2 gap-2">
-          <input id="b-rec-name" type="text" placeholder="Recipient Name" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
-          <input id="b-rec-phone" type="tel" placeholder="Recipient Phone" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
-        </div>
-
-        <input id="b-dropoff" type="text" placeholder="Dropoff Address (e.g. Barnawa / Unguwan Rimi)" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
-
-        <div class="grid grid-cols-2 gap-2">
-          <input id="b-note" type="text" placeholder="Package Item (e.g. Box, Documents)" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white" />
-          <input id="b-amount" type="number" value="1500" placeholder="Agreed Fare (₦)" class="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-orange-400 font-bold" />
-        </div>
-
-        <button type="button" onclick="submitCustomerBooking()" class="w-full bg-orange-600 hover:bg-orange-500 py-3.5 rounded-2xl text-xs font-extrabold text-white shadow-lg shadow-orange-600/25">
-          Book Dispatch Now
-        </button>
-        <p id="b-msg" class="text-xs text-center hidden"></p>
-      </div>
-    </div>
-
     <!-- ==================== 5. BOTTOM 5-TAB NAVIGATION BAR ==================== -->
     <nav class="fixed bottom-0 inset-x-0 z-40 bg-slate-900/95 backdrop-blur border-t border-slate-800">
       <div class="max-w-md mx-auto grid grid-cols-5 py-2">
@@ -420,13 +522,25 @@
       }
     ];
 
+    const HUB_CENTERS = {
+      KD: [10.5105, 7.4165], // Kaduna Metro (Tafawa Balewa / Unguwan Rimi)
+      KN: [12.0022, 8.5920]  // Kano Metro
+    };
+
     let slideIdx = 0;
     let cAuthMode = 'LOGIN';
     let pendingVerifyEmail = '';
     let bookingCity = 'KD';
+    let deliveryService = 'MOTO';
+    let activePinMode = 'PICKUP';
     let custFilter = 'ALL';
     let myWaybills = JSON.parse(localStorage.getItem('speedial_my_waybills') || '[]');
     let loadedOrders = [];
+
+    let mapInstance = null;
+    let pickupMarker = null;
+    let dropoffMarker = null;
+    let routeLine = null;
 
     function initCustomerApp() {
       const today = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
@@ -448,6 +562,192 @@
       loadMyOrders();
     }
 
+    // ==================== SEND A PACKAGE + INTERACTIVE MAP ====================
+    function openSendPackage() {
+      document.getElementById('b-msg').classList.add('hidden');
+      document.getElementById('cust-shell').classList.add('hidden');
+      document.getElementById('send-package-screen').classList.remove('hidden');
+      window.scrollTo(0, 0);
+
+      setTimeout(() => {
+        initBookingMap();
+        if (mapInstance) mapInstance.invalidateSize();
+      }, 120);
+    }
+
+    function closeSendPackage() {
+      document.getElementById('send-package-screen').classList.add('hidden');
+      document.getElementById('cust-shell').classList.remove('hidden');
+    }
+
+    function selectDeliveryService(svc) {
+      deliveryService = svc;
+      const isMoto = svc === 'MOTO';
+
+      document.getElementById('svc-MOTO').className = isMoto
+        ? 'text-left p-3.5 rounded-2xl bg-orange-500/10 border-2 border-orange-500 transition space-y-1.5'
+        : 'text-left p-3.5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition space-y-1.5';
+      document.getElementById('svc-FLEET').className = !isMoto
+        ? 'text-left p-3.5 rounded-2xl bg-orange-500/10 border-2 border-orange-500 transition space-y-1.5'
+        : 'text-left p-3.5 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition space-y-1.5';
+
+      document.getElementById('b-fare-label').textContent = isMoto ? 'Fixed Fare (₦)' : 'Proposed Quote (₦)';
+      recalculateFareAndLine();
+    }
+
+    function setActivePinMode(mode) {
+      activePinMode = mode;
+      const isPickup = mode === 'PICKUP';
+      document.getElementById('pin-mode-pickup').className = isPickup
+        ? 'py-2 px-3 rounded-full bg-orange-600 text-white text-xs font-bold shadow-lg flex items-center justify-center gap-1.5'
+        : 'py-2 px-3 rounded-full bg-slate-950/95 border border-orange-500/60 text-orange-400 text-xs font-bold shadow-lg flex items-center justify-center gap-1.5';
+      document.getElementById('pin-mode-dropoff').className = !isPickup
+        ? 'py-2 px-3 rounded-full bg-emerald-600 text-white text-xs font-bold shadow-lg flex items-center justify-center gap-1.5'
+        : 'py-2 px-3 rounded-full bg-slate-950/95 border border-emerald-500/60 text-emerald-400 text-xs font-bold shadow-lg flex items-center justify-center gap-1.5';
+    }
+
+    function createPinIcon(colorHex) {
+      return L.divIcon({
+        className: 'custom-pin',
+        html: `<div style="width:26px;height:26px;border-radius:9999px;background:${colorHex};border:3px solid #ffffff;box-shadow:0 4px 10px rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:bold;">•</div>`,
+        iconSize: [26, 26],
+        iconAnchor: [13, 13]
+      });
+    }
+
+    function initBookingMap() {
+      if (mapInstance) return;
+      const center = HUB_CENTERS[bookingCity] || HUB_CENTERS.KD;
+
+      mapInstance = L.map('booking-map', { zoomControl: false }).setView(center, 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+      }).addTo(mapInstance);
+
+      pickupMarker = L.marker(center, { draggable: true, icon: createPinIcon('#ea580c') }).addTo(mapInstance);
+      dropoffMarker = L.marker([center[0] + 0.014, center[1] + 0.014], { draggable: true, icon: createPinIcon('#059669') }).addTo(mapInstance);
+
+      pickupMarker.on('dragend', () => {
+        const pos = pickupMarker.getLatLng();
+        reverseGeocodePin(pos.lat, pos.lng, 'PICKUP');
+        recalculateFareAndLine();
+      });
+
+      dropoffMarker.on('dragend', () => {
+        const pos = dropoffMarker.getLatLng();
+        reverseGeocodePin(pos.lat, pos.lng, 'DROPOFF');
+        recalculateFareAndLine();
+      });
+
+      mapInstance.on('click', (e) => {
+        if (activePinMode === 'PICKUP') {
+          pickupMarker.setLatLng(e.latlng);
+          reverseGeocodePin(e.latlng.lat, e.latlng.lng, 'PICKUP');
+        } else {
+          dropoffMarker.setLatLng(e.latlng);
+          reverseGeocodePin(e.latlng.lat, e.latlng.lng, 'DROPOFF');
+        }
+        recalculateFareAndLine();
+      });
+
+      recalculateFareAndLine();
+    }
+
+    async function reverseGeocodePin(lat, lng, target) {
+      const inputId = target === 'PICKUP' ? 'b-pickup' : 'b-dropoff';
+      const el = document.getElementById(inputId);
+      el.value = `Pin (${lat.toFixed(4)}, ${lng.toFixed(4)})...`;
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
+        const data = await res.json();
+        if (data && data.display_name) {
+          el.value = data.display_name.split(',').slice(0, 3).join(', ');
+        }
+      } catch (e) {}
+    }
+
+    async function geocodeAddressInput(target) {
+      const inputId = target === 'PICKUP' ? 'b-pickup' : 'b-dropoff';
+      const q = document.getElementById(inputId).value.trim();
+      if (!q || !mapInstance) return;
+      const hubSuffix = bookingCity === 'KN' ? ', Kano, Nigeria' : ', Kaduna, Nigeria';
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(q + hubSuffix)}`);
+        const results = await res.json();
+        if (results && results.length > 0) {
+          const latlng = [parseFloat(results[0].lat), parseFloat(results[0].lon)];
+          if (target === 'PICKUP') pickupMarker.setLatLng(latlng);
+          else dropoffMarker.setLatLng(latlng);
+          mapInstance.setView(latlng, 14);
+          recalculateFareAndLine();
+        }
+      } catch (e) {}
+    }
+
+    function useCurrentLocationForPickup() {
+      const lbl = document.getElementById('gps-btn-label');
+      if (!navigator.geolocation) {
+        lbl.textContent = 'GPS not supported on this browser';
+        return;
+      }
+      lbl.textContent = 'Locating your GPS position...';
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const latlng = [pos.coords.latitude, pos.coords.longitude];
+          setActivePinMode('PICKUP');
+          if (mapInstance && pickupMarker) {
+            pickupMarker.setLatLng(latlng);
+            mapInstance.setView(latlng, 15);
+          }
+          reverseGeocodePin(latlng[0], latlng[1], 'PICKUP');
+          recalculateFareAndLine();
+          lbl.textContent = 'Pickup pin set to current GPS location ✓';
+        },
+        () => {
+          lbl.textContent = 'Location access denied — tap map to drop pin';
+        },
+        { enableHighAccuracy: true, timeout: 8000 }
+      );
+    }
+
+    function recalculateFareAndLine() {
+      if (!mapInstance || !pickupMarker || !dropoffMarker) return;
+      const p1 = pickupMarker.getLatLng();
+      const p2 = dropoffMarker.getLatLng();
+
+      if (routeLine) mapInstance.removeLayer(routeLine);
+      routeLine = L.polyline([p1, p2], { color: '#f97316', weight: 3, dashArray: '6, 6' }).addTo(mapInstance);
+
+      const km = Math.max(0.5, mapInstance.distance(p1, p2) / 1000);
+      const rawFare = deliveryService === 'MOTO'
+        ? Math.max(1000, Math.round((1000 + km * 200) / 50) * 50)
+        : Math.max(3500, Math.round((3500 + km * 350) / 100) * 100);
+
+      document.getElementById('b-amount').value = rawFare;
+      document.getElementById('b-distance-info').textContent =
+        `Est. distance: ${km.toFixed(1)} km • ${deliveryService === 'MOTO' ? 'On-demand Motorcycle' : 'Logistics Fleet'}`;
+    }
+
+    function setBookingCity(c) {
+      bookingCity = c;
+      document.getElementById('bcity-KD').className = c === 'KD'
+        ? 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-orange-600 text-white'
+        : 'px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-400';
+      document.getElementById('bcity-KN').className = c === 'KN'
+        ? 'px-2.5 py-1 rounded-lg text-[11px] font-bold bg-orange-600 text-white'
+        : 'px-2.5 py-1 rounded-lg text-[11px] font-bold text-slate-400';
+
+      if (mapInstance && pickupMarker && dropoffMarker) {
+        const center = HUB_CENTERS[c] || HUB_CENTERS.KD;
+        pickupMarker.setLatLng(center);
+        dropoffMarker.setLatLng([center[0] + 0.014, center[1] + 0.014]);
+        mapInstance.setView(center, 13);
+        recalculateFareAndLine();
+      }
+    }
+
+    // ==================== ONBOARDING & AUTH ====================
     function nextOnboardingSlide() {
       if (slideIdx < slides.length - 1) {
         slideIdx++;
@@ -476,6 +776,7 @@
 
     function openCustAuth() {
       document.getElementById('cust-shell').classList.add('hidden');
+      document.getElementById('send-package-screen').classList.add('hidden');
       document.getElementById('cust-auth-screen').classList.remove('hidden');
       document.getElementById('c-auth-form').classList.remove('hidden');
       document.getElementById('c-verify-box').classList.add('hidden');
@@ -681,27 +982,12 @@
       renderCustomerOrders();
     }
 
-    function openBookingModal() {
-      document.getElementById('b-msg').classList.add('hidden');
-      document.getElementById('booking-modal').classList.remove('hidden');
-    }
-
-    function closeBookingModal() {
-      document.getElementById('booking-modal').classList.add('hidden');
-    }
-
-    function setBookingCity(c) {
-      bookingCity = c;
-      document.getElementById('bcity-KD').className = c === 'KD'
-        ? 'py-2 rounded-xl text-xs font-bold bg-orange-600 text-white'
-        : 'py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300';
-      document.getElementById('bcity-KN').className = c === 'KN'
-        ? 'py-2 rounded-xl text-xs font-bold bg-orange-600 text-white'
-        : 'py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300';
-    }
-
+    // ==================== BOOKING SUBMISSION & TRACKING ====================
     async function submitCustomerBooking() {
       const msgEl = document.getElementById('b-msg');
+      const svcTag = deliveryService === 'MOTO' ? '[Motorcycle]' : '[Logistics Fleet]';
+      const rawNote = document.getElementById('b-note').value.trim();
+
       const payload = {
         city: bookingCity,
         sender_name: document.getElementById('b-sender-name').value.trim(),
@@ -710,7 +996,7 @@
         recipient_name: document.getElementById('b-rec-name').value.trim(),
         recipient_phone: document.getElementById('b-rec-phone').value.trim(),
         dropoff_address: document.getElementById('b-dropoff').value.trim(),
-        package_note: document.getElementById('b-note').value.trim(),
+        package_note: rawNote ? `${svcTag} ${rawNote}` : svcTag,
         amount: Number(document.getElementById('b-amount').value) || 1500
       };
 
@@ -741,7 +1027,10 @@
         msgEl.className = 'text-xs text-center text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-2.5';
 
         await loadMyOrders();
-        setTimeout(() => closeBookingModal(), 1400);
+        setTimeout(() => {
+          closeSendPackage();
+          switchCustNav('orders');
+        }, 1300);
       } catch (e) {
         msgEl.textContent = 'Network error. Please retry.';
         msgEl.className = 'text-xs text-center text-red-400';
